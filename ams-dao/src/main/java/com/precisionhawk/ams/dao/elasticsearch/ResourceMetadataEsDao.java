@@ -23,6 +23,7 @@ public abstract class ResourceMetadataEsDao extends AbstractEsDao implements Res
     private static final String COL_ORG_ID = "organizationId";
     private static final String COL_ASSET_ID = "assetId";
     private static final String COL_ASSET_INSP_ID = "assetInspectionId";
+    private static final String COL_ORDER_NUM = "orderNumber";
     private static final String COL_RESOURCE_ID = "resourceId";
     private static final String COL_SOURCE_RESOURCE_ID = "sourceResourceId";
     private static final String COL_STATUS = "status";
@@ -52,7 +53,7 @@ public abstract class ResourceMetadataEsDao extends AbstractEsDao implements Res
         }
         BoolQueryBuilder query = null;
         query = addQueryMust(query, COL_NAME, params.getName());
-        query = addQueryMust(query, COL_ORG_ID, params.getOrganizationId());
+        query = addQueryMust(query, COL_ORDER_NUM, params.getOrderNumber());
         query = addQueryMust(query, COL_ASSET_ID, params.getAssetId());
         query = addQueryMust(query, COL_ASSET_INSP_ID, params.getAssetInspectionId());
         query = addQueryMust(query, COL_SOURCE_RESOURCE_ID, params.getSourceResourceId());

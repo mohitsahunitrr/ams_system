@@ -1,4 +1,4 @@
-package com.precisionhawk.poleams.webservices;
+package com.precisionhawk.ams.webservices;
 
 import javax.ws.rs.BadRequestException;
 import org.slf4j.Logger;

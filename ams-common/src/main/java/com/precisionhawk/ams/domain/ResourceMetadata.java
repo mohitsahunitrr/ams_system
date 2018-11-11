@@ -40,6 +40,15 @@ public final class ResourceMetadata {
         this.contentType = contentType;
     }
 
+    @Schema(description="The order number for the work order under which the resource was obtained.")
+    private String orderNumber;
+    public String getOrderNumber() {
+        return orderNumber;
+    }
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
     @Schema(description="The unique ID of the resource.")
     private String resourceId;
     public String getResourceId() {
@@ -87,15 +96,6 @@ public final class ResourceMetadata {
     }
     public void setName(String name) {
         this.name = name;
-    }
-    
-    @Schema(description="The organization.")
-    private String organizationId;
-    public String getOrganizationId() {
-        return organizationId;
-    }
-    public void setOrganizationId(String organizationId) {
-        this.organizationId = organizationId;
     }
     
     @Schema(description="The unique ID of the related site.")

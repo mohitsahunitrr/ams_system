@@ -137,7 +137,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>eams-dao</artifactId>
+                <artifactId>ams-dao</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

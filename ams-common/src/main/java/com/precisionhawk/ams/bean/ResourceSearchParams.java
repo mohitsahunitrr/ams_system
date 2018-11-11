@@ -23,14 +23,14 @@ public class ResourceSearchParams extends AbstractSearchParams {
     public void setName(String name) {
         this.name = name;
     }
-    
-    @Schema(description="The organization.")
-    private String organizationId;
-    public String getOrganizationId() {
-        return organizationId;
+
+    @Schema(description="The order number for the work order under which the resource was obtained.")
+    private String orderNumber;
+    public String getOrderNumber() {
+        return orderNumber;
     }
-    public void setOrganizationId(String organizationId) {
-        this.organizationId = organizationId;
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
     @Schema(description="The unique ID of the related asset.")
@@ -111,7 +111,7 @@ public class ResourceSearchParams extends AbstractSearchParams {
     
     @Override
     public boolean hasCriteria() {
-        return testField(siteId) || testField(organizationId) || testField(assetId) ||
+        return testField(siteId) || testField(orderNumber) || testField(assetId) ||
                 testField(assetInspectionId) || testField(siteInspectionId) ||
                 status != null || testField(sourceResourceId) || type != null;
     }
