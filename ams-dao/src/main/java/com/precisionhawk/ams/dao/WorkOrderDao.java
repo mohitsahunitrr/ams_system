@@ -20,5 +20,7 @@ public interface WorkOrderDao
      
     List<WorkOrder> search(WorkOrderSearchParams params) throws DaoException;
      
-    void store(WorkOrder workOrder) throws DaoException;
+    boolean insert(WorkOrder workOrder) throws DaoException;
+    
+    boolean update(WorkOrder workOrder) throws DaoException;
 }

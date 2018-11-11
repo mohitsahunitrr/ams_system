@@ -1,0 +1,34 @@
+{
+  "WorkOrder" : {
+    "properties" : {
+      "description" : {
+        "include_in_all" : false,
+        "type" : "string"        
+      },
+      "orderNumber" : {
+        "include_in_all" : true,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "siteId" : {
+        "include_in_all" : true,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "status" : {
+        "include_in_all" : true,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "type" : {
+        "include_in_all" : true,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "requestDate" : {
+          "type" : "date",
+          "format" : "yyyyMMdd"
+      }
+    }
+  }
+}

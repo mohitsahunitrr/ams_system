@@ -31,6 +31,24 @@ public final class ResourceMetadata {
         this.assetInspectionId = poleInspectionId;
     }
     
+    @Schema(description="Unique ID of the related component.")
+    private String componentId;
+    public String getComponentId() {
+        return componentId;
+    }
+    public void setComponentId(String componentId) {
+        this.componentId = componentId;
+    }
+    
+    @Schema(description="The unique ID of the related component inspection.")
+    private String componentInspectionId;
+    public String getComponentInspectionId() {
+        return componentInspectionId;
+    }
+    public void setComponentInspectionId(String componentInspectionId) {
+        this.componentInspectionId = componentInspectionId;
+    }
+    
     @Schema(description="The media type of the resource. See https://en.wikipedia.org/wiki/Media_type")
     private String contentType;
     public String getContentType() {

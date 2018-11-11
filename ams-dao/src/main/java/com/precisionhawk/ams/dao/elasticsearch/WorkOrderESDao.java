@@ -98,20 +98,41 @@ public abstract class WorkOrderESDao extends AbstractEsDao implements WorkOrderD
     }
 
     @Override
-    public void store(WorkOrder workOrder) throws DaoException
+    public boolean insert(WorkOrder workOrder) throws DaoException
     {
-        getClient().prepareIndex(
-                getIndexName(),
-                DOCUMENT_TYPE_WORK_ORDER,
-                workOrder.getOrderNumber())
-                    .setSource(serializeToString(workOrder))
-                    .setRefresh(true)
-                    .execute()
-                    .actionGet();
+        if (workOrder == null) {
+            throw new IllegalArgumentException("Work order cannot be null.");
+        } else if (workOrder.getOrderNumber() == null || workOrder.getOrderNumber().isEmpty()) {
+            throw new IllegalArgumentException("Order number required.");
+        }
+        WorkOrder wo = retrieveById(workOrder.getOrderNumber());
+        if (wo == null) {
+            indexObject(DOCUMENT_TYPE_WORK_ORDER, workOrder);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public void delete(String orderNumber) throws DaoException {
         super.deleteDocument(orderNumber);
+    }
+
+    @Override
+    public boolean update(WorkOrder workOrder) throws DaoException
+    {
+        if (workOrder == null) {
+            throw new IllegalArgumentException("Work order cannot be null.");
+        } else if (workOrder.getOrderNumber() == null || workOrder.getOrderNumber().isEmpty()) {
+            throw new IllegalArgumentException("Order number required.");
+        }
+        WorkOrder wo = retrieveById(workOrder.getOrderNumber());
+        if (wo == null) {
+            return false;
+        } else {
+            indexObject(DOCUMENT_TYPE_WORK_ORDER, workOrder);
+            return true;
+        }
     }
 }

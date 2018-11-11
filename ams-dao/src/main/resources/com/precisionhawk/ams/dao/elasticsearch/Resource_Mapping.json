@@ -1,0 +1,109 @@
+{
+  "Resource" : {
+    "properties" : {
+      "assetId" : {
+        "include_in_all" : false,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "assetInspectionId" : {
+        "include_in_all" : false,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "componentId" : {
+        "include_in_all" : false,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "componentInspectionId" : {
+        "include_in_all" : false,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "contentType" : {
+        "include_in_all" : true,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "orderNumber" : {
+        "include_in_all" : false,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "resourceId" : {
+        "include_in_all" : true,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "sourceResourceId" : {
+        "include_in_all" : false,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "timestamp" : {
+          "type" : "date",
+          "format" : "yyyyMMdd'T'HHmmss.SSSZ"
+      },
+      "location" : {
+        "properties" : {
+            "accuracy" : {
+                "type" : "double"
+            },
+            "altitude" : {
+                "type" : "double"
+            },
+            "latitude" : {
+                "type" : "double"
+            },
+            "longitude" : {
+                "type" : "double"
+            }
+        }
+      },
+      "name" : {
+        "include_in_all" : true,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "siteId" : {
+        "include_in_all" : false,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "siteInspectionId" : {
+        "include_in_all" : false,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "size" : {
+        "properties" : {
+            "depth" : {
+                "type" : "double"
+            },
+            "height" : {
+                "type" : "double"
+            },
+            "width" : {
+                "type" : "double"
+            }
+        }
+      },
+      "status" : {
+        "include_in_all" : true,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "type" : {
+        "include_in_all" : true,
+        "index" : "not_analyzed",
+        "type" : "string"
+      },
+      "zoomifyID" : {
+        "include_in_all" : false,
+        "index" : "not_analyzed",
+        "type" : "string"
+      }
+    }
+  }
+}
