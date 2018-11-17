@@ -1,6 +1,5 @@
 package com.precisionhawk.ams.support.elasticsearch;
 
-import javax.inject.Named;
 import org.elasticsearch.client.Client;
 import us.pcsw.es.util.ClientLifecycleListener;
 import us.pcsw.es.util.ESUtils;
@@ -9,7 +8,6 @@ import us.pcsw.es.util.ESUtils;
  *
  * @author Philip A. Chapman
  */
-@Named
 public abstract class IndexEnsuringLifecycleListener implements ClientLifecycleListener {
 
     @Override
