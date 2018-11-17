@@ -23,7 +23,7 @@ import org.elasticsearch.index.query.QueryBuilders;
  *
  * @author <a href="mailto:pchapman@pcsw.us">Philip A. Chapman</a>
  */
-public abstract class WorkOrderESDao extends AbstractEsDao implements WorkOrderDao
+public abstract class WorkOrderEsDao extends AbstractEsDao implements WorkOrderDao
 {
     private static final String DOCUMENT_FIELD_SITE_ID = "siteId";
     private static final String DOCUMENT_FIELD_STATUS = "status";
