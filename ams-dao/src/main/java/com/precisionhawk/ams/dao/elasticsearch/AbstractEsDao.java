@@ -1,5 +1,6 @@
 package com.precisionhawk.ams.dao.elasticsearch;
 
+import com.precisionhawk.ams.dao.AbstractDao;
 import com.precisionhawk.ams.support.elasticsearch.ElasticSearchConfig;
 import com.precisionhawk.ams.dao.DaoException;
 import java.io.IOException;
@@ -30,7 +31,7 @@ import us.pcsw.es.util.ESUtils;
  *
  * @author Philip A. Chapman
  */
-public abstract class AbstractEsDao {
+public abstract class AbstractEsDao extends AbstractDao {
 
     @Inject protected Client client;
     @Inject protected ElasticSearchConfig config;

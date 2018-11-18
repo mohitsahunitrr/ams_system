@@ -37,12 +37,13 @@ public abstract class WorkOrderEsDao extends AbstractEsDao implements WorkOrderD
     
     @Override
     public WorkOrder retrieveById(String orderNumber) throws DaoException {
+        ensureExists(orderNumber, "Order number is required.");
         return retrieveObject(orderNumber, WorkOrder.class);
     }
     
-    private QueryBuilder prepareQuery(WorkOrderSearchParams searchBean) {
-        if (searchBean == null) {
-            return null;
+    private QueryBuilder prepareQuery(WorkOrderSearchParams searchBean) throws DaoException {
+        if (searchBean == null || (!searchBean.hasCriteria())) {
+            throw new DaoException("Search parameters are required");
         }
         
         BoolQueryBuilder query = null;
@@ -75,9 +76,6 @@ public abstract class WorkOrderEsDao extends AbstractEsDao implements WorkOrderD
     @Override
     public List<WorkOrder> search(WorkOrderSearchParams searchBean) throws DaoException {
         QueryBuilder query = prepareQuery(searchBean);
-        if (query == null) {
-            return Collections.emptyList();
-        }
         
         LOGGER.debug("Executing query for work orders: {}", query);
 
@@ -100,11 +98,8 @@ public abstract class WorkOrderEsDao extends AbstractEsDao implements WorkOrderD
     @Override
     public boolean insert(WorkOrder workOrder) throws DaoException
     {
-        if (workOrder == null) {
-            throw new IllegalArgumentException("Work order cannot be null.");
-        } else if (workOrder.getOrderNumber() == null || workOrder.getOrderNumber().isEmpty()) {
-            throw new IllegalArgumentException("Order number required.");
-        }
+        ensureExists(workOrder, "Work order cannot be null.");
+        ensureExists(workOrder.getOrderNumber(), "Order number required.");
         WorkOrder wo = retrieveById(workOrder.getOrderNumber());
         if (wo == null) {
             indexObject(DOCUMENT_TYPE_WORK_ORDER, workOrder);
@@ -116,17 +111,15 @@ public abstract class WorkOrderEsDao extends AbstractEsDao implements WorkOrderD
 
     @Override
     public void delete(String orderNumber) throws DaoException {
+        ensureExists(orderNumber, "Order number required.");
         super.deleteDocument(orderNumber);
     }
 
     @Override
     public boolean update(WorkOrder workOrder) throws DaoException
     {
-        if (workOrder == null) {
-            throw new IllegalArgumentException("Work order cannot be null.");
-        } else if (workOrder.getOrderNumber() == null || workOrder.getOrderNumber().isEmpty()) {
-            throw new IllegalArgumentException("Order number required.");
-        }
+        ensureExists(workOrder, "Work order cannot be null.");
+        ensureExists(workOrder.getOrderNumber(), "Order number required.");
         WorkOrder wo = retrieveById(workOrder.getOrderNumber());
         if (wo == null) {
             return false;
