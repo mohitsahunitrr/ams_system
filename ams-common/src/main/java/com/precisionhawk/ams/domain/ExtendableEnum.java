@@ -44,4 +44,9 @@ public abstract class ExtendableEnum {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }

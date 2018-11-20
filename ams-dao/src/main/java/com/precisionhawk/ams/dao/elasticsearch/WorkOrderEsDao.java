@@ -9,7 +9,6 @@ import com.precisionhawk.ams.dao.DaoException;
 import com.precisionhawk.ams.dao.WorkOrderDao;
 import com.precisionhawk.ams.domain.WorkOrder;
 import com.precisionhawk.ams.domain.WorkOrderStatus;
-import java.util.Collections;
 import java.util.List;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
