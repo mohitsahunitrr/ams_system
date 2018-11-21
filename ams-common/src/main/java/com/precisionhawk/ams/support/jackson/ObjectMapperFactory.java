@@ -18,9 +18,9 @@ import org.codehaus.jackson.map.module.SimpleModule;
  */
 public class ObjectMapperFactory implements Provider<ObjectMapper> {
 
-    private final ObjectMapper objectMapper;
+    private static final ObjectMapper objectMapper;
     
-    public ObjectMapperFactory() {
+    static {
         objectMapper = new ObjectMapper();
         SimpleModule module;
         
@@ -45,6 +45,10 @@ public class ObjectMapperFactory implements Provider<ObjectMapper> {
     
     @Override
     public ObjectMapper get() {
+        return objectMapper;
+    }
+    
+    public static ObjectMapper getObjectMapper() {
         return objectMapper;
     }
 }

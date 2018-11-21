@@ -2,7 +2,7 @@
  * All rights reserved.
  */
 
-package com.precisionhawk.ams.webservices.client.spring;
+package com.precisionhawk.ams.security;
 
 /**
  *

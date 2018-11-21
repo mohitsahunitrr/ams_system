@@ -4,6 +4,7 @@
 
 package com.precisionhawk.ams.webservices.client;
 
+import com.precisionhawk.ams.security.AccessTokenProvider;
 import com.precisionhawk.ams.webservices.WebService;
 import com.precisionhawk.ams.webservices.client.spring.WebServicesFactory;
 import java.io.IOException;
@@ -18,11 +19,11 @@ import java.util.Map;
  */
 public class Environment {
 
-//    private AccessTokenProvider accessTokenProvider;
-//    public void setAccessTokenProvider(AccessTokenProvider accessTokenProvider) {
-//        this.accessTokenProvider = accessTokenProvider;
-//    }
-//
+    private AccessTokenProvider accessTokenProvider;
+    public void setAccessTokenProvider(AccessTokenProvider accessTokenProvider) {
+        this.accessTokenProvider = accessTokenProvider;
+    }
+
     private String name;
     public String getName() {
         return name;
@@ -50,8 +51,7 @@ public class Environment {
      *                     authorization services.
      */
     public String obtainAccessToken() throws IOException {
-//        return accessTokenProvider.obtainAccessToken(serviceAppId);
-        return "NotImplemented";
+        return accessTokenProvider.obtainAccessToken(serviceAppId);
     }
     
     private final Map<Class<? extends WebService>, WebService> services = new HashMap();
