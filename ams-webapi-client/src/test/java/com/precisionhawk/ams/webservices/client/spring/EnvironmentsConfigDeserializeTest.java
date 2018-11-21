@@ -4,7 +4,6 @@
 
 package com.precisionhawk.ams.webservices.client.spring;
 
-import com.precisionhawk.ams.security.EnvironmentConfig;
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import java.util.List;

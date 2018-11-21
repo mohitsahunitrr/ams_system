@@ -422,6 +422,11 @@
             </dependency>
             <dependency>
                 <groupId>us.pcsw</groupId>
+                <artifactId>pcsw-websvcs-libs</artifactId>
+                <version>${pcsw.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>us.pcsw</groupId>
                 <artifactId>pcsw-mybatis</artifactId>
                 <version>${pcsw.version}</version>
             </dependency>

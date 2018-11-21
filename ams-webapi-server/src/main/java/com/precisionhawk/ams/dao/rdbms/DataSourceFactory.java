@@ -23,7 +23,7 @@ public class DataSourceFactory implements Provider<DataSource> {
         ds.setDataSourceName("DS Pool");
         ds.setDatabaseName(config.getDataBaseName());
         ds.setInitialConnections(config.getInitialConnections());
-        ds.setMaxConnections(config.getMaxCommections());
+        ds.setMaxConnections(config.getMaxConnections());
         ds.setPassword(config.getPassword());
         ds.setPortNumber(config.getPortNumber());
         ds.setServerName(config.getServerName());

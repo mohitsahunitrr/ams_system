@@ -2,13 +2,21 @@
  * All rights reserved.
  */
 
-package com.precisionhawk.ams.security;
+package com.precisionhawk.ams.webservices.client.spring;
 
 /**
  *
  * @author <a href="mailto:pchapman@pcsw.us">Philip A. Chapman</a>
  */
 public class EnvironmentConfig {
+    
+    private String accessTokenProvider;
+    public String getAccessTokenProvider() {
+        return accessTokenProvider;
+    }
+    public void setAccessTokenProvider(String accessTokenProvider) {
+        this.accessTokenProvider = accessTokenProvider;
+    }
 
     private String name;
     public String getName() {

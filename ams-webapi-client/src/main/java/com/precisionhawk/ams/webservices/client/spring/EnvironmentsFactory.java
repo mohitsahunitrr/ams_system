@@ -4,8 +4,9 @@
 
 package com.precisionhawk.ams.webservices.client.spring;
 
-import com.precisionhawk.ams.security.EnvironmentConfig;
 import com.esotericsoftware.yamlbeans.YamlReader;
+import com.precisionhawk.ams.security.AADAccessTokenProvider;
+import com.precisionhawk.ams.security.NoOppAccessTokenProvider;
 import com.precisionhawk.ams.webservices.client.Environment;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -80,11 +81,17 @@ public class EnvironmentsFactory
         environments = new LinkedList<>();
         for (EnvironmentConfig config : configs) {
             Environment env = new Environment();
-//            AccessTokenProvider tokenProvider = new AccessTokenProvider();
-//            tokenProvider.setClientId(config.getClientId());
-//            tokenProvider.setClientSecret(config.getClientSecret());
-//            tokenProvider.setTenantId(config.getTenantId());
-//            env.setAccessTokenProvider(tokenProvider);
+            if (AADAccessTokenProvider.class.getName().equals(config.getAccessTokenProvider())) {
+                AADAccessTokenProvider provider = new AADAccessTokenProvider();
+                provider.setClientId(config.getClientId());
+                provider.setClientSecret(config.getClientSecret());
+                provider.setTenantId(config.getTenantId());
+                env.setAccessTokenProvider(provider);
+            } else if (NoOppAccessTokenProvider.class.getName().equals(config.getAccessTokenProvider())) {
+                env.setAccessTokenProvider(new NoOppAccessTokenProvider());
+            } else {
+                throw new IllegalArgumentException(String.format("Invalid access provider \"%s\".", config.getAccessTokenProvider()));
+            }
             env.setName(config.getName());
             env.setServiceAppId(config.getServiceAppId());
             URI svcuri = new URI(config.getServiceURI());

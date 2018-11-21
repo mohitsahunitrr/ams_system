@@ -16,5 +16,5 @@ public interface DbConfig {
     String getServerName();
     String getUserName();
     Integer getInitialConnections();
-    Integer getMaxCommections();
+    Integer getMaxConnections();
 }
