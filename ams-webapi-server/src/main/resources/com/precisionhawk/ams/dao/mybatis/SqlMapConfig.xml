@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <mappers>
+        <mapper resource="com/precisionhawk/ams/dao/mybatis/app_sqlmap.xml"/>
+        <mapper resource="com/precisionhawk/ams/dao/mybatis/common_sqlmap.xml"/>
+        <mapper resource="com/precisionhawk/ams/dao/mybatis/group_sqlmap.xml"/>
+        <mapper resource="com/precisionhawk/ams/dao/mybatis/org_sqlmap.xml"/>
+        <mapper resource="com/precisionhawk/ams/dao/mybatis/user_sqlmap.xml"/>
+    </mappers>
+</configuration>

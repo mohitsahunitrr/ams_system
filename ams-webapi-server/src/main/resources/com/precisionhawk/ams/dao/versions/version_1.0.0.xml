@@ -1,0 +1,145 @@
+<dbchanges>
+    <!-- Version -->
+    <statement>
+        CREATE TABLE sec_db_version (
+            major INTEGER NOT NULL,
+            minor INTEGER NOT NULL,
+            revision INTEGER NOT NULL,
+            updated TIMESTAMP NOT NULL,
+            CONSTRAINT app_version PRIMARY KEY (
+                major, minor, revision
+            )
+        );
+    </statement>
+    
+    <!-- Application -->
+    <statement>
+        CREATE TABLE sec_application (
+            app_id CHAR(36) NOT NULL,
+            app_name VARCHAR(64) NOT NULL,
+            CONSTRAINT pk_sec_application PRIMARY KEY (app_id),
+            CONSTRAINT idx_sec_application_01 UNIQUE (app_name)
+        );
+    </statement>
+
+    <!-- Group -->
+    <statement>
+        CREATE TABLE sec_group (
+            group_id CHAR(36) NOT NULL,
+            group_app_id CHAR(36) NOT NULL,
+            group_key VARCHAR(64) NOT NULL,
+            group_name VARCHAR(64) NOT NULL,
+            description VARCHAR(1024) NOT NULL,
+            CONSTRAINT pk_sec_group PRIMARY KEY (group_id),
+            CONSTRAINT idx_sec_group_01 UNIQUE (group_app_id, group_key),
+            CONSTRAINT idx_sec_group_02 UNIQUE (group_app_id, group_name),
+            CONSTRAINT fk_sec_group_01 FOREIGN KEY (group_app_id)
+                REFERENCES sec_application (app_id)
+        );
+    </statement>
+
+    <!-- Organization -->
+    <statement>
+        CREATE TABLE sec_org (
+            org_id CHAR(36) NOT NULL,
+            org_key VARCHAR(64) NOT NULL,
+            org_name VARCHAR(64) NOT NULL,
+            CONSTRAINT pk_sec_org PRIMARY KEY (org_id),
+            CONSTRAINT idx_sec_org_01 UNIQUE (org_key),
+            CONSTRAINT idx_sec_org_02 UNIQUE (org_name)
+        );
+    </statement>
+
+    
+
+    <!-- User -->
+    <statement>
+        CREATE TABLE sec_user (
+            user_id CHAR(36) NOT NULL,
+            tenant_id CHAR(36) NOT NULL,
+            first_name VARCHAR(128) NOT NULL,
+            middle_name VARCHAR(128),
+            last_name VARCHAR(128) NOT NULL,
+            email_address VARCHAR(128),
+            email_nickname VARCHAR(64),
+            last_updated BIGINT,
+            CONSTRAINT pk_sec_user PRIMARY KEY (user_id),
+            CONSTRAINT idx_sec_user_01 UNIQUE (tenant_id, email_nickname)
+        );
+    </statement>
+    <statement>
+        CREATE INDEX idx_sec_user_02 ON sec_user (
+            email_address
+        );
+    </statement>
+    <statement>
+        CREATE INDEX idx_sec_user_03 ON sec_user (
+            tenant_id
+        );
+    </statement>
+    <statement>
+        CREATE INDEX idx_sec_user_04 ON sec_user (
+            last_name, middle_name, first_name
+        );
+    </statement>        
+                
+    <!-- User Group Mapping -->
+    <statement>
+        CREATE TABLE sec_group_user (
+            group_user_id BIGSERIAL,
+            group_id CHAR(36) NOT NULL,
+            user_id CHAR(36) NOT NULL,
+            CONSTRAINT pk_group_user PRIMARY KEY (group_user_id),
+            CONSTRAINT idx_group_user_01 UNIQUE (group_id, user_id),
+            CONSTRAINT fk_group_user_01 FOREIGN KEY (group_id)
+                REFERENCES sec_group (group_id)
+        );
+    </statement>
+    <statement>
+        CREATE INDEX idx_group_user_02 ON sec_group_user (group_id);
+    </statement>
+    <statement>
+        CREATE INDEX idx_group_user_03 ON sec_group_user (user_id);
+    </statement>
+    
+    <!-- User Org Mapping -->
+    <statement>
+        CREATE TABLE sec_org_user (
+            org_user_id BIGSERIAL,
+            org_id CHAR(36) NOT NULL,
+            user_id CHAR(36) NOT NULL,
+            CONSTRAINT pk_org_user PRIMARY KEY (org_user_id),
+            CONSTRAINT idx_org_user_01 UNIQUE (org_id, user_id),
+            CONSTRAINT fk_org_user_01 FOREIGN KEY (org_id)
+                REFERENCES sec_org (org_id)
+        );
+    </statement>
+    <statement>
+        CREATE INDEX idx_org_user_02 ON sec_org_user (org_id);
+    </statement>
+    <statement>
+        CREATE INDEX idx_org_user_03 ON sec_org_user (user_id);
+    </statement>
+
+    <!-- Field Translations -->    
+    <statement>
+        CREATE TABLE ams_field_translations (
+            id CHAR(36) NOT NULL,
+            org_id CHAR(36) NOT NULL,
+            lang_code CHAR(2) NOT NULL,
+            country_code CHAR(2),
+            json TEXT,
+            CONSTRAINT idx_ams_field_translations_01 UNIQUE (org_id, lang_code, country_code)
+        );
+    </statement>
+
+    <!-- Field Validations -->    
+    <statement>
+        CREATE TABLE ams_field_validations (
+            id CHAR(36) NOT NULL,
+            org_id CHAR(36) NOT NULL,
+            json TEXT,
+            CONSTRAINT idx_ams_field_validations_01 UNIQUE (org_id)
+        );
+    </statement>
+</dbchanges>

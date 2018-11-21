@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Group">
+    <!-- Application -->
+    
+    <select id="selectApplicationById" parameterType="string" resultMap="Common.ApplicationResult">
+        select <include refid="Common.selectApplication"/>
+        from
+            sec_application sa
+        where sa.app_id = #{value}
+    </select>
+    
+    <select id="selectApplications" resultMap="Common.ApplicationResult">
+        select <include refid="Common.selectApplication"/>
+        from
+            sec_application sa
+        order by sa.app_name
+    </select>
+
+    <delete id="deleteApplication" parameterType="string">
+        delete from sec_application where app_id = #{value}
+    </delete>
+
+    <update id="insertApplication" parameterType="com.precisionhawk.ams.bean.security.Application">
+        insert into sec_application (
+            app_id, app_name
+        ) values (
+            #{id}, #{name}
+        )
+    </update>
+
+    <update id="updateApplication" parameterType="com.precisionhawk.ams.bean.security.Application">
+        update sec_application
+        set
+            app_name = #{name}
+        where app_id = #{id}
+    </update>
+    
+    <!-- Group -->
+
+    <select id="selectGroupsOrderedByName" resultMap="Common.GroupResult">
+        select <include refid="Common.selectGroup"/>
+        from
+            sec_group g
+            left outer join sec_application sa on sa.app_id = g.group_app_id
+        order by sa.app_name, g.group_name
+    </select>
+
+    <select id="selectGroupsForAppOrderedByName" parameterType="String" resultMap="Common.GroupResult">
+        select <include refid="Common.selectGroup"/>
+        from
+            sec_group g
+            left outer join sec_application sa on sa.app_id = g.group_app_id
+        where g.group_app_id = ${value}
+        order g.group_name
+    </select>
+
+    <select id="selectGroupById" parameterType="string" resultMap="Common.GroupResult">
+        select <include refid="Common.selectGroup"/>
+        from sec_group g
+        where g.group_id = #{value}
+    </select>
+
+    <select id="selectGroupByKey" parameterType="Map" resultMap="Common.GroupResult">
+        select <include refid="Common.selectGroup"/>
+        from sec_group g
+        where g.group_app_id = #{appId} and g.group_key = #{groupKey}
+    </select>
+
+    <delete id="deleteGroup" parameterType="string">
+        delete from sec_group where group_id = #{value}
+    </delete>
+
+    <update id="insertGroup" parameterType="com.precisionhawk.ams.bean.security.Group">
+        insert into sec_group (
+            group_id, group_app_id, group_key, group_name, description
+        ) values (
+            #{id}, #{applicationId}, #{key}, #{name}, #{description}
+        )
+    </update>
+
+    <update id="updateGroup" parameterType="com.precisionhawk.ams.bean.security.Group">
+        update sec_group
+        set
+            group_name = #{name},
+            description = #{description}
+        where group_id = #{id}
+    </update>
+    
+    <!-- Tenant Group -->
+
+    <select id="selectTenantAADGroups" parameterType="String" resultType="String">
+        select tg.add_group_id
+        from sec_tenant_group tg
+        where tg.tenant_id = #{value}
+    </select>
+
+    <select id="selectTenantGroups" resultMap="Common.TenantGroupResult">
+        select <include refid="Common.selectTenantGroup"/>
+        from sec_tenant_group tg
+        order by tg.tenant_id
+    </select>
+
+    <select id="selectGroupByTenantGroup" parameterType="Map" resultMap="Common.GroupResult">
+        select <include refid="Common.selectGroup"/>
+        from
+            sec_tenant_group tg
+            join sec_group g on g.group_id = tg.group_id
+        where tg.tenant_id = #{tenantId} and tg.add_group_id = #{addGroupId}
+    </select>
+</mapper>

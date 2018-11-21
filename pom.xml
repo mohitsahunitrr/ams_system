@@ -331,9 +331,24 @@
                 <version>6.1.14</version>
             </dependency>
             <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>3.2.8</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis-spring</artifactId>
+                <version>1.2.2</version>
+            </dependency>
+            <dependency>
                 <groupId>org.papernapkin.liana</groupId>
                 <artifactId>liana-util</artifactId>
                 <version>${liana.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>9.3-1102-jdbc41</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -403,6 +418,11 @@
             <dependency>
                 <groupId>us.pcsw</groupId>
                 <artifactId>pcsw-es-util</artifactId>
+                <version>${pcsw.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>us.pcsw</groupId>
+                <artifactId>pcsw-mybatis</artifactId>
                 <version>${pcsw.version}</version>
             </dependency>
             <dependency>

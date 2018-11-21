@@ -1,0 +1,18 @@
+<versions>
+    <versionTable>
+        <insert>
+            INSERT INTO sec_db_version (
+                major, minor, revision, updated
+            ) VALUES (
+                ?, ?, ?, current_timestamp
+            );
+        </insert>
+        <select>
+            SELECT major, minor, revision
+            FROM sec_db_version
+            ORDER BY major DESC, minor DESC, revision DESC
+            LIMIT 1
+        </select>
+    </versionTable>
+    <version major="1" minor="0" revision="0" updatefile="version_1.0.0.xml"/>
+</versions>

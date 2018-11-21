@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Org">
+    <!-- Org -->
+
+    <select id="selectOrgsOrderedByName" resultMap="Common.OrgResult">
+        select <include refid="Common.selectOrg"/>
+        from
+            sec_org o
+        order by o.org_name
+    </select>
+
+    <select id="selectOrgById" parameterType="string" resultMap="Common.OrgResult">
+        select <include refid="Common.selectOrg"/>
+        from sec_org o
+        where o.org_id = #{value}
+    </select>
+
+    <select id="selectOrgByKey" parameterType="string" resultMap="Common.OrgResult">
+        select <include refid="Common.selectOrg"/>
+        from sec_org o
+        where o.org_key = #{value}
+    </select>
+
+    <delete id="deleteOrg" parameterType="string">
+        delete from sec_org where org_id = #{value}
+    </delete>
+
+    <update id="insertOrg" parameterType="com.precisionhawk.ams.domain.Organization">
+        insert into sec_org (
+            org_id, org_key, org_name
+        ) values (
+            #{id}, #{key}, #{name}
+        )
+    </update>
+
+    <update id="updateOrg" parameterType="com.precisionhawk.ams.domain.Organization">
+        update sec_org
+        set
+            org_name = #{name}
+        where org_id = #{id}
+    </update>
+    
+    <!-- Users in organizations -->
+
+    <select id="selectOrgsByUserId" parameterType="string" resultMap="Common.OrgResult">
+        select <include refid="Common.selectOrg"/>
+        from
+            sec_org_user ou
+            join sec_org o on o.org_id = ou.org_id
+        where ou.user_id = #{value}
+        order by o.org_name
+    </select>
+    
+    <select id="selectUsersInOrg" parameterType="string" resultType="String">
+        select ou.user_id
+        from sec_org_user ou
+        where ou.org_id = #{value}
+    </select>
+    
+    <delete id="deleteUserFromOrg" parameterType="map">
+        delete from sec_org_user where org_id = #{orgId} and user_id = #{userId}
+    </delete>
+    
+    <insert id="insertUserIntoOrg" parameterType="map">
+        insert into sec_org_user (org_id, user_id) values (#{orgId}, #{userId})
+    </insert>
+</mapper>

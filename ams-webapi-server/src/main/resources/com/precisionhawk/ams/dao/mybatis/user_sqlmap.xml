@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="User">
+    <!-- User -->
+    <select id="selectUserSearch" parameterType="com.precisionhawk.ams.bean.security.UserSearchParams" resultMap="Common.UserResult">
+        select <include refid="Common.selectUser"/>
+        from
+            sec_user su
+        <where>
+            <if test="tenantId != null">
+            su.tenant_id = #{tenantId}
+            </if>
+            <if test="emailAddress != null">
+                AND su.email_address = #{emailAddress}
+            </if>
+            <if test="userId != null">
+                AND su.user_id = #{userId}
+            </if>
+            <if test="emailNickname != null">
+                AND su.email_nickname = #{emailNickname}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteUser" parameterType="string">
+        delete from sec_user where user_id = #{value}
+    </delete>
+
+    <update id="insertUser" parameterType="com.precisionhawk.ams.bean.security.CachedUserInfo">
+        insert into sec_user (
+            user_id, tenant_id, first_name, middle_name, last_name, email_address, email_nickname, last_updated
+        ) values (
+            #{userId}, #{tenantId}, #{firstName}, #{middleName}, #{lastName}, #{emailAddress}, #{emailNickname}, #{lastUpdated}
+        );
+    </update>
+
+    <update id="updateUser" parameterType="com.precisionhawk.ams.bean.security.CachedUserInfo">
+        update sec_user
+        set
+            first_name = #{firstName},
+            middle_name = #{middleName},
+            last_name = #{lastName},
+            email_address = #{emailAddress},
+            email_nickname = #{emailNickname},
+            last_updated = ${lastUpdated}
+        where user_id = #{userId}
+    </update>
+    
+    <!-- Site User -->
+        
+    <select id="selectSitesForUser" parameterType="string" resultType="String">
+        select su.site_id
+        from sec_site_user su
+        where su.user_id = #{value}
+    </select>
+    
+    <select id="selectUsersForSite" parameterType="string" resultType="String">
+        select su.user_id
+        from sec_site_user su
+        where su.site_id = #{value}
+    </select>
+    
+    <update id="insertUserForSite" parameterType="map">
+        insert into sec_site_user(site_id, user_id)
+        values(
+            #{siteId},
+            #{userId}
+        )
+    </update>
+    
+    <delete id="deleteUserFromSite" parameterType="map">
+        delete from sec_site_user
+        where
+            site_id = #{siteId}
+            and
+            user_id = #{userId}
+    </delete>
+</mapper>

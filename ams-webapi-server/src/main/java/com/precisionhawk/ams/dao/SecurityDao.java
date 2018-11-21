@@ -1,5 +1,6 @@
 package com.precisionhawk.ams.dao;
 
+import com.precisionhawk.ams.bean.security.Application;
 import com.precisionhawk.ams.bean.security.CachedUserInfo;
 import com.precisionhawk.ams.bean.security.Group;
 import com.precisionhawk.ams.bean.security.TenantGroup;
@@ -7,7 +8,6 @@ import com.precisionhawk.ams.bean.security.UserInfoBean;
 import com.precisionhawk.ams.bean.security.UserSearchParams;
 import com.precisionhawk.ams.domain.Organization;
 import java.util.List;
-import javax.ws.rs.core.Application;
 
 /**
  * @author Philip A. Chapman <pchapman@pcsw.us>
