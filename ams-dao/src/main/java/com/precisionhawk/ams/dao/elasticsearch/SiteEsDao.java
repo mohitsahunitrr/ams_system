@@ -6,7 +6,6 @@ import com.precisionhawk.ams.dao.SiteDao;
 import com.precisionhawk.ams.dao.SiteProvider;
 import com.precisionhawk.ams.domain.Site;
 import java.util.List;
-import javax.inject.Named;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -19,7 +18,6 @@ import java.util.LinkedList;
  *
  * @author Philip A. Chapman
  */
-@Named
 public abstract class SiteEsDao extends AbstractEsDao implements SiteDao, SiteProvider {
     
     private static final String COL_ID = "id";

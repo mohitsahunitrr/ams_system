@@ -33,6 +33,14 @@ public abstract class ResourceMetadataEsDao extends AbstractEsDao implements Res
     private static final String COL_ZOOMIFY_ID = "zoomifyId";
     private static final String DOCUMENT = "Resource";
 
+    private static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/Resource_Mapping.json";
+
+    //TODO: Could this be done a differenet way?
+    @Override
+    public String getMappingPath() {
+        return MAPPING;
+    }
+
     @Override
     protected String getDocumentType() {
         return DOCUMENT;

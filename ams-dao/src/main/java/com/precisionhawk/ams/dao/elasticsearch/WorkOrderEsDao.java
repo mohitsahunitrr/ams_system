@@ -29,6 +29,13 @@ public abstract class WorkOrderEsDao extends AbstractEsDao implements WorkOrderD
     private static final String DOCUMENT_FIELD_TYPE = "type";
     private static final String DOCUMENT_TYPE_WORK_ORDER = "WorkOrder";
 
+    private static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/WorkOrder_Mapping.json";
+
+    @Override
+    protected String getMappingPath() {
+        return MAPPING;
+    }
+
     @Override
     protected String getDocumentType() {
         return DOCUMENT_TYPE_WORK_ORDER;
