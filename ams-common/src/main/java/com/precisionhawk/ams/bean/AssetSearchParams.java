@@ -8,7 +8,7 @@ import io.swagger.oas.annotations.media.Schema;
  * @author pchapman
  */
 @Schema(description="Search criteria for assets.  At least one field must have a non-null value.")
-public final class AssetSearchParams extends AbstractSearchParams implements SiteAware {
+public class AssetSearchParams extends AbstractSearchParams implements SiteAware {
 
     @Schema(description="Owner-specific name for the asset. Should be unique for the owner or the site, but not necessarily across all assets.")
     private String name;

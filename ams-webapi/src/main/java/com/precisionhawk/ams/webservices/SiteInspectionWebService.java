@@ -2,7 +2,6 @@ package com.precisionhawk.ams.webservices;
 
 import com.precisionhawk.ams.bean.SiteInspectionSearchParams;
 import com.precisionhawk.ams.domain.SiteInspection;
-import com.precisionhawk.ams.webservices.WebService;
 import io.swagger.oas.annotations.Operation;
 import io.swagger.oas.annotations.Parameter;
 import java.util.List;
