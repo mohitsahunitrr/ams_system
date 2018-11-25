@@ -80,6 +80,18 @@ public class SiteInspection implements Identifyable, SiteAware {
         this.type = type;
     }
 
+    public SiteInspection() {}
+    
+    public SiteInspection(SiteInspection original) {
+        this.dateOfInspection = original.getDateOfInspection();
+        this.id = original.getId();
+        this.orderNumber = original.getOrderNumber();
+        this.processedBy = original.getProcessedBy();
+        this.siteId = original.getSiteId();
+        this.status = original.getStatus();
+        this.type = original.getType();
+    }
+    
     @Override
     public int hashCode() {
         int hash = 3;
