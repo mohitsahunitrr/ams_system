@@ -17,7 +17,7 @@ public class ReflectionUtilities {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ReflectionUtilities.class);
 
-    public static <T> List<Class<T>> findClassesImpmenenting(final Class<T> interfaceClass, final Package fromPackage) {
+    public static <T> List<Class<T>> findClassesImplementing(final Class<T> interfaceClass, final Package fromPackage) {
 
         if (interfaceClass == null) {
             LOGGER.debug("Unknown subclass.");

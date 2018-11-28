@@ -4,6 +4,7 @@
 
 package com.precisionhawk.ams.wb.process;
 
+import com.precisionhawk.ams.wb.config.ConfigUtil;
 import com.precisionhawk.ams.wb.config.WorkbenchConfig;
 import com.precisionhawk.ams.webservices.client.Environment;
 import com.precisionhawk.ams.webservices.client.spring.EnvironmentsFactory;
@@ -24,7 +25,7 @@ public abstract class ServiceClientCommandProcess extends CommandProcess {
 
     @Override
     public final boolean process(WorkbenchConfig config, Queue<String> args) {
-        String configURI = "file://" + new File(new File(new File(new File(System.getProperty("user.home")), ".ph"), config.getConfigDirName()), DEFAULT_CFG_FILE).getAbsolutePath();
+        String configURI = "file://" + new File(ConfigUtil.defaultConfigDir(config), DEFAULT_CFG_FILE).getAbsolutePath();
         String envStr = null;
         
         String s;

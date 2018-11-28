@@ -3,7 +3,7 @@ package com.precisionhawk.ams.wb;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.gaffer.GafferConfigurator;
 import ch.qos.logback.core.util.StatusPrinter;
-import com.precisionhawk.ams.util.ReflectionUtilities;
+import com.precisionhawk.ams.wb.config.ConfigUtil;
 import com.precisionhawk.ams.wb.config.WorkbenchConfig;
 import com.precisionhawk.ams.wb.process.CommandProcess;
 import java.io.File;
@@ -11,7 +11,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,7 @@ public final class Main {
     }
     
     private void execute(String[] argsArray) {
-        WorkbenchConfig config = loadConfiguration();
+        WorkbenchConfig config = ConfigUtil.loadConfiguration();
         if (config == null) {
             System.exit(1);
         }
@@ -67,7 +66,7 @@ public final class Main {
         // If there is a file in $home/.windams/workbench.logback.groovy, use that
         // Otherwise, use classpath://com.windams.wb.workbench.logback.groovy
         URL config = null;
-        File f = new File(new File(new File(new File(System.getProperty("user.home")), ".ph"), wbconfig.getConfigDirName()), USER_LOGGING_COFIG);
+        File f = new File(ConfigUtil.defaultConfigDir(wbconfig), USER_LOGGING_COFIG);
         if (f.canRead()) {
             try {
                 config = f.toURI().toURL();
@@ -84,23 +83,5 @@ public final class Main {
         StatusPrinter.printInCaseOfErrorsOrWarnings(context);
         
         LoggerFactory.getLogger(getClass()).info("LogBack has been configured from {}", config);
-    }
-    
-    private WorkbenchConfig loadConfiguration() {
-        WorkbenchConfig config = null;
-        List<Class<WorkbenchConfig>> impls = ReflectionUtilities.findClassesImpmenenting(WorkbenchConfig.class, WorkbenchConfig.class.getPackage());
-        if (impls.isEmpty()) {
-            System.err.printf("No implentations of %s found in package %s.\n", WorkbenchConfig.class, WorkbenchConfig.class.getPackage());
-        } else if (impls.size() == 1) {
-            Class<WorkbenchConfig> clazz = impls.get(0);
-            try {
-                config = clazz.newInstance();
-            } catch (IllegalAccessException | InstantiationException ex) {
-                System.err.printf("Unable to instantiate workbench config class.", ex);
-            }
-        } else {
-            System.err.printf("Multiple implentations of %s found in package %s.  Only one expected.\n", WorkbenchConfig.class, WorkbenchConfig.class.getPackage());
-        }
-        return config;
     }
 }
