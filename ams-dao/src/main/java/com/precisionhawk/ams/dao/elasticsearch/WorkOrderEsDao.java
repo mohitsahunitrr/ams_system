@@ -24,12 +24,11 @@ import org.elasticsearch.index.query.QueryBuilders;
  */
 public abstract class WorkOrderEsDao extends AbstractEsDao implements WorkOrderDao
 {
-    private static final String DOCUMENT_FIELD_SITE_ID = "siteId";
-    private static final String DOCUMENT_FIELD_STATUS = "status";
-    private static final String DOCUMENT_FIELD_TYPE = "type";
-    private static final String DOCUMENT_TYPE_WORK_ORDER = "WorkOrder";
-
-    private static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/WorkOrder_Mapping.json";
+    protected static final String DOCUMENT_FIELD_SITE_ID = "siteId";
+    protected static final String DOCUMENT_FIELD_STATUS = "status";
+    protected static final String DOCUMENT_FIELD_TYPE = "type";
+    protected static final String DOCUMENT_TYPE_WORK_ORDER = "WorkOrder";
+    protected static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/WorkOrder_Mapping.json";
 
     @Override
     protected String getMappingPath() {

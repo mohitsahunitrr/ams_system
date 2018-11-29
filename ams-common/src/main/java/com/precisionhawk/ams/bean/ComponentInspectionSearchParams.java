@@ -89,9 +89,9 @@ public class ComponentInspectionSearchParams extends AbstractSearchParams implem
 
     @Override
     public boolean hasCriteria() {
-        return testField(assetId) || testField(assetInspectionId)
-                || testField(componentId) || testField(orderNumber)
-                || testField(siteId) || testField(siteInspectionId)
+        return hasValue(assetId) || hasValue(assetInspectionId)
+                || hasValue(componentId) || hasValue(orderNumber)
+                || hasValue(siteId) || hasValue(siteInspectionId)
                 || (status != null) || (type != null);
     }
 }

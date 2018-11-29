@@ -111,8 +111,8 @@ public class ResourceSearchParams extends AbstractSearchParams {
     
     @Override
     public boolean hasCriteria() {
-        return testField(siteId) || testField(orderNumber) || testField(assetId) ||
-                testField(assetInspectionId) || testField(siteInspectionId) ||
-                status != null || testField(sourceResourceId) || type != null;
+        return hasValue(siteId) || hasValue(orderNumber) || hasValue(assetId) ||
+                hasValue(assetInspectionId) || hasValue(siteInspectionId) ||
+                status != null || hasValue(sourceResourceId) || type != null;
     }
 }

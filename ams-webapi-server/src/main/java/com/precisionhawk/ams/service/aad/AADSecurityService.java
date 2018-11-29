@@ -30,7 +30,6 @@ import com.precisionhawk.ams.bean.security.UserInfoBean;
 import com.precisionhawk.ams.bean.security.UserSearchParams;
 import com.precisionhawk.ams.service.AbstractSecurityService;
 import com.precisionhawk.ams.config.ClientConfig;
-import com.precisionhawk.ams.config.SecurityConfig;
 import com.precisionhawk.ams.config.TenantConfig;
 import com.precisionhawk.ams.dao.DaoException;
 import com.precisionhawk.ams.dao.SecurityDao;
@@ -106,12 +105,12 @@ public class AADSecurityService extends AbstractSecurityService {
 //        this.maxRetries = maxRetries;
 //    }
     
-    private SiteProvider siteDao;
-    public SiteProvider getSiteProvider() {
-        return siteDao;
+    private List<SiteProvider> siteDaos;
+    public List<SiteProvider> getSiteProviders() {
+        return siteDaos;
     }
-    public void setSiteProvider(SiteProvider provider) {
-        this.siteDao = provider;
+    public void setSiteProviders(List<SiteProvider> providers) {
+        this.siteDaos = providers;
     }
     
     private SecurityTokenCache tokenCache;
@@ -238,14 +237,18 @@ public class AADSecurityService extends AbstractSecurityService {
                 List<Organization> orgs = new LinkedList<>();
                 creds.setApplicationId(clientAppID);
                 orgs.add(dao.selectOrganizationById(cconfig.getOrganizationId()));
-                List<Site> sites;
+                List<Site> sites = new ArrayList<>();
                 try {
                     if (Constants.COMPANY_ORG_KEY.equals(orgs.get(0).getKey())) {
-                        sites = siteDao.retrieveAllSites();
+                        for (SiteProvider p : siteDaos) {
+                            sites.addAll( p.retrieveAllSites());
+                        }
                     } else {
                         SiteSearchParams params = new SiteSearchParams();
                         params.setOrganizationId(cconfig.getOrganizationId());
-                        sites = siteDao.retrieve(params);
+                        for (SiteProvider p : siteDaos) {
+                            sites.addAll(p.retrieve(params));
+                        }
                     }
                 } catch (DaoException ex) {
                     LOGGER.error("Error loading approved sites for clientId {}, org {}", clientAppID, cconfig.getOrganizationId(), ex);
@@ -374,7 +377,10 @@ public class AADSecurityService extends AbstractSecurityService {
                 }
                 if (inspecToolsUser) {
                     // If the user is an InspecTools user, he has access to all sites.
-                    List<Site> slist = siteDao.retrieveAllSites();
+                    List<Site> slist = new ArrayList<>();
+                    for (SiteProvider p : siteDaos) {
+                        slist.addAll(p.retrieveAllSites());
+                    }
                     siteIDs = new ArrayList<>(slist.size());
                     for (Site site : slist) {
                         sites = sitesByOrg.get(site.getOrganizationId());
@@ -386,13 +392,16 @@ public class AADSecurityService extends AbstractSecurityService {
                         siteIDs.add(site.getId());
                     }
                 } else {
+                    sites = new ArrayList<>();
                     siteIDs = new ArrayList<>();
                     // The user has access to all sites for the org to which the user belongs.
                     SiteSearchParams query = new SiteSearchParams();
                     for (Organization o : orgs) {
                         query.setOrganizationId(o.getId());
-                        sites = siteDao.retrieve(query);
-                        if (sites == null) {
+                        for (SiteProvider p : siteDaos) {
+                            sites.addAll(p.retrieve(query));
+                        }
+                        if (sites.isEmpty()) {
                             sitesByOrg.put(o.getId(), Collections.emptyList());
                         } else {
                             sitesByOrg.put(o.getId(), sites);
@@ -403,7 +412,10 @@ public class AADSecurityService extends AbstractSecurityService {
                     }
                     // The user may have access to additional sites.
                     List<String> sids = dao.selectSitesForUser(creds.getUserId());
-                    List<Site> allowedSites = siteDao.retrieveByIDs(sids);
+                    List<Site> allowedSites = new ArrayList<>();
+                    for (SiteProvider p : siteDaos) {
+                        allowedSites.addAll(p.retrieveByIDs(sids));
+                    }
                     for (Site site : allowedSites) {
                         // On occasion, sites have been deleted without permissions removed.  This causes nulls.
                         if (
@@ -429,7 +441,10 @@ public class AADSecurityService extends AbstractSecurityService {
                 // Add all the sites for the entire organization.
                 SiteSearchParams query = new SiteSearchParams();
                 query.setOrganizationId(tcfg.getOrganizationId());
-                sites = siteDao.retrieve(query);
+                sites = new ArrayList<>();
+                for (SiteProvider p : siteDaos) {
+                    sites.addAll(p.retrieve(query));
+                }
                 siteIDs = new ArrayList<>(sites.size());
                 for (Site site : sites) {
                     siteIDs.add(site.getId());

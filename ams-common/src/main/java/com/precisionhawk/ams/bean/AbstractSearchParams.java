@@ -8,7 +8,7 @@ public abstract class AbstractSearchParams {
     
     public abstract boolean hasCriteria();
     
-    protected static boolean testField(String field) {
+    protected static boolean hasValue(String field) {
         return field != null && field.length() > 0;
     }
 }

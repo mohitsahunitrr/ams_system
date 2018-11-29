@@ -54,6 +54,6 @@ public class SiteInspectionSearchParams extends AbstractSearchParams implements 
 
     @Override
     public boolean hasCriteria() {
-        return testField(orderNumber) || testField(siteId) || (status != null) || (type != null);
+        return hasValue(orderNumber) || hasValue(siteId) || (status != null) || (type != null);
     }
 }

@@ -30,6 +30,6 @@ public class SiteSearchParams extends AbstractSearchParams {
 
     @Override
     public boolean hasCriteria() {
-        return testField(name) || testField(organizationId);
+        return hasValue(name) || hasValue(organizationId);
     }
 }

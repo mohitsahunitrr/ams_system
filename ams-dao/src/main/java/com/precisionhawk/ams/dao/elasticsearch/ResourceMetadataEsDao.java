@@ -18,20 +18,20 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
  */
 public abstract class ResourceMetadataEsDao extends AbstractEsDao implements ResourceMetadataDao {
 
-    private static final String COL_CONTENT_TYPE = "contentType";
-    private static final String COL_NAME = "name";
-    private static final String COL_ORG_ID = "organizationId";
-    private static final String COL_ASSET_ID = "assetId";
-    private static final String COL_ASSET_INSP_ID = "assetInspectionId";
-    private static final String COL_ORDER_NUM = "orderNumber";
-    private static final String COL_RESOURCE_ID = "resourceId";
-    private static final String COL_SOURCE_RESOURCE_ID = "sourceResourceId";
-    private static final String COL_STATUS = "status";
-    private static final String COL_SITE_ID = "siteId";
-    private static final String COL_SITE_INSP_ID = "siteInspectionId";
-    private static final String COL_TYPE = "type";
-    private static final String COL_ZOOMIFY_ID = "zoomifyId";
-    private static final String DOCUMENT = "Resource";
+    protected static final String COL_CONTENT_TYPE = "contentType";
+    protected static final String COL_NAME = "name";
+    protected static final String COL_ORG_ID = "organizationId";
+    protected static final String COL_ASSET_ID = "assetId";
+    protected static final String COL_ASSET_INSP_ID = "assetInspectionId";
+    protected static final String COL_ORDER_NUM = "orderNumber";
+    protected static final String COL_RESOURCE_ID = "resourceId";
+    protected static final String COL_SOURCE_RESOURCE_ID = "sourceResourceId";
+    protected static final String COL_STATUS = "status";
+    protected static final String COL_SITE_ID = "siteId";
+    protected static final String COL_SITE_INSP_ID = "siteInspectionId";
+    protected static final String COL_TYPE = "type";
+    protected static final String COL_ZOOMIFY_ID = "zoomifyId";
+    protected static final String DOCUMENT = "Resource";
 
     private static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/Resource_Mapping.json";
 

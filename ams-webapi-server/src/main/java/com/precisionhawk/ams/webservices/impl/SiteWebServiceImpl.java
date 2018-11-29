@@ -4,7 +4,6 @@ import com.precisionhawk.ams.bean.SiteSearchParams;
 import com.precisionhawk.ams.dao.DaoException;
 import com.precisionhawk.ams.dao.SiteDao;
 import com.precisionhawk.ams.domain.Site;
-import com.precisionhawk.ams.webservices.AbstractWebService;
 import com.precisionhawk.ams.webservices.SiteWebService;
 import java.util.List;
 import java.util.UUID;

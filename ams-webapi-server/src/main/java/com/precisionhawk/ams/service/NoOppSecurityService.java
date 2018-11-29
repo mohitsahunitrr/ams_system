@@ -28,7 +28,7 @@ import javax.ws.rs.InternalServerErrorException;
 public class NoOppSecurityService extends AbstractSecurityService {
     
     private SecurityDao securityDao;
-    private SiteProvider siteDao;
+    private List<SiteProvider> siteDaos;
 
     public SecurityDao getSecurityDao() {
         return securityDao;
@@ -38,12 +38,12 @@ public class NoOppSecurityService extends AbstractSecurityService {
         this.securityDao = securityDao;
     }
 
-    public SiteProvider getSiteProvider() {
-        return siteDao;
+    public List<SiteProvider> getSiteProviders() {
+        return siteDaos;
     }
 
-    public void setSiteProvider(SiteProvider siteDao) {
-        this.siteDao = siteDao;
+    public void setSiteProviders(List<SiteProvider> providers) {
+        this.siteDaos = providers;
     }
     
     
@@ -64,8 +64,10 @@ public class NoOppSecurityService extends AbstractSecurityService {
         AppCredentials creds = new AppCredentials();
         creds.setOrganizations(securityDao.selectOrganizations());
         try {
-            for (Site s : siteDao.retrieveAllSites()) {
-                creds.getSiteIDs().add(s.getId());
+            for (SiteProvider p : siteDaos) {
+                for (Site s : p.retrieveAllSites()) {
+                    creds.getSiteIDs().add(s.getId());
+                }
             }
         } catch (DaoException dao) {
             LOGGER.error("Error looking up sites.", dao);

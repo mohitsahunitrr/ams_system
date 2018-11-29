@@ -1,0 +1,71 @@
+{
+    "InspectionEventResource" : {
+      "properties" : {
+        "id" : {
+          "include_in_all" : true,
+          "index" : "not_analyzed",
+          "type" : "string"
+        },
+        "assetId" : {
+          "include_in_all" : true,
+          "index" : "not_analyzed",
+          "type" : "string"
+        },
+        "polygons" : {
+          "properties" : {
+            "center" : {
+              "properties" : {
+                "x" : {
+                  "type" : "double"
+                },
+                "y" : {
+                  "type" : "double"
+                },
+                "z" : {
+                  "type" : "double"
+                }
+              }
+            },
+            "geometry" : {
+              "properties" : {
+                "x" : {
+                  "type" : "double"
+                },
+                "y" : {
+                  "type" : "double"
+                },
+                "z" : {
+                  "type" : "double"
+                }
+              }
+            },
+            "id" : {
+              "include_in_all" : true,
+              "index" : "not_analyzed",
+              "type" : "string"
+            }
+          }
+        },
+        "inspectionEventId" : {
+          "include_in_all" : true,
+          "index" : "not_analyzed",
+          "type" : "string"
+        },
+        "orderNumber" : {
+          "include_in_all" : true,
+          "index" : "not_analyzed",
+          "type" : "string"
+        },
+        "resourceId" : {
+          "include_in_all" : true,
+          "index" : "not_analyzed",
+          "type" : "string"
+        },
+        "siteId" : {
+          "include_in_all" : true,
+          "index" : "not_analyzed",
+          "type" : "string"
+        }
+      }
+    }
+}

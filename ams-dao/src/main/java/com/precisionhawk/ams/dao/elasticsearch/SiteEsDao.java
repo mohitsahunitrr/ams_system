@@ -20,11 +20,11 @@ import java.util.LinkedList;
  */
 public abstract class SiteEsDao extends AbstractEsDao implements SiteDao, SiteProvider {
     
-    private static final String COL_ID = "id";
-    private static final String COL_NAME = "name";
-    private static final String COL_ORG_ID = "organizationId";
-    private static final String DOCUMENT = "Site";
-    private static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/Site_Mapping.json";
+    protected static final String COL_ID = "id";
+    protected static final String COL_NAME = "name";
+    protected static final String COL_ORG_ID = "organizationId";
+    protected static final String DOCUMENT = "Site";
+    protected static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/Site_Mapping.json";
 
     @Override
     public String getMappingPath() {

@@ -19,12 +19,12 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 @Named
 public abstract class SiteInspectionEsDao extends AbstractEsDao implements SiteInspectionDao {
 
-    private static final String COL_ORDER_NUM = "orderNumber";
-    private static final String COL_SITE_ID = "siteId";
-    private static final String COL_STATUS = "status";
-    private static final String COL_TYPE = "type";
-    private static final String DOCUMENT = "SiteInspection";
-    private static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/SiteInspection_Mapping.json";
+    protected static final String COL_ORDER_NUM = "orderNumber";
+    protected static final String COL_SITE_ID = "siteId";
+    protected static final String COL_STATUS = "status";
+    protected static final String COL_TYPE = "type";
+    protected static final String DOCUMENT = "SiteInspection";
+    protected static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/SiteInspection_Mapping.json";
 
     @Override
     protected String getDocumentType() {

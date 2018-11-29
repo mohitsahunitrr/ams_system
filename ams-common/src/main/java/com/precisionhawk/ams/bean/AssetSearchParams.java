@@ -49,6 +49,6 @@ public class AssetSearchParams extends AbstractSearchParams implements SiteAware
 
     @Override
     public boolean hasCriteria() {
-        return testField(name) || testField(serialNumber) || testField(siteId) || (type != null);
+        return hasValue(name) || hasValue(serialNumber) || hasValue(siteId) || (type != null);
     }
 }

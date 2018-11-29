@@ -4,7 +4,6 @@ import com.precisionhawk.ams.bean.SiteInspectionSearchParams;
 import com.precisionhawk.ams.dao.DaoException;
 import com.precisionhawk.ams.dao.SiteInspectionDao;
 import com.precisionhawk.ams.domain.SiteInspection;
-import com.precisionhawk.ams.webservices.AbstractWebService;
 import com.precisionhawk.ams.webservices.SiteInspectionWebService;
 import java.util.List;
 import javax.inject.Inject;

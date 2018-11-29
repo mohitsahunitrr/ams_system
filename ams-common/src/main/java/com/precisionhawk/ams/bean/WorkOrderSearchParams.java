@@ -48,6 +48,6 @@ public class WorkOrderSearchParams extends AbstractSearchParams implements SiteA
 
     @Override
     public boolean hasCriteria() {
-        return testField(siteId) || (statuses != null && !statuses.isEmpty()) || type != null;
+        return hasValue(siteId) || (statuses != null && !statuses.isEmpty()) || type != null;
     }
 }

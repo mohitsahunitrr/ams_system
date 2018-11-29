@@ -98,6 +98,6 @@ public class AssetInspectionSearchParams extends AbstractSearchParams implements
 
     @Override
     public boolean hasCriteria() {
-        return testField(assetId) || testField(orderNumber) || testField(siteId) || testField(siteInspectionId) || (status != null);
+        return hasValue(assetId) || hasValue(orderNumber) || hasValue(siteId) || hasValue(siteInspectionId) || (status != null);
     }
 }

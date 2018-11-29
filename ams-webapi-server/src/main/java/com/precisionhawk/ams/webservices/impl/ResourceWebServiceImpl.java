@@ -12,14 +12,10 @@ import com.precisionhawk.ams.repository.RepositoryException;
 import com.precisionhawk.ams.repository.ResourceRepository;
 import com.precisionhawk.ams.util.CollectionsUtilities;
 import com.precisionhawk.ams.util.ImageUtilities;
-import com.precisionhawk.ams.webservices.AbstractWebService;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.NotFoundException;
 import com.precisionhawk.ams.webservices.ResourceWebService;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
@@ -35,7 +31,9 @@ import javax.imageio.ImageIO;
 import javax.inject.Named;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import org.apache.commons.fileupload.FileItem;
@@ -188,7 +186,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
     private Response provideResource(final ResourceMetadata rmeta, final boolean isZoomify) {
         StreamingOutput stream = new StreamingOutput() {
             @Override
-            public void write(OutputStream output) throws IOException, WebApplicationException {
+            public void write(OutputStream output) throws IOException, InternalServerErrorException {
                 InputStream is = null;
                 String key = isZoomify ? rmeta.getZoomifyId() : rmeta.getResourceId();
                 try {

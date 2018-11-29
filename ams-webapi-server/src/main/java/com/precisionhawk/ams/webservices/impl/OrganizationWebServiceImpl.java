@@ -4,18 +4,15 @@ import com.precisionhawk.ams.bean.orgconfig.OrgFieldTranslations;
 import com.precisionhawk.ams.bean.orgconfig.OrgFieldValidations;
 import com.precisionhawk.ams.bean.orgconfig.OrgTranslationsSummary;
 import com.precisionhawk.ams.bean.orgconfig.OrgTranslationsSummaryList;
-import com.precisionhawk.ams.bean.security.ServicesSessionBean;
 import com.precisionhawk.ams.dao.DaoException;
 import com.precisionhawk.ams.dao.SecurityDao;
 import com.precisionhawk.ams.dao.TranslationsAndValidationsDao;
 import com.precisionhawk.ams.domain.Organization;
-import com.precisionhawk.ams.webservices.AbstractWebService;
 import com.precisionhawk.ams.webservices.OrganizationWebService;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 
 /**
