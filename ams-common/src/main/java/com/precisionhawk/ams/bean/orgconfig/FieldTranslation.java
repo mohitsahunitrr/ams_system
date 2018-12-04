@@ -70,5 +70,14 @@ public class FieldTranslation {
     }
     public void setErrors(Map<String, String> errors) {
         this.errors = errors;
-    }    
+    }
+    
+    @Schema(description="A map of the fields used to populate columns in views keyed by view identifier mapped to a list of field identifiers.")
+    private Map<String, List<String>> views = new HashMap<>();
+    public Map<String, List<String>> getViews() {
+        return views;
+    }
+    public void setViews(Map<String, List<String>> views) {
+        this.views = views;
+    }
 }

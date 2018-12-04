@@ -11,16 +11,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * @author Philip A. Chapman <pchapman@pcsw.us>
  */
-@Component
+@Named
 public final class SecurityDaoImpl implements com.precisionhawk.ams.dao.SecurityDao {
     
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
@@ -30,7 +30,7 @@ public final class SecurityDaoImpl implements com.precisionhawk.ams.dao.Security
     private static final String PARAM_TENANT_ID = "tenantId";
     private static final String PARAM_USER_ID = "userId";
 
-    @Autowired
+    @Inject
     private SqlSession sess;
 
     public SqlSession getSqlSession() {
