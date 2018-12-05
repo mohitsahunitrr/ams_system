@@ -1,8 +1,8 @@
 package com.precisionhawk.ams.wb.config;
 
-import com.precisionhawk.ams.util.ReflectionUtilities;
 import java.io.File;
-import java.util.List;
+import java.util.Set;
+import org.reflections.Reflections;
 
 /**
  *
@@ -18,11 +18,12 @@ public class ConfigUtil {
     
     public static WorkbenchConfig loadConfiguration() {
         WorkbenchConfig config = null;
-        List<Class<WorkbenchConfig>> impls = ReflectionUtilities.findClassesImplementing(WorkbenchConfig.class, WorkbenchConfig.class.getPackage());
+        Reflections reflections = new Reflections("com.precisionhawk.ams.wb.config");
+        Set<Class<? extends WorkbenchConfig>> impls = reflections.getSubTypesOf(WorkbenchConfig.class);
         if (impls.isEmpty()) {
             System.err.printf("No implentations of %s found in package %s.\n", WorkbenchConfig.class, WorkbenchConfig.class.getPackage());
         } else if (impls.size() == 1) {
-            Class<WorkbenchConfig> clazz = impls.get(0);
+            Class<? extends WorkbenchConfig> clazz = impls.iterator().next();
             try {
                 config = clazz.newInstance();
             } catch (IllegalAccessException | InstantiationException ex) {

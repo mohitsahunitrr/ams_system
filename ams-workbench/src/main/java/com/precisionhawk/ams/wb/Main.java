@@ -15,20 +15,21 @@ import java.util.Queue;
 import org.slf4j.LoggerFactory;
 
 /**
- * All the logic for a "Main" class for a workbench.  However, it must be subclassed so that
- * the appropriate jars are loaded in order to find the implementation of the WorkbenchConfig
- * interface.
  *
  * @author <a href="mail:pchapman@pcsw.us">Philip A. Chapman</a>
  */
-public abstract class Main {
+public final class Main {
 
     private static final String DEFAULT_LOGGING_CONFIG = "com/precisionhawk/ams/wb/workbench.logback.groovy";
     private static final String USER_LOGGING_COFIG = "workbench.logback.groovy";
     
-    protected Main() {}
+    private Main() {}
     
-    protected void execute(String[] argsArray) {
+    public static void main(String[] argsArray) {
+        new Main().execute(argsArray);
+    }
+    
+    private void execute(String[] argsArray) {
         WorkbenchConfig config = ConfigUtil.loadConfiguration();
         if (config == null) {
             System.exit(1);
