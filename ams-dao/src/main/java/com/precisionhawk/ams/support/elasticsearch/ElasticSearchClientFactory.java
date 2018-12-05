@@ -17,9 +17,22 @@ import us.pcsw.es.util.TransportElasticSearchClientFactory;
 public class ElasticSearchClientFactory implements Provider<Client> {
     
     private static final Object LOCK = new Object();
+
+    @Inject private ElasticSearchConfig config;
+    public ElasticSearchConfig getConfig() {
+        return config;
+    }
+    public void setConfig(ElasticSearchConfig config) {
+        this.config = config;
+    }
     
     @Inject private ClientLifecycleListener listener;
-    @Inject private ElasticSearchConfig config;
+    public ClientLifecycleListener getListener() {
+        return listener;
+    }
+    public void setListener(ClientLifecycleListener listener) {
+        this.listener = listener;
+    }
 
     private AbstractSearchClientFactory delegate;
     

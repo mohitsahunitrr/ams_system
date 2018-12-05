@@ -46,8 +46,27 @@ public abstract class AbstractEsDao extends AbstractDao {
         return config.getBulkSize();
     }
     
-    protected Client getClient() {
+    public Client getClient() {
         return client;
+    }
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public ElasticSearchConfig getConfig() {
+        return config;
+    }
+
+    public void setConfig(ElasticSearchConfig config) {
+        this.config = config;
+    }
+
+    public ObjectMapper getMapper() {
+        return mapper;
+    }
+
+    public void setMapper(ObjectMapper mapper) {
+        this.mapper = mapper;
     }
     
     public long getScrollLifespan() {
