@@ -10,7 +10,7 @@
         "index" : "not_analyzed",
         "type" : "string"
       },
-      "siteId" : {
+      "siteIds" : {
         "include_in_all" : true,
         "index" : "not_analyzed",
         "type" : "string"
