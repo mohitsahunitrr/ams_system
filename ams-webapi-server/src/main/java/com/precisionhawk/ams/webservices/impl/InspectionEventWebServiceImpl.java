@@ -52,11 +52,7 @@ public class InspectionEventWebServiceImpl extends AbstractWebService implements
         ServicesSessionBean sess = lookupSessionBean(accessToken);
         ensureExists(id, "Inspection event ID is required.");
         try {
-            InspectionEvent result = dao.retrieve(id);
-            if (result == null) {
-                throw new NotFoundException(String.format("Inspection event %s not found", id));
-            }
-            return authorize(sess, result);
+            return authorize(sess, validateFound(dao.retrieve(id)));
         } catch (DaoException e) {
 	    throw new InternalServerErrorException(String.format("Unable load inspection event %s ", id), e);
         }
@@ -118,7 +114,12 @@ public class InspectionEventWebServiceImpl extends AbstractWebService implements
         ensureExists(event.getId(), "Inspection event ID is required.");
         authorize(sess, event);
         try {
-            if (!dao.update(event)) {
+            InspectionEvent evt = dao.retrieve(event.getId());
+            boolean updated = false;
+            if (evt != null) {
+                updated = dao.update(event);
+            }
+            if (!updated) {
                 throw new NotFoundException(String.format("Inspection event %s does not exist.", event.getId()));
             }
         } catch (DaoException e) {

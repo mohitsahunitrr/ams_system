@@ -35,7 +35,7 @@ public interface OrganizationWebService extends WebService {
     public static final String COMPANY_ORG_KEY = Constants.COMPANY_ORG_KEY;
 
     @PUT
-    Organization createOrg(Organization org);    
+    Organization createOrg(@Parameter(required = true) @HeaderParam("Authorization") String authToken, Organization org);
     
     @GET
     @Path("/precisionHawk")

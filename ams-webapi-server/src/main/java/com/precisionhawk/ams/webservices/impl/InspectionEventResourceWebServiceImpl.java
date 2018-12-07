@@ -7,6 +7,7 @@ package com.precisionhawk.ams.webservices.impl;
 import com.precisionhawk.ams.bean.InspectionEventResourceSearchParams;
 import com.precisionhawk.ams.bean.ResourcePolygons;
 import com.precisionhawk.ams.bean.ResourceSearchParams;
+import com.precisionhawk.ams.bean.security.ServicesSessionBean;
 import com.precisionhawk.ams.dao.DaoException;
 import com.precisionhawk.ams.dao.InspectionEventResourceDao;
 import com.precisionhawk.ams.dao.ResourceMetadataDao;
@@ -37,13 +38,10 @@ public class InspectionEventResourceWebServiceImpl extends AbstractWebService im
 
     @Override
     public InspectionEventResource retrieve(String accessToken, String id) {
+        ServicesSessionBean sess = lookupSessionBean(accessToken);
         ensureExists(id, "Inspection event resource ID is required");
         try {
-            InspectionEventResource result = dao.retrieve(id);
-            if (result == null) {
-                throw new NotFoundException(String.format("Inspection event resource %s not found", id));
-            }
-            return result;
+            return authorize(sess, validateFound(dao.retrieve(id)));
         } catch (DaoException e) {
             throw new InternalServerErrorException(String.format("Error loading inspection event resource {}", id), e);
         }
@@ -51,12 +49,14 @@ public class InspectionEventResourceWebServiceImpl extends AbstractWebService im
 
     @Override
     public List<InspectionEventResource> search(String accessToken, InspectionEventResourceSearchParams searchParams) {
+        ServicesSessionBean sess = lookupSessionBean(accessToken);
         ensureExists(searchParams, "Search parameters are required");
+        authorize(sess, searchParams);
         if (!searchParams.hasCriteria()) {
             throw new BadRequestException("Search parameters are required");
         }
         try {
-            return dao.lookup(searchParams);
+            return authorize(sess, dao.lookup(searchParams));
         } catch (DaoException e) {
             throw new InternalServerErrorException(String.format("Error searching for inspection event resources for event {} and/or resource {}", searchParams.getInspectionEventId(), searchParams.getResourceId()), e);
         }
@@ -64,7 +64,9 @@ public class InspectionEventResourceWebServiceImpl extends AbstractWebService im
 
     @Override
     public InspectionEventResource create(String accessToken, InspectionEventResource ier) {
+        ServicesSessionBean sess = lookupSessionBean(accessToken);
         ensureExists(ier, "Inspection event resource is required.");
+        authorize(sess, ier);
         if (ier.getId() == null) {
             ier.setId(UUID.randomUUID().toString());
         }
@@ -81,10 +83,12 @@ public class InspectionEventResourceWebServiceImpl extends AbstractWebService im
     
     @Override
     public void delete(String accessToken, String id) {
+        ServicesSessionBean sess = lookupSessionBean(accessToken);
         ensureExists(id, "Inspection event resource ID is required.");
         try {
             InspectionEventResource ier = dao.retrieve(id);
             if (ier != null) {
+                authorize(sess, ier);
                 dao.delete(id);
             }
         } catch (DaoException e) {
@@ -94,10 +98,17 @@ public class InspectionEventResourceWebServiceImpl extends AbstractWebService im
 
     @Override
     public void update(String accessToken, InspectionEventResource event) {
+        ServicesSessionBean sess = lookupSessionBean(accessToken);
         ensureExists(event, "Inspection event resource");
         ensureExists(event.getId(), "Inspection event resource");
         try {
-            if (!dao.update(event)) {
+            InspectionEventResource ier = dao.retrieve(event.getId());
+            boolean updated = false;
+            if (ier != null) {
+                authorize(sess, ier);
+                updated = dao.update(event);
+            }
+            if (!updated) {
                 throw new NotFoundException(String.format("The inspection event resource %s does not already exist.", event.getId()));
             }
         } catch (DaoException e) {
@@ -107,11 +118,13 @@ public class InspectionEventResourceWebServiceImpl extends AbstractWebService im
 
     @Override
     public List<ResourcePolygons> searchResourcePolygons(String accessToken, ResourceSearchParams searchParams) {
+        ServicesSessionBean sess = lookupSessionBean(accessToken);
         ensureExists(searchParams, "Search parameters are required.");
         if (!searchParams.hasCriteria()) {
             throw new BadRequestException("Search parameters are required.");
         }
-        List<ResourcePolygons> polysList = new LinkedList<ResourcePolygons>();
+        authorize(sess, searchParams);
+        List<ResourcePolygons> polysList = new LinkedList<>();
         ResourcePolygons polys;
         InspectionEventResourceSearchParams search2 = new InspectionEventResourceSearchParams();
         try {

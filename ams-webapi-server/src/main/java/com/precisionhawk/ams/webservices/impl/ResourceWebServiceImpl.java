@@ -3,6 +3,7 @@ package com.precisionhawk.ams.webservices.impl;
 import com.precisionhawk.ams.bean.Dimension;
 import com.precisionhawk.ams.bean.ImageScaleRequest;
 import com.precisionhawk.ams.bean.ResourceSearchParams;
+import com.precisionhawk.ams.bean.security.ServicesSessionBean;
 import com.precisionhawk.ams.dao.ResourceMetadataDao;
 import com.precisionhawk.ams.domain.ResourceMetadata;
 import com.precisionhawk.ams.domain.ResourceStatus;
@@ -56,6 +57,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
     
     @Override
     public void delete(String authToken, String resourceId) {
+        ServicesSessionBean sess = lookupSessionBean(authToken);
         ensureExists(resourceId, "The resource ID is required.");
         try {
             ResourceMetadata rmeta = resourceDao.retrieveResourceMetadata(resourceId);
@@ -64,9 +66,14 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
                 params.setZoomifyId(resourceId);
                 rmeta = CollectionsUtilities.firstItemIn(resourceDao.lookup(params));
                 if (rmeta == null) {
-                    return;
-                } // Else, this is a zoomify file, remove it from the repository.
+                    throw new NotFoundException(String.format("The resource %s was not found.", resourceId));
+                } else {
+                    // This is a zoomify file.  Make sure user has authorization to do the delte.
+                    authorize(sess, rmeta);
+                }
+                // This is a zoomify file, remove it from the repository, below.
             } else {
+                authorize(sess, rmeta);
                 resourceDao.deleteMetadata(resourceId);
             }
             repo.deleteResource(resourceId);
@@ -77,9 +84,10 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
 
     @Override
     public ResourceMetadata retrieve(String authToken, String resourceId) {
+        ServicesSessionBean sess = lookupSessionBean(authToken);
         ensureExists(resourceId, "The resource ID is required.");
         try {
-            return resourceDao.retrieveResourceMetadata(resourceId);
+            return authorize(sess, validateFound(resourceDao.retrieveResourceMetadata(resourceId)));
         } catch (DaoException ex) {
             throw new InternalServerErrorException(String.format("Error retrieving resource %s", resourceId));
         }
@@ -87,9 +95,11 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
 
     @Override
     public List<ResourceMetadata> query(String authToken, ResourceSearchParams params) {
+        ServicesSessionBean sess = lookupSessionBean(authToken);
         ensureExists(params, "The search parameters are required.");
+        authorize(sess, params);
         try {
-            return resourceDao.lookup(params);
+            return authorize(sess, resourceDao.lookup(params));
         } catch (DaoException ex) {
             throw new InternalServerErrorException("Error retrieving resources by search parameters.");
         }
@@ -97,6 +107,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
 
     @Override
     public ResourceMetadata scale(String authToken, String resourceId, ImageScaleRequest scaleRequest) {
+        ServicesSessionBean sess = lookupSessionBean(authToken);
         ensureExists(resourceId, "The resource ID is required.");
         ensureExists(scaleRequest, "The image scale request is required.");
         try {
@@ -106,6 +117,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
             } else if (!rmeta.getContentType().startsWith("image/")) {
                 throw new BadRequestException(String.format("The resource %s is not an image.", resourceId));
             }
+            authorize(sess, rmeta);
             return createScaledImageFromOriginal(rmeta, scaleRequest);
         } catch (DaoException e) {
             throw new InternalServerErrorException(e);
@@ -120,7 +132,9 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
 
     @Override
     public ResourceMetadata insertResourceMetadata(String authToken, ResourceMetadata rmeta) {
+        ServicesSessionBean sess = lookupSessionBean(authToken);
         ensureExists(rmeta, "The resource metadata is required.");
+        authorize(sess, rmeta);
         if (rmeta.getResourceId() == null) {
             rmeta.setResourceId(UUID.randomUUID().toString());
         }
@@ -138,10 +152,19 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
 
     @Override
     public ResourceMetadata updateResourceMetadata(String authToken, ResourceMetadata rmeta) {
+        ServicesSessionBean sess = lookupSessionBean(authToken);
         ensureExists(rmeta, "The resource metadata is required.");
         ensureExists(rmeta.getResourceId(), "The resource ID is required.");
+        authorize(sess, rmeta);
         try {
-            if (resourceDao.updateMetadata(rmeta)) {
+            ResourceMetadata rm = resourceDao.retrieveResourceMetadata(rmeta.getResourceId());
+            boolean updated = false;
+            if (rm != null) {
+                authorize(sess, rm);
+                updated = resourceDao.updateMetadata(rmeta);
+            }
+            
+            if (updated) {
                 LOGGER.debug("Resource {} has been updated.", rmeta.getResourceId());
                 return rmeta;
             } else {
@@ -213,6 +236,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
 
     @Override
     public void uploadResource(String authToken, String resourceId, HttpServletRequest req) {
+        ServicesSessionBean sess = lookupSessionBean(authToken);
         ensureExists(resourceId, "Resource ID is required.");
         try {
             String contentType;
@@ -225,13 +249,15 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
                 meta = CollectionsUtilities.firstItemIn(resourceDao.lookup(rparms));
                 if (meta == null) {
                     LOGGER.debug("No metadata for resource {}, upload aborted.", resourceId);
-                    throw new BadRequestException(String.format("No metadata for resource %s found.  Data cannot be uploaded.", resourceId));
+                    throw new NotFoundException(String.format("No metadata for resource %s found.  Data cannot be uploaded.", resourceId));
                 } else {
                     // Zoomify image
+                    authorize(sess, meta);
                     contentType = "image/zif";
                     name = resourceId + ".zif";
                 }
             } else {
+                authorize(sess, meta);
                 contentType = meta.getContentType();
                 name = meta.getName();
             }

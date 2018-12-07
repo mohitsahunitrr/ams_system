@@ -4,16 +4,22 @@ import com.precisionhawk.ams.bean.orgconfig.OrgFieldTranslations;
 import com.precisionhawk.ams.bean.orgconfig.OrgFieldValidations;
 import com.precisionhawk.ams.bean.orgconfig.OrgTranslationsSummary;
 import com.precisionhawk.ams.bean.orgconfig.OrgTranslationsSummaryList;
+import com.precisionhawk.ams.bean.security.ServicesSessionBean;
 import com.precisionhawk.ams.dao.DaoException;
 import com.precisionhawk.ams.dao.SecurityDao;
 import com.precisionhawk.ams.dao.TranslationsAndValidationsDao;
 import com.precisionhawk.ams.domain.Organization;
+import com.precisionhawk.ams.security.Constants;
+import com.precisionhawk.ams.util.CollectionsUtilities;
 import com.precisionhawk.ams.webservices.OrganizationWebService;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotAuthorizedException;
 
 /**
  *
@@ -35,18 +41,22 @@ public class OrganizationWebServiceImpl extends AbstractWebService implements Or
         return securityDao.selectOrganizations();
     }
 
-    public Organization ensureInspecToolsOrg() {
+    public Organization ensurePrecisionHawkOrg() {
         Organization org = securityDao.selectOrganizationByKey(COMPANY_ORG_KEY);
         if (org == null) {
             org = new Organization(UUID.randomUUID().toString(), COMPANY_ORG_KEY, "InspecTools LLC");
-            createOrg(org);
+            try {
+                securityDao.insertOrganization(org);
+            } catch (DaoException ex) {
+                throw new InternalServerErrorException("Error saving the inspectools organization.");
+            }
         }
         return org;
     }
 
     @Override
     public Organization retrieveOrg(String orgId) {
-        return securityDao.selectOrganizationById(orgId);
+        return validateFound(securityDao.selectOrganizationById(orgId));
     }
     
     //TODO: This needs to be stored somewhere.  Probably ElasticSearch in MetaData index.
@@ -58,12 +68,7 @@ public class OrganizationWebServiceImpl extends AbstractWebService implements Or
         String orgId, String lang, String country
     ) {
         try {
-            List<OrgFieldTranslations> list = _retrieveOrgTranslations(orgId, lang, country);
-            if (list.isEmpty()) {
-                return null;
-            } else {
-                return list.get(0);
-            }
+            return validateFound(CollectionsUtilities.firstItemIn(_retrieveOrgTranslations(orgId, lang, country)));
         } catch (DaoException ex) {
             throw new InternalServerErrorException("Error loading translations", ex);
         }
@@ -111,7 +116,7 @@ public class OrganizationWebServiceImpl extends AbstractWebService implements Or
                 validations = tavDao.loadOrgValidations(retrievePrecisionHawkOrg().getId());
             }
         
-            return validations;
+            return validateFound(validations);
         } catch (DaoException ex) {
             throw new InternalServerErrorException("Error loading validations", ex);
         }
@@ -120,17 +125,19 @@ public class OrganizationWebServiceImpl extends AbstractWebService implements Or
     @Override
     public void postOrgTranslations(String authToken, String orgId, OrgFieldTranslations trans)
     {
-//        ServicesSessionBean sess = securityService.validateToken(authToken);
-//        if (!sess.getCredentials().checkAuthorization(ApplicationService.APP_ID_WINDAMS_VIEWER, orgId, null, true, GroupService.GROUP_KEY_ADMIN));
-//        if (orgId == null || orgId.isEmpty()) {
-//            throw new BadRequestException("Organization ID is required.");
-//        }
-//        if (!Objects.equals(orgId, trans.getOrganizationId())) {
-//            throw new BadRequestException("Organization ID mismatch.");
-//        }
-//        if (trans.getId() == null) {
-//            trans.setId(UUID.randomUUID().toString());
-//        }
+        ServicesSessionBean sess = securityService.validateToken(authToken);
+        if (orgId == null || orgId.isEmpty()) {
+            throw new BadRequestException("Organization ID is required.");
+        }
+        if (!sess.getCredentials().checkAuthorization(null, orgId, null, true, Constants.GROUP_KEY_ADMIN)) {
+            throw new NotAuthorizedException(String.format("The user is not authorized to upload translations for the organization %s", orgId));
+        }
+        if (!Objects.equals(orgId, trans.getOrganizationId())) {
+            throw new BadRequestException("Organization ID mismatch.");
+        }
+        if (trans.getId() == null) {
+            trans.setId(UUID.randomUUID().toString());
+        }
         try {
             tavDao.storeOrgTranslations(trans);
         } catch (DaoException ex) {
@@ -143,17 +150,19 @@ public class OrganizationWebServiceImpl extends AbstractWebService implements Or
         String authToken, String orgId, OrgFieldValidations validations
     )
     {
-//        ServicesSessionBean sess = securityService.validateToken(authToken);
-//        if (!sess.getCredentials().checkAuthorization(ApplicationService.APP_ID_WINDAMS_VIEWER, orgId, null, true, GroupService.GROUP_KEY_ADMIN));
-//        if (orgId == null || orgId.isEmpty()) {
-//            throw new BadRequestException("Organization ID is required.");
-//        }
-//        if (!Objects.equals(orgId, validations.getOrganizationId())) {
-//            throw new BadRequestException("Organization ID mismatch.");
-//        }
-//        if (validations.getId() == null) {
-//            validations.setId(UUID.randomUUID().toString());
-//        }
+        ServicesSessionBean sess = securityService.validateToken(authToken);
+        if (orgId == null || orgId.isEmpty()) {
+            throw new BadRequestException("Organization ID is required.");
+        }
+        if (!sess.getCredentials().checkAuthorization(null, orgId, null, true, Constants.GROUP_KEY_ADMIN)) {
+            throw new NotAuthorizedException(String.format("The user is not authorized to upload validations for the organization %s", orgId));
+        }
+        if (!Objects.equals(orgId, validations.getOrganizationId())) {
+            throw new BadRequestException("Organization ID mismatch.");
+        }
+        if (validations.getId() == null) {
+            validations.setId(UUID.randomUUID().toString());
+        }
         try {
             tavDao.storeOrgValidations(validations);
         } catch (DaoException ex) {
@@ -162,8 +171,12 @@ public class OrganizationWebServiceImpl extends AbstractWebService implements Or
     }
 
     @Override
-    public Organization createOrg(Organization org) {
+    public Organization createOrg(String authToken, Organization org) {
+        ServicesSessionBean sess = securityService.validateToken(authToken);
         ensureExists(org, "Organization is required");
+        if (!sess.getCredentials().checkAuthorization(null, null, null, true, Constants.GROUP_KEY_ADMIN)) {
+            throw new NotAuthorizedException("The user is not authorized to create organizations");
+        }
         if (org.getId() == null) {
             org.setId(UUID.randomUUID().toString());
         }

@@ -24,7 +24,7 @@ import org.elasticsearch.index.query.QueryBuilders;
  */
 public abstract class WorkOrderEsDao extends AbstractEsDao implements WorkOrderDao
 {
-    protected static final String DOCUMENT_FIELD_SITE_ID = "siteId";
+    protected static final String DOCUMENT_FIELD_SITE_ID = "siteIds";
     protected static final String DOCUMENT_FIELD_STATUS = "status";
     protected static final String DOCUMENT_FIELD_TYPE = "type";
     protected static final String DOCUMENT_TYPE_WORK_ORDER = "WorkOrder";

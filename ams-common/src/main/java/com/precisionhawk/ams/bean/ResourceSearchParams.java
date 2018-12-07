@@ -6,6 +6,7 @@ package com.precisionhawk.ams.bean;
 
 import com.precisionhawk.ams.domain.ResourceStatus;
 import com.precisionhawk.ams.domain.ResourceType;
+import com.precisionhawk.ams.domain.SiteAware;
 import io.swagger.oas.annotations.media.Schema;
 
 /**
@@ -13,7 +14,7 @@ import io.swagger.oas.annotations.media.Schema;
  * @author <a href="mailto:pchapman@pcsw.us">Philip A. Chapman</a>
  */
 @Schema(description="A bean containing search criteria for resources and objects related to resources.  At least one field must have a non-null value.")
-public class ResourceSearchParams extends AbstractSearchParams {
+public class ResourceSearchParams extends AbstractSearchParams implements SiteAware {
 
     @Schema(description="A name for the resource.")
     private String name;
@@ -53,6 +54,7 @@ public class ResourceSearchParams extends AbstractSearchParams {
     
     @Schema(description="The unique ID of the related site.")
     private String siteId;
+    @Override
     public String getSiteId() {
         return siteId;
     }

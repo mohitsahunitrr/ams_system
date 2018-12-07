@@ -43,9 +43,10 @@ public class SiteWebServiceImpl extends AbstractWebService implements SiteWebSer
 
     @Override
     public Site retrieve(String authToken, String id) {
+        ServicesSessionBean sess = lookupSessionBean(authToken);
         ensureExists(id, "Site ID is required.");
         try {
-            return dao.retrieve(id);
+            return SiteWebServiceUtilities.authorizeSite(sess, validateFound(dao.retrieve(id)));
         } catch (DaoException ex) {
             throw new InternalServerErrorException("Error retrieving site.", ex);
         }
@@ -53,8 +54,9 @@ public class SiteWebServiceImpl extends AbstractWebService implements SiteWebSer
 
     @Override
     public List<Site> retrieveAll(String authToken) {
+        ServicesSessionBean sess = lookupSessionBean(authToken);
         try {
-            return dao.retrieveAll();
+            return SiteWebServiceUtilities.cleanseUnAuthorizedSites(sess, dao.retrieveAll());
         } catch (DaoException ex) {
             throw new InternalServerErrorException("Error retrieving sites.", ex);
         }
@@ -62,9 +64,10 @@ public class SiteWebServiceImpl extends AbstractWebService implements SiteWebSer
 
     @Override
     public List<Site> search(String authToken, SiteSearchParams searchParams) {
+        ServicesSessionBean sess = lookupSessionBean(authToken);
         ensureExists(searchParams, "Search parameters are required.");
         try {
-            return dao.search(searchParams);
+            return SiteWebServiceUtilities.cleanseUnAuthorizedSites(sess, dao.search(searchParams));
         } catch (DaoException ex) {
             throw new InternalServerErrorException("Unable to search for sites.", ex);
         }
@@ -72,11 +75,19 @@ public class SiteWebServiceImpl extends AbstractWebService implements SiteWebSer
 
     @Override
     public void update(String authToken, Site site) {
+        ServicesSessionBean sess = lookupSessionBean(authToken);
         ensureExists(site, "The Site is required.");
         ensureExists(site.getId(), "Site ID is required.");
         try {
-            if (!dao.update(site)) {
-                throw new BadRequestException(String.format("The site %s already exists.", site.getId()));
+            SiteWebServiceUtilities.authorizeSite(sess, site);
+            Site s = dao.retrieve(site.getId());
+            boolean updated = false;
+            if (s != null) {
+                SiteWebServiceUtilities.authorizeSite(sess, s);
+                updated = dao.update(site);
+            }
+            if (!updated) {
+                throw new BadRequestException(String.format("The site %s does not already exist.", site.getId()));
             }
         } catch (DaoException ex) {
             throw new InternalServerErrorException("Error persisting site.", ex);

@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,5 +103,26 @@ public abstract class AbstractWebService {
             }
         }
         return awares;
+    }
+    
+    /**
+     * If the object is null,a NotFoundException is thrown, else the object is returned.
+     * @param obj The object to test.
+     * @return 
+     */
+    protected <T> T validateFound(T obj) {
+        return validateFound(obj, "Object not found");
+    }
+    
+    /**
+     * If the object is null,a NotFoundException is thrown, else the object is returned.
+     * @param obj The object to test.
+     * @return 
+     */
+    protected <T> T validateFound(T obj, String errorMessage) {
+        if (obj == null) {
+            throw new NotFoundException(errorMessage);
+        }
+        return obj;
     }
 }

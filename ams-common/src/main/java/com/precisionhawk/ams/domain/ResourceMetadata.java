@@ -11,7 +11,7 @@ import java.util.Objects;
  * @author Philip A. Chapman
  */
 @Schema(description="Data related to a resource (image, sound, video, sensor readings, etc) gathered when an inspection is made.")
-public final class ResourceMetadata {
+public final class ResourceMetadata implements SiteAware {
 
     @Schema(description="Unique ID of the related asset.")
     private String assetId;
@@ -118,6 +118,7 @@ public final class ResourceMetadata {
     
     @Schema(description="The unique ID of the related site.")
     private String siteId;
+    @Override
     public String getSiteId() {
         return siteId;
     }
