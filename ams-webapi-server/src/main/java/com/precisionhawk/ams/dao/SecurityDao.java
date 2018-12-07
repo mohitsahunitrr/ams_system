@@ -38,7 +38,7 @@ public interface SecurityDao {
 
     // ORGANIZATION
     
-    void insertOrganization(Organization org);
+    void insertOrganization(Organization org) throws DaoException;
 
     void deleteOrganization(String orgId);
 

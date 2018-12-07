@@ -21,7 +21,7 @@ public class SiteWebServiceUtilities {
             throw new NotAuthorizedException(sess.getReason());
         }
         //TODO: Org Aware for Org ID?
-        if (sess.getCredentials().checkAuthorization(null, null, site.getId(), false, groupKeys)) {
+        if (sess.getCredentials().checkAuthorization(null, site.getOrganizationId(), site.getId(), false, groupKeys)) {
             return site;
         } else {
             throw new NotAuthorizedException(String.format("User not authorized for site %s", site.getId()));

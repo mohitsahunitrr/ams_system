@@ -1,6 +1,7 @@
 package com.precisionhawk.ams.webservices.impl;
 
 import com.precisionhawk.ams.bean.SiteSearchParams;
+import com.precisionhawk.ams.bean.security.ServicesSessionBean;
 import com.precisionhawk.ams.dao.DaoException;
 import com.precisionhawk.ams.dao.SiteDao;
 import com.precisionhawk.ams.domain.Site;
@@ -24,11 +25,13 @@ public class SiteWebServiceImpl extends AbstractWebService implements SiteWebSer
     @Override
     public Site create(String authToken, Site site) {
         ensureExists(site, "The site is required.");
+        ServicesSessionBean sess = lookupSessionBean(authToken);
         if (site.getId() == null) {
             site.setId(UUID.randomUUID().toString());
         }
         try {
             if (dao.insert(site)) {
+                securityService.addSiteToCredentials(sess, site);
                 return site;
             } else {
                 throw new BadRequestException(String.format("The site %s already exists.", site.getId()));

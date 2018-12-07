@@ -7,6 +7,7 @@ import com.precisionhawk.ams.bean.orgconfig.OrgFieldTranslations;
 import com.precisionhawk.ams.bean.orgconfig.OrgFieldValidations;
 import com.precisionhawk.ams.bean.orgconfig.OrgTranslationsSummaryList;
 import com.precisionhawk.ams.domain.Organization;
+import com.precisionhawk.ams.security.Constants;
 import io.swagger.oas.annotations.Operation;
 import io.swagger.oas.annotations.Parameter;
 import java.util.List;
@@ -15,6 +16,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -30,12 +32,15 @@ import javax.ws.rs.core.MediaType;
 @Path("/org")
 public interface OrganizationWebService extends WebService {
     
-    public static final String COMPANY_ORG_KEY = "InspecToolsLLC";
+    public static final String COMPANY_ORG_KEY = Constants.COMPANY_ORG_KEY;
+
+    @PUT
+    Organization createOrg(Organization org);    
     
     @GET
-    @Path("/inspectools")
+    @Path("/precisionHawk")
     @Operation(summary = "Get InspecTools", description = "Gets the InspecTools organization.")
-    Organization retrieveInspecToolsOrg();
+    Organization retrievePrecisionHawkOrg();
     
     @GET
     @Path("/{orgId}")
@@ -45,14 +50,6 @@ public interface OrganizationWebService extends WebService {
     @GET
     @Operation(summary = "Get Organizations", description = "Gets all organizations.")
     List<Organization> retrieveOrgs();
-    
-//    @GET
-//    @Path("/{orgId}/user")
-//    List<User> retrieveUsersForOrg(@HeaderParam("Authorization") String authToken, @PathParam("orgId") String orgId);
-//    
-//    @GET
-//    @Path("/user/{userId}")
-//    List<Organization> retrieveOrgsForUser(@HeaderParam("Authorization") String authToken, @PathParam("userId") String userId);
 
     @GET
     @Path("/{orgId}/translations")

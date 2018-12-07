@@ -26,7 +26,7 @@ public class OrganizationWebServiceImpl extends AbstractWebService implements Or
     @Inject private TranslationsAndValidationsDao tavDao;
     
     @Override
-    public Organization retrieveInspecToolsOrg() {
+    public Organization retrievePrecisionHawkOrg() {
         return securityDao.selectOrganizationByKey(COMPANY_ORG_KEY);
     }
 
@@ -39,7 +39,7 @@ public class OrganizationWebServiceImpl extends AbstractWebService implements Or
         Organization org = securityDao.selectOrganizationByKey(COMPANY_ORG_KEY);
         if (org == null) {
             org = new Organization(UUID.randomUUID().toString(), COMPANY_ORG_KEY, "InspecTools LLC");
-            securityDao.insertOrganization(org);
+            createOrg(org);
         }
         return org;
     }
@@ -108,7 +108,7 @@ public class OrganizationWebServiceImpl extends AbstractWebService implements Or
             OrgFieldValidations validations = tavDao.loadOrgValidations(orgId);
             
             if (validations == null) {
-                validations = tavDao.loadOrgValidations(retrieveInspecToolsOrg().getId());
+                validations = tavDao.loadOrgValidations(retrievePrecisionHawkOrg().getId());
             }
         
             return validations;
@@ -158,6 +158,20 @@ public class OrganizationWebServiceImpl extends AbstractWebService implements Or
             tavDao.storeOrgValidations(validations);
         } catch (DaoException ex) {
             throw new InternalServerErrorException("Error storing translations", ex);
+        }
+    }
+
+    @Override
+    public Organization createOrg(Organization org) {
+        ensureExists(org, "Organization is required");
+        if (org.getId() == null) {
+            org.setId(UUID.randomUUID().toString());
+        }
+        try {
+            securityDao.insertOrganization(org);
+            return org;
+        } catch (DaoException ex) {
+            throw new InternalServerErrorException("Error storing organization", ex);
         }
     }
 }

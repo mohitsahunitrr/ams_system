@@ -40,9 +40,21 @@ public class AppCredentials implements Credentials
     public void setOrganizations(List<Organization> organizations) {
         this.organizations = organizations;
     }
-
+    
+    private boolean isPrecisionHawk() {
+        for (Organization org : organizations) {
+            if (Constants.COMPANY_ORG_KEY.equals(org.getKey())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     @Override
-    public boolean checkAuthorization(String appKey, String orgId, String siteId, boolean mustBeInspectoolsEmployee, String... groupKeys) {
+    public boolean checkAuthorization(String appKey, String orgId, String siteId, boolean mustBePrecisionHawkEmployee, String... groupKeys) {
+        if (isPrecisionHawk()) {
+            return true;
+        }
         // Authorized applications can do almost anything within their organization and sites
         // AppKey, inspectools employee, and group keys are all ignored.
         if (siteId != null) {

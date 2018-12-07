@@ -2,6 +2,7 @@ package com.precisionhawk.ams.service;
 
 import com.precisionhawk.ams.cache.SecurityTokenCache;
 import com.precisionhawk.ams.config.SecurityConfig;
+import com.precisionhawk.ams.dao.SecurityDao;
 import com.precisionhawk.ams.dao.SiteProvider;
 import com.precisionhawk.ams.service.aad.AADSecurityService;
 import java.net.MalformedURLException;
@@ -18,6 +19,8 @@ import javax.inject.Provider;
 public class SecurityServiceFactory implements Provider<SecurityService> {
     
     @Inject private SecurityConfig config;
+    
+    @Inject private SecurityDao securityDao;
     
     @Inject private List<SiteProvider> siteProviders;
     
@@ -38,6 +41,7 @@ public class SecurityServiceFactory implements Provider<SecurityService> {
         } else if (NoOppSecurityService.class.getName().equals(config.getSecurityImplementation())) {
             NoOppSecurityService svc = new NoOppSecurityService();
             svc.setSecurityConfig(config);
+            svc.setSecurityDao(securityDao);
             svc.setSiteProviders(siteProviders);
             return svc;
         } else {
