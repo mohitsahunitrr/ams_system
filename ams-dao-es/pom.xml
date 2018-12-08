@@ -11,9 +11,9 @@
       <version>1.0.0-SNAPSHOT</version>
     </parent>
     
-    <artifactId>ams-dao</artifactId>
-    <name>AMS - Dao</name>
-    <description>Data access API for AMS</description>
+    <artifactId>ams-dao-es</artifactId>
+    <name>AMS - Dao - ES</name>
+    <description>ElasticSearch implementation of the AMS DAO</description>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -21,30 +21,18 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>ams-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>ams-dao</artifactId>
+        </dependency>
 
         <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk</artifactId>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.papernapkin.liana</groupId>
-            <artifactId>liana-util</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
+            <groupId>us.pcsw</groupId>
+            <artifactId>pcsw-es-util</artifactId>
         </dependency>
 
         <!-- Testing -->

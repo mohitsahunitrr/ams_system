@@ -142,6 +142,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>ams-dao-es</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>ams-swagger</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -455,6 +460,7 @@
     <modules>
         <module>ams-common</module>
         <module>ams-dao</module>
+        <module>ams-dao-es</module>
         <module>ams-swagger</module>
         <module>ams-webapi</module>
         <module>ams-webapi-client</module>
