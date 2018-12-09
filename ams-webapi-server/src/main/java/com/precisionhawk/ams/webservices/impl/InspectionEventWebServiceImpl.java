@@ -66,7 +66,7 @@ public class InspectionEventWebServiceImpl extends AbstractWebService implements
         }
         authorize(sess, searchParams);
         try {
-            return authorize(sess, dao.lookup(searchParams));
+            return authorize(sess, dao.search(searchParams));
         } catch (DaoException e) {
 	    throw new InternalServerErrorException(String.format("Unable to a search for inspection events: %s", searchParams), e);
         }
@@ -98,7 +98,7 @@ public class InspectionEventWebServiceImpl extends AbstractWebService implements
             // Delete related resources
             InspectionEventResourceSearchParams bean = new InspectionEventResourceSearchParams();
             bean.setInspectionEventId(id);
-            for (InspectionEventResource r : ierdao.lookup(bean)) {
+            for (InspectionEventResource r : ierdao.search(bean)) {
                 ierdao.delete(r.getId());
             }
             dao.delete(id);

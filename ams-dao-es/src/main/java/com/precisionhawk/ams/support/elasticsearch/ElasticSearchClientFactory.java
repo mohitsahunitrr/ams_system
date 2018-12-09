@@ -53,5 +53,5 @@ public class ElasticSearchClientFactory implements Provider<Client> {
             }
         }
         return delegate.getClient();
-    }    
+    }
 }

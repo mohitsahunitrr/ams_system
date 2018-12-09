@@ -53,7 +53,7 @@ public abstract class ResourceMetadataEsDao extends AbstractEsDao implements Res
     }
 
     @Override
-    public List<ResourceMetadata> lookup(ResourceSearchParams params) throws DaoException {
+    public List<ResourceMetadata> search(ResourceSearchParams params) throws DaoException {
         if (params == null || (!params.hasCriteria())) {
             throw new IllegalArgumentException("The search parameters are required.");
         }

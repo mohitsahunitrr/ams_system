@@ -14,13 +14,13 @@ import java.util.List;
  */
 public interface InspectionEventDao {
     
-    void delete(String id) throws DaoException;
+    boolean delete(String id) throws DaoException;
 
     InspectionEvent retrieve(String id) throws DaoException;
     
     Long count(InspectionEventSearchParams searchBean) throws DaoException;
     
-    List<InspectionEvent> lookup(InspectionEventSearchParams searchBean) throws DaoException;
+    List<InspectionEvent> search(InspectionEventSearchParams searchBean) throws DaoException;
     
     boolean insert(InspectionEvent report) throws DaoException;
     

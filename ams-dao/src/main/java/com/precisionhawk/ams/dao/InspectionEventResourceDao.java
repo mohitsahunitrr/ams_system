@@ -14,11 +14,11 @@ import java.util.List;
  */
 public interface InspectionEventResourceDao {
     
-    void delete(String id) throws DaoException;
+    boolean delete(String id) throws DaoException;
 
     InspectionEventResource retrieve(String id) throws DaoException;
     
-    List<InspectionEventResource> lookup(InspectionEventResourceSearchParams queryParams) throws DaoException;
+    List<InspectionEventResource> search(InspectionEventResourceSearchParams queryParams) throws DaoException;
     
     boolean insert(InspectionEventResource ieResource) throws DaoException;
 

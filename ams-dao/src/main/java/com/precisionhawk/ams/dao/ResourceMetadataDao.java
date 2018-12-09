@@ -27,7 +27,7 @@ public interface ResourceMetadataDao {
      * @return A list of all matching resource metadata.
      * @throws DaoException Indicates an irrecoverable error.
      */
-    List<ResourceMetadata> lookup(ResourceSearchParams params) throws DaoException;
+    List<ResourceMetadata> search(ResourceSearchParams params) throws DaoException;
     
     boolean insertMetadata(ResourceMetadata meta) throws DaoException;
 

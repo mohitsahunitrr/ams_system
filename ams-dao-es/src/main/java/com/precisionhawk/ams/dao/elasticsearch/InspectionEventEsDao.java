@@ -39,9 +39,10 @@ public abstract class InspectionEventEsDao extends AbstractEsDao implements Insp
     }
     
     @Override
-    public void delete(String id) throws DaoException {
+    public boolean delete(String id) throws DaoException {
         ensureExists(id, "Inspection event ID is required.");
         super.deleteDocument(id);
+        return true;
     }
 
     @Override
@@ -77,7 +78,7 @@ public abstract class InspectionEventEsDao extends AbstractEsDao implements Insp
     }
 
     @Override
-    public List<InspectionEvent> lookup(InspectionEventSearchParams searchParms) throws DaoException {
+    public List<InspectionEvent> search(InspectionEventSearchParams searchParms) throws DaoException {
         ensureExists(searchParms, "Search parameters are required.");
         QueryBuilder queryBuilder = buildLookupQuery(searchParms.getSiteId(), searchParms.getOrderNumber(), searchParms.getAssetId(), searchParms.getComponentId());
         ensureExists(queryBuilder, "Search parameters are required.");

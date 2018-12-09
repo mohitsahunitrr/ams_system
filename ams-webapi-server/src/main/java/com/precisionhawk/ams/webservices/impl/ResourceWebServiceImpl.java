@@ -64,7 +64,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
             if (rmeta == null) {
                 ResourceSearchParams params = new ResourceSearchParams();
                 params.setZoomifyId(resourceId);
-                rmeta = CollectionsUtilities.firstItemIn(resourceDao.lookup(params));
+                rmeta = CollectionsUtilities.firstItemIn(resourceDao.search(params));
                 if (rmeta == null) {
                     throw new NotFoundException(String.format("The resource %s was not found.", resourceId));
                 } else {
@@ -99,7 +99,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
         ensureExists(params, "The search parameters are required.");
         authorize(sess, params);
         try {
-            return authorize(sess, resourceDao.lookup(params));
+            return authorize(sess, resourceDao.search(params));
         } catch (DaoException ex) {
             throw new InternalServerErrorException("Error retrieving resources by search parameters.");
         }
@@ -185,7 +185,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
                 // This may be zoomify resource.
                 ResourceSearchParams params = new ResourceSearchParams();
                 params.setZoomifyId(resourceId);
-                rmeta = CollectionsUtilities.firstItemIn(resourceDao.lookup(params));
+                rmeta = CollectionsUtilities.firstItemIn(resourceDao.search(params));
                 if (rmeta == null) {
                     throw new NotFoundException(String.format("No resource with ID %s exists.", resourceId));
                 } else {
@@ -246,7 +246,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
                 // It may be a zoomify image.
                 ResourceSearchParams rparms = new ResourceSearchParams();
                 rparms.setZoomifyId(resourceId);
-                meta = CollectionsUtilities.firstItemIn(resourceDao.lookup(rparms));
+                meta = CollectionsUtilities.firstItemIn(resourceDao.search(rparms));
                 if (meta == null) {
                     LOGGER.debug("No metadata for resource {}, upload aborted.", resourceId);
                     throw new NotFoundException(String.format("No metadata for resource %s found.  Data cannot be uploaded.", resourceId));

@@ -13,8 +13,6 @@ public interface SiteProvider {
     Site retrieve(String id) throws DaoException;
     
     List<Site> retrieveAllSites() throws DaoException;
-
-//    List<Site> retrieveByName(String name) throws DaoException;
     
     List<Site> retrieve(SiteSearchParams params) throws DaoException;
 

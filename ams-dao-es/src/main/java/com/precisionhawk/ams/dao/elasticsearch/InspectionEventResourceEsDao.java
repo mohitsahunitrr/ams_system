@@ -40,9 +40,10 @@ public abstract class InspectionEventResourceEsDao extends AbstractEsDao impleme
     }
     
     @Override
-    public void delete(String id) throws DaoException {
+    public boolean delete(String id) throws DaoException {
         ensureExists(id, "Inspection event resource ID is required.");
         super.deleteDocument(id);
+        return true;
     }
 
     @Override
@@ -52,7 +53,7 @@ public abstract class InspectionEventResourceEsDao extends AbstractEsDao impleme
     }
 
     @Override
-    public List<InspectionEventResource> lookup(InspectionEventResourceSearchParams searchBean) throws DaoException {
+    public List<InspectionEventResource> search(InspectionEventResourceSearchParams searchBean) throws DaoException {
         ensureExists(searchBean, "Search parameters are required.");
         QueryBuilder queryBuilder = prepareSearchQuery(searchBean);
         ensureExists(queryBuilder, "Search parameters are required.");

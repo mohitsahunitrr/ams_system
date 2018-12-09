@@ -56,7 +56,7 @@ public class InspectionEventResourceWebServiceImpl extends AbstractWebService im
             throw new BadRequestException("Search parameters are required");
         }
         try {
-            return authorize(sess, dao.lookup(searchParams));
+            return authorize(sess, dao.search(searchParams));
         } catch (DaoException e) {
             throw new InternalServerErrorException(String.format("Error searching for inspection event resources for event {} and/or resource {}", searchParams.getInspectionEventId(), searchParams.getResourceId()), e);
         }
@@ -128,11 +128,11 @@ public class InspectionEventResourceWebServiceImpl extends AbstractWebService im
         ResourcePolygons polys;
         InspectionEventResourceSearchParams search2 = new InspectionEventResourceSearchParams();
         try {
-            for (ResourceMetadata r : resourceDao.lookup(searchParams)) {
+            for (ResourceMetadata r : resourceDao.search(searchParams)) {
                 search2.setResourceId(r.getResourceId());
                 polys = new ResourcePolygons();
                 polys.setResource(r);
-                polys.setInspectionEventResources(dao.lookup(search2));
+                polys.setInspectionEventResources(dao.search(search2));
                 polysList.add(polys);
             }
         } catch (DaoException e) {
