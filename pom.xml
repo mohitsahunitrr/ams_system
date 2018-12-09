@@ -147,6 +147,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>ams-dao-cassandra</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>ams-swagger</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -190,6 +195,11 @@
                 <artifactId>nimbus-jose-jwt</artifactId>
                 <version>5.4</version>
             </dependency>
+	    <dependency>
+	        <groupId>com.yugabyte</groupId>
+	        <artifactId>cassandra-driver-core</artifactId>
+	        <version>3.2.0-yb-18</version>
+	    </dependency>
             <dependency>
                 <groupId>net.sf.ehcache</groupId>
                 <artifactId>ehcache</artifactId>
@@ -460,6 +470,7 @@
     <modules>
         <module>ams-common</module>
         <module>ams-dao</module>
+        <module>ams-dao-cassandra</module>
         <module>ams-dao-es</module>
         <module>ams-swagger</module>
         <module>ams-webapi</module>

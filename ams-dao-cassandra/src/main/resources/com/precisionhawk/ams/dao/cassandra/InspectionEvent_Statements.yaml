@@ -1,0 +1,13 @@
+table: insp_event
+deleteStmt: DELETE FROM insp_event WHERE id = ?;
+initStmts:
+  - CREATE TABLE IF NOT EXISTS insp_event (id TEXT, site_id TEXT, order_num TEXT, asset_id TEXT, component_id TEXT, obj_json JSONB);
+  - CREATE INDEX IF NOT EXISTS insp_evt_idx_insp_evt_site insp_event (site_id) INCLUDED_COLUMNS (obj_json);
+  - CREATE INDEX IF NOT EXISTS insp_evt_idx_insp_evt_workord insp_event (order_num) INCLUDED_COLUMNS (obj_json);
+  - CREATE INDEX IF NOT EXISTS insp_evt_idx_insp_evt_asset insp_event (asset_id) INCLUDED_COLUMNS (obj_json);
+  - CREATE INDEX IF NOT EXISTS insp_evt_idx_insp_evt_comp insp_event (component_id) INCLUDED_COLUMNS (obj_json);
+insertStmt: INSERT INTO insp_event (site_id, order_num, asset_id, component_id, obj_json, id) VALUES (?, ?, ?, ?, ?, ?);
+updateStmt: UPDATE insp_event SET site_id = ?, order_num = ?, asset_id = ?, component_id = ?, obj_json = ? WHERE id = ?;
+selectTemplate: SELECT obj_json FROM insp_event {where_clause};
+namedTemplates:
+  count: SELECT COUNT(id) FROM insp_event {where_clause};

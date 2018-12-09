@@ -1,0 +1,8 @@
+table: site
+deleteStmt: DELETE FROM site WHERE id = ?;
+initStmts:
+  - CREATE TABLE IF NOT EXISTS site (id TEXT, org_id TEXT, site_name TEXT, obj_json JSONB);
+  - CREATE UNIQUE INDEX IF NOT EXISTS site_idx_org_name site (org_id, site_name) INCLUDED_COLUMNS (obj_json);
+insertStmt: INSERT INTO site (org_id, site_name, obj_json, id) VALUES (?, ?, ?, ?);
+updateStmt: UPDATE site SET org_id = ?, site_name = ?, obj_json = ? WHERE id = ?;
+selectTemplate: SELECT obj_json FROM site {where_clause};
