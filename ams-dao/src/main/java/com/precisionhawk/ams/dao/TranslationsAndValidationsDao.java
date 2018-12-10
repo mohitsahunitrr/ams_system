@@ -12,9 +12,9 @@ public interface TranslationsAndValidationsDao {
 
     List<OrgFieldTranslations> loadOrgTranslations(String orgId, String lang, String country) throws DaoException;
     
-    void storeOrgTranslations(OrgFieldTranslations translations) throws DaoException;
+    boolean storeOrgTranslations(OrgFieldTranslations translations) throws DaoException;
 
     OrgFieldValidations loadOrgValidations(String orgId) throws DaoException;
     
-    void storeOrgValidations(OrgFieldValidations translations) throws DaoException;    
+    boolean storeOrgValidations(OrgFieldValidations translations) throws DaoException;    
 }

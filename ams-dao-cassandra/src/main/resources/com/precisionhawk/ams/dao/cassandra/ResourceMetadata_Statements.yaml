@@ -1,0 +1,28 @@
+# Table resource_meta
+deleteStmt: DELETE FROM resource_meta WHERE id = ?;
+initStmts:
+  - >
+      CREATE TABLE IF NOT EXISTS resource_meta (
+        id TEXT PRIMARY KEY, site_id TEXT, order_num TEXT, asset_id TEXT, component_id TEXT,
+        site_insp_id TEXT, asset_insp_id TEXT, comp_insp_id TEXT, name TEXT,
+        source_id TEXT, status TEXT, type TEXT, zoomify_id TEXT, obj_json JSONB
+      ) WITH transactions = { 'enabled' : true };
+  - CREATE INDEX IF NOT EXISTS resource_meta_idx_site      ON resource_meta (site_id)      INCLUDE (obj_json);
+  - CREATE INDEX IF NOT EXISTS resource_meta_idx_workord   ON resource_meta (order_num)    INCLUDE (obj_json);
+  - CREATE INDEX IF NOT EXISTS resource_meta_idx_asset     ON resource_meta (asset_id)     INCLUDE (obj_json);
+  - CREATE INDEX IF NOT EXISTS resource_meta_idx_comp      ON resource_meta (component_id) INCLUDE (obj_json);
+  - CREATE INDEX IF NOT EXISTS resource_meta_idx_site_insp ON resource_meta (site_insp_id) INCLUDE (obj_json);
+  - CREATE INDEX IF NOT EXISTS resource_meta_idx_status    ON resource_meta (status)       INCLUDE (obj_json);
+  - CREATE INDEX IF NOT EXISTS resource_meta_idx_type      ON resource_meta (type)         INCLUDE (obj_json);
+  - CREATE INDEX IF NOT EXISTS resource_meta_idx_zoomify   ON resource_meta (zoomify_id)   INCLUDE (obj_json);
+insertStmt: >
+    INSERT INTO insp_event_res (
+      site_id, order_num, asset_id, component_id, site_insp_id, asset_insp_id,
+      comp_insp_id, name, source_id, status, type, zoomify_id, obj_json, id
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+updateStmt: >
+    UPDATE insp_event_res SET
+      site_id = ?, order_num = ?, asset_id = ?, component_id = ?, site_insp_id = ?, asset_insp_id = ?,
+      comp_insp_id = ?, name = ?, source_id = ?, status = ?, type = ?, zoomify_id = ?, obj_json = ?
+    WHERE id = ?;
+selectTemplate: SELECT obj_json FROM insp_event_res {where_clause};

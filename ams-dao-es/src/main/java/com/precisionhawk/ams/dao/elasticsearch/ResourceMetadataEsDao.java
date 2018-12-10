@@ -47,7 +47,7 @@ public abstract class ResourceMetadataEsDao extends AbstractEsDao implements Res
     }
 
     @Override
-    public ResourceMetadata retrieveResourceMetadata(String resourceId) throws DaoException {
+    public ResourceMetadata retrieve(String resourceId) throws DaoException {
         ensureExists(resourceId, "Resource ID is required.");
         return retrieveObject(resourceId, ResourceMetadata.class);
     }
@@ -83,7 +83,7 @@ public abstract class ResourceMetadataEsDao extends AbstractEsDao implements Res
     }
 
     @Override
-    public boolean insertMetadata(ResourceMetadata meta) throws DaoException {
+    public boolean insert(ResourceMetadata meta) throws DaoException {
         ensureExists(meta, "The resource metadata is required.");
         ensureExists(meta.getResourceId(), "The resource ID is required.");
         ResourceMetadata existing = retrieveObject(meta.getResourceId(), ResourceMetadata.class);
@@ -97,14 +97,14 @@ public abstract class ResourceMetadataEsDao extends AbstractEsDao implements Res
     }
 
     @Override
-    public boolean deleteMetadata(String resourceId) throws DaoException {
+    public boolean delete(String resourceId) throws DaoException {
         ensureExists(resourceId, "The resource ID is required.");
         deleteDocument(resourceId);
         return true;
     }
 
     @Override
-    public boolean updateMetadata(ResourceMetadata meta) throws DaoException {
+    public boolean update(ResourceMetadata meta) throws DaoException {
         ensureExists(meta, "The resource metadata is required.");
         ensureExists(meta, "The resource ID is required.");
         ResourceMetadata existing = retrieveObject(meta.getResourceId(), ResourceMetadata.class);

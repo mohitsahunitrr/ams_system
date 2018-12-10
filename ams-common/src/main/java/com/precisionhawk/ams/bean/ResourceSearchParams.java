@@ -52,6 +52,24 @@ public class ResourceSearchParams extends AbstractSearchParams implements SiteAw
         this.assetInspectionId = assetInspectionId;
     }
     
+    @Schema(description="The unique ID of the component.")
+    private String componentId;
+    public String getComponentId() {
+        return componentId;
+    }
+    public void setComponentId(String componentId) {
+        this.componentId = componentId;
+    }
+    
+    @Schema(description="The unique ID of the component inspection.")
+    private String componentInspectionId;
+    public String getComponentInspectionId() {
+        return componentInspectionId;
+    }
+    public void setComponentInspectionId(String componentInspectionId) {
+        this.componentInspectionId = componentInspectionId;
+    }
+    
     @Schema(description="The unique ID of the related site.")
     private String siteId;
     @Override

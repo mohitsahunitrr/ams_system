@@ -1,0 +1,14 @@
+# Table work_order and join table site_work_order
+deleteStmt: DELETE FROM work_order WHERE id = ?;
+initStmts:
+  - #CREATE TABLE IF NOT EXISTS work_order (id TEXT PRIMARY KEY, status TEXT, type TEXT, obj_json JSONB); # WITH TRANSACTIONS = { 'enabled' : true } WITH transactions = { 'enabled' : true };"
+  - CREATE UNIQUE INDEX IF NOT EXISTS work_order_idx_state ON work_order (state)   INCLUDE (obj_json);
+  - CREATE UNIQUE INDEX IF NOT EXISTS work_order_idx_type  ON work_order (type)    INCLUDE (obj_json);
+  - CREATE TABLE IF NOT EXISTS site_work_order (work_order_id TEXT, site_id TEXT, PRIMARY KEY (work_order_id, site_id)); # WITH TRANSACTIONS = { 'enabled' : true };"
+insertStmt: INSERT INTO work_order (state, type, obj_json, id) VALUES (?, ?, ?, ?);
+updateStmt: UPDATE work_order SET state = ?, type = ?, obj_json = ? WHERE id = ?;
+selectTemplate: SELECT obj_json FROM work_order {where_clause};
+namedTemplates:
+  - deleteSiteIDs DELETE FROM site_work_order WHERE work_order_id = ? and site_id NOT IN {in_cluase};
+  - insertSiteIDs INSERT INTO site_work_order (work_order_id, site_id) VALUES (?, ?);
+  - selectSiteIDs SELECT site_id FROM site_work_order WHERE work_order_id = ?;

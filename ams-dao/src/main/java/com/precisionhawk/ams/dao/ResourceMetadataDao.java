@@ -19,7 +19,7 @@ public interface ResourceMetadataDao {
      * @return The resource's metadata.
      * @throws DaoException Indicates an irrecoverable error.
      */
-    ResourceMetadata retrieveResourceMetadata(String resourceId) throws DaoException;
+    ResourceMetadata retrieve(String resourceId) throws DaoException;
     
     /**
      * Searches for Resource Metadata that fits all given criteria.  At least one parameter must be non-null.
@@ -29,9 +29,9 @@ public interface ResourceMetadataDao {
      */
     List<ResourceMetadata> search(ResourceSearchParams params) throws DaoException;
     
-    boolean insertMetadata(ResourceMetadata meta) throws DaoException;
+    boolean insert(ResourceMetadata meta) throws DaoException;
 
-    boolean deleteMetadata(String id) throws DaoException;
+    boolean delete(String id) throws DaoException;
     
-    boolean updateMetadata(ResourceMetadata meta) throws DaoException;
+    boolean update(ResourceMetadata meta) throws DaoException;
 }

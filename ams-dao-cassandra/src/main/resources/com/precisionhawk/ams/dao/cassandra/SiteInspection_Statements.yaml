@@ -1,0 +1,11 @@
+# Table site_insp
+deleteStmt: DELETE FROM site_insp WHERE id = ?;
+initStmts:
+  - "CREATE TABLE IF NOT EXISTS site_insp (id TEXT PRIMARY KEY, site_id TEXT, org_num TEXT, status TEXT, type TEXT, obj_json JSONB) WITH transactions = { 'enabled' : true };"
+  - CREATE UNIQUE INDEX IF NOT EXISTS site_insp_idx_site   ON site_insp (site_id) INCLUDE (obj_json);
+  - CREATE UNIQUE INDEX IF NOT EXISTS site_insp_idx_org    ON site_insp (org_id)  INCLUDE (obj_json);
+  - CREATE UNIQUE INDEX IF NOT EXISTS site_insp_idx_status ON site_insp (status)  INCLUDE (obj_json);
+  - CREATE UNIQUE INDEX IF NOT EXISTS site_insp_idx_type   ON site_insp (status)  INCLUDE (obj_json);
+insertStmt: INSERT INTO site_insp (site_id, org_num, status, type, obj_json, id) VALUES (?, ?, ?, ?, ?, ?);
+updateStmt: UPDATE site_insp SET site_id = ?, org_num = ?, status = ?, type = ?, obj_json = ? WHERE id = ?;
+selectTemplate: SELECT obj_json FROM site_insp {where_clause};

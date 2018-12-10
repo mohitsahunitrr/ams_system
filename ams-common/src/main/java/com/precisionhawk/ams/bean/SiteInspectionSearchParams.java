@@ -6,7 +6,6 @@ package com.precisionhawk.ams.bean;
 
 import com.precisionhawk.ams.domain.*;
 import io.swagger.oas.annotations.media.Schema;
-import java.util.Objects;
 
 /**
  *

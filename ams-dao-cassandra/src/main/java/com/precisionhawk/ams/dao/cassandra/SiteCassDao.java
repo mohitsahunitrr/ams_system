@@ -45,14 +45,13 @@ public class SiteCassDao extends AbstractCassandraDao implements SiteDao {
         ensureExists(site.getOrganizationId(), "Organization ID is required");
         
         Site s = retrieve(site.getId());
-        if (s == null) {        
-            Object[] values = new Object[4];
-            values[PARAM_INS_ID] = site.getId();
-            values[PARAM_INS_OBJ_JSON] = serializeObject(site);
-            values[PARAM_INS_ORG_ID] = site.getId();
-            values[PARAM_INS_SITE_NAME] = site.getName();
-            SimpleStatement stmt = new SimpleStatement(getStatementsMaps().getInsertStmt(), values);
-            ResultSet rs = getSession().execute(stmt);
+        if (s == null) {    
+            StatementBuilder stmt = new StatementBuilder(getStatementsMaps().getInsertStmt());
+            stmt = stmt.setParameter(PARAM_INS_ID, site.getId());
+            stmt = stmt.setParameter(PARAM_INS_OBJ_JSON, serializeObject(site));
+            stmt = stmt.setParameter(PARAM_INS_ORG_ID, site.getOrganizationId());
+            stmt = stmt.setParameter(PARAM_INS_SITE_NAME, site.getName());
+            ResultSet rs = getSession().execute(stmt.build());
             return rs.wasApplied();
         } else {
             return false;
@@ -70,13 +69,12 @@ public class SiteCassDao extends AbstractCassandraDao implements SiteDao {
         if (s == null) {
             return false;
         } else {
-            Object[] values = new Object[4];
-            values[PARAM_UPD_ID] = site.getId();
-            values[PARAM_UPD_OBJ_JSON] = serializeObject(site);
-            values[PARAM_UPD_ORG_ID] = site.getId();
-            values[PARAM_UPD_SITE_NAME] = site.getName();
-            SimpleStatement stmt = new SimpleStatement(getStatementsMaps().getUpdateStmt(), values);
-            ResultSet rs = getSession().execute(stmt);
+            StatementBuilder stmt = new StatementBuilder(getStatementsMaps().getUpdateStmt());
+            stmt = stmt.setParameter(PARAM_UPD_ID, site.getId());
+            stmt = stmt.setParameter(PARAM_UPD_OBJ_JSON, serializeObject(site));
+            stmt = stmt.setParameter(PARAM_UPD_ORG_ID, site.getId());
+            stmt = stmt.setParameter(PARAM_UPD_SITE_NAME, site.getName());
+            ResultSet rs = getSession().execute(stmt.build());
             return rs.wasApplied();
         }
     }
@@ -99,7 +97,8 @@ public class SiteCassDao extends AbstractCassandraDao implements SiteDao {
 
     @Override
     public Site retrieve(String id) throws DaoException {
-        SelectStatementBuilder stmt = new SelectStatementBuilder()
+        ensureExists(id, "Site ID is required");
+        StatementBuilder stmt = new StatementBuilder()
                 .withSqlTemplate(getStatementsMaps().getSelectTemplate())
                 .addEquals(COL_ID, id);
         return CollectionsUtilities.firstItemIn(selectObjects(Site.class, stmt.build(), 0));
@@ -107,7 +106,7 @@ public class SiteCassDao extends AbstractCassandraDao implements SiteDao {
 
     @Override
     public List<Site> search(SiteSearchParams params) throws DaoException {
-        SelectStatementBuilder stmt = new SelectStatementBuilder()
+        StatementBuilder stmt = new StatementBuilder()
                 .withSqlTemplate(getStatementsMaps().getSelectTemplate())
                 .addEqualsConditionally(COL_SITE_NAME, params.getName())
                 .addEqualsConditionally(COL_ORG_ID, params.getOrganizationId());
@@ -120,7 +119,7 @@ public class SiteCassDao extends AbstractCassandraDao implements SiteDao {
 
     @Override
     public List<Site> retrieveAll() throws DaoException {
-        SelectStatementBuilder stmt = new SelectStatementBuilder()
+        StatementBuilder stmt = new StatementBuilder()
                 .withSqlTemplate(getStatementsMaps().getSelectTemplate());
         return selectObjects(Site.class, stmt.build(), 0);
     }

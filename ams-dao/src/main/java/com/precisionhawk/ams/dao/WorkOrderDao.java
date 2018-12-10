@@ -14,9 +14,9 @@ import java.util.List;
  */
 public interface WorkOrderDao
 {
-    void delete(String orderNumber) throws DaoException;
+    boolean delete(String orderNumber) throws DaoException;
     
-    WorkOrder retrieveById(String orderNumber) throws DaoException;
+    WorkOrder retrieve(String orderNumber) throws DaoException;
      
     List<WorkOrder> search(WorkOrderSearchParams params) throws DaoException;
      

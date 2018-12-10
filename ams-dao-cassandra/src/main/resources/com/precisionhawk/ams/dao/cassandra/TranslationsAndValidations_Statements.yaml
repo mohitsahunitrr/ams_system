@@ -1,0 +1,13 @@
+# Tables field_translations and field_validations
+initStmts:
+  - "CREATE TABLE IF NOT EXISTS field_translations (id TEXT PRIMARY KEY, org_id TEXT, lang_code TEXT, country_code, obj_json JSONB) WITH transactions = { 'enabled' : true };"
+  - CREATE UNIQUE INDEX IF NOT EXISTS ON field_trans_idx_unique site (org_id, lang_code, country_code) INCLUDE (obj_json);
+  - CREATE TABLE IF NOT EXISTS field_validations (id TEXT PRIMARY KEY, org_id TEXT, obj_json JSONB);
+  - CREATE UNIQUE INDEX IF NOT EXISTS ON field_vals_idx_unique site (org_id) INCLUDE (obj_json);
+namedTemplates:
+  - insertTrans: INSERT INTO field_translations (org_id, lang_code, country_code, obj_json, id) VALUES (?, ?, ?, ?, ?);
+  - insertVals:  INSERT INTO field_validations (org_id, obj_json, id) VALUES (?, ?, ?);
+  - selectTrans: SELECT obj_json FROM field_translations {where_clause};
+  - selectVals:  SELECT obj_json FROM field_validations {where_clause};
+  - updateTrans: UPDATE field_translations SET org_id = ?, lang_code = ?, country_code = ?, obj_json = ? WHERE id = ?;
+  - updateVals:  UPDATE field_validations SET org_id = ?, obj_json = ? WHERE id = ?;

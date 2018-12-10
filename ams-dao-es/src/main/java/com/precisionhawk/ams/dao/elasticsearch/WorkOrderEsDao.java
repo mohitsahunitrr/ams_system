@@ -41,7 +41,7 @@ public abstract class WorkOrderEsDao extends AbstractEsDao implements WorkOrderD
     }
     
     @Override
-    public WorkOrder retrieveById(String orderNumber) throws DaoException {
+    public WorkOrder retrieve(String orderNumber) throws DaoException {
         ensureExists(orderNumber, "Order number is required.");
         return retrieveObject(orderNumber, WorkOrder.class);
     }
@@ -105,7 +105,7 @@ public abstract class WorkOrderEsDao extends AbstractEsDao implements WorkOrderD
     {
         ensureExists(workOrder, "Work order cannot be null.");
         ensureExists(workOrder.getOrderNumber(), "Order number required.");
-        WorkOrder wo = retrieveById(workOrder.getOrderNumber());
+        WorkOrder wo = retrieve(workOrder.getOrderNumber());
         if (wo == null) {
             indexObject(DOCUMENT_TYPE_WORK_ORDER, workOrder);
             return true;
@@ -115,9 +115,10 @@ public abstract class WorkOrderEsDao extends AbstractEsDao implements WorkOrderD
     }
 
     @Override
-    public void delete(String orderNumber) throws DaoException {
+    public boolean delete(String orderNumber) throws DaoException {
         ensureExists(orderNumber, "Order number required.");
         super.deleteDocument(orderNumber);
+        return true;
     }
 
     @Override
@@ -125,7 +126,7 @@ public abstract class WorkOrderEsDao extends AbstractEsDao implements WorkOrderD
     {
         ensureExists(workOrder, "Work order cannot be null.");
         ensureExists(workOrder.getOrderNumber(), "Order number required.");
-        WorkOrder wo = retrieveById(workOrder.getOrderNumber());
+        WorkOrder wo = retrieve(workOrder.getOrderNumber());
         if (wo == null) {
             return false;
         } else {

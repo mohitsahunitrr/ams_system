@@ -26,6 +26,15 @@ public class InspectionEventResource implements Identifyable, SiteAware {
     public void setAssetId(String assetId) {
         this.assetId = assetId;
     }
+
+    @Schema(description="The unique ID of the damaged component.")    
+    private String componentId;
+    public String getComponentId() {
+        return componentId;
+    }
+    public void setComponentId(String componentId) {
+        this.componentId = componentId;
+    }
     
     @Schema(description="The unique ID of this object.")
     private String id;

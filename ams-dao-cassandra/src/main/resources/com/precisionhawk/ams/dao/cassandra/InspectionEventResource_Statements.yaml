@@ -1,0 +1,13 @@
+# Table insp_event_res
+deleteStmt: DELETE FROM insp_event_res WHERE id = ?;
+initStmts:
+  - "CREATE TABLE IF NOT EXISTS insp_event_res (id TEXT PRIMARY KEY, site_id TEXT, order_num TEXT, asset_id TEXT, component_id TEXT, insp_evt_id TEXT, res_id TEXT, obj_json JSONB) WITH transactions = { 'enabled' : true };"
+  - CREATE INDEX IF NOT EXISTS insp_evt_res_idx_site     ON insp_event_res (site_id)      INCLUDE (obj_json);
+  - CREATE INDEX IF NOT EXISTS insp_evt_res_idx_workord  ON insp_event_res (order_num)    INCLUDE (obj_json);
+  - CREATE INDEX IF NOT EXISTS insp_evt_res_idx_asset    ON insp_event_res (asset_id)     INCLUDE (obj_json);
+  - CREATE INDEX IF NOT EXISTS insp_evt_res_idx_comp     ON insp_event_res (component_id) INCLUDE (obj_json);
+  - CREATE INDEX IF NOT EXISTS insp_evt_res_idx_insp_evt ON insp_event_res (insp_evt_id)  INCLUDE (obj_json);
+  - CREATE INDEX IF NOT EXISTS insp_evt_res_idx_res      ON insp_event_res (res_id)       INCLUDE (obj_json);
+insertStmt: INSERT INTO insp_event_res (site_id, order_num, asset_id, component_id, insp_evt_id, res_id, obj_json, id) VALUES (?, ?, ?, ?, ?, ?, ?);
+updateStmt: UPDATE insp_event_res SET site_id = ?, order_num = ?, asset_id = ?, component_id = ?, insp_evt_id = ?, res_id = ?, obj_json = ? WHERE id = ?;
+selectTemplate: SELECT obj_json FROM insp_event_res {where_clause};

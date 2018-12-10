@@ -58,6 +58,7 @@ public class CassandraClientFactory implements Provider<Session> {
         }
         cluster = b.build();
         session = cluster.connect();
+        session.execute("USE " + getConfig().getKeyspace() + ";");
         if (listener != null) listener.clientConnectionOpened(cluster, session);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override

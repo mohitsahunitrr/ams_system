@@ -51,14 +51,6 @@ public class StatementsMaps {
         this.selectTemplate = selectTemplate;
     }
 
-    private String table;
-    public String getTable() {
-        return table;
-    }
-    public void setTable(String table) {
-        this.table = table;
-    }
-
     private String updateStmt;
     public String getUpdateStmt() {
         return updateStmt;

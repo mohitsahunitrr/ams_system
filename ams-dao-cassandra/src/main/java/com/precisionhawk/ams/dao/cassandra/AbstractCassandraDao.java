@@ -1,6 +1,5 @@
 package com.precisionhawk.ams.dao.cassandra;
 
-import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -125,5 +124,15 @@ public abstract class AbstractCassandraDao extends AbstractDao {
         } finally {
             IOUtils.closeQuietly(reader);
         }
+    }
+    
+    protected boolean endTransaction() {
+        ResultSet rs = getSession().execute("END TRANSACTION;");
+        return rs.wasApplied();
+    }
+    
+    protected boolean beginTransaction() {
+        ResultSet rs = getSession().execute("BEGIN TRANSACTION;");
+        return rs.wasApplied();
     }
 }

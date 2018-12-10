@@ -29,7 +29,7 @@ public class WorkOrderWebServiceImpl extends AbstractWebService implements WorkO
         ServicesSessionBean sess = super.lookupSessionBean(authToken);
         ensureExists(orderNumber, "Work order number is required.");
         try {
-            return authorize(sess, validateFound(dao.retrieveById(orderNumber)));
+            return authorize(sess, validateFound(dao.retrieve(orderNumber)));
         } catch (DaoException ex) {
             throw new InternalServerErrorException(String.format("Error retrieving work order for order number %s.", orderNumber), ex);
         }
@@ -75,7 +75,7 @@ public class WorkOrderWebServiceImpl extends AbstractWebService implements WorkO
         ServicesSessionBean sess = super.lookupSessionBean(authToken);
         ensureExists(orderNumber, "Work order number is required.");
         try {
-            WorkOrder order = dao.retrieveById(orderNumber);
+            WorkOrder order = dao.retrieve(orderNumber);
             if (order != null) {
                 authorize(sess, order);
                 dao.delete(orderNumber);
@@ -93,7 +93,7 @@ public class WorkOrderWebServiceImpl extends AbstractWebService implements WorkO
         authorize(sess, workOrder);
         try {
             boolean updated = false;
-            WorkOrder order = dao.retrieveById(workOrder.getOrderNumber());
+            WorkOrder order = dao.retrieve(workOrder.getOrderNumber());
             if (order != null) {
                 authorize(sess, order);
                 updated = dao.update(workOrder);

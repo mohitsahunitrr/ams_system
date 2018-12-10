@@ -60,7 +60,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
         ServicesSessionBean sess = lookupSessionBean(authToken);
         ensureExists(resourceId, "The resource ID is required.");
         try {
-            ResourceMetadata rmeta = resourceDao.retrieveResourceMetadata(resourceId);
+            ResourceMetadata rmeta = resourceDao.retrieve(resourceId);
             if (rmeta == null) {
                 ResourceSearchParams params = new ResourceSearchParams();
                 params.setZoomifyId(resourceId);
@@ -74,7 +74,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
                 // This is a zoomify file, remove it from the repository, below.
             } else {
                 authorize(sess, rmeta);
-                resourceDao.deleteMetadata(resourceId);
+                resourceDao.delete(resourceId);
             }
             repo.deleteResource(resourceId);
         } catch (DaoException | RepositoryException ex) {
@@ -87,7 +87,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
         ServicesSessionBean sess = lookupSessionBean(authToken);
         ensureExists(resourceId, "The resource ID is required.");
         try {
-            return authorize(sess, validateFound(resourceDao.retrieveResourceMetadata(resourceId)));
+            return authorize(sess, validateFound(resourceDao.retrieve(resourceId)));
         } catch (DaoException ex) {
             throw new InternalServerErrorException(String.format("Error retrieving resource %s", resourceId));
         }
@@ -111,7 +111,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
         ensureExists(resourceId, "The resource ID is required.");
         ensureExists(scaleRequest, "The image scale request is required.");
         try {
-            ResourceMetadata rmeta = resourceDao.retrieveResourceMetadata(resourceId);
+            ResourceMetadata rmeta = resourceDao.retrieve(resourceId);
             if (rmeta == null) {
                 throw new NotFoundException(String.format("No image %s found.", resourceId));
             } else if (!rmeta.getContentType().startsWith("image/")) {
@@ -139,7 +139,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
             rmeta.setResourceId(UUID.randomUUID().toString());
         }
         try {
-            if (resourceDao.insertMetadata(rmeta)) {
+            if (resourceDao.insert(rmeta)) {
                 LOGGER.debug("Resource {} has been inserted.", rmeta.getResourceId());
                 return rmeta;
             } else {
@@ -157,11 +157,11 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
         ensureExists(rmeta.getResourceId(), "The resource ID is required.");
         authorize(sess, rmeta);
         try {
-            ResourceMetadata rm = resourceDao.retrieveResourceMetadata(rmeta.getResourceId());
+            ResourceMetadata rm = resourceDao.retrieve(rmeta.getResourceId());
             boolean updated = false;
             if (rm != null) {
                 authorize(sess, rm);
-                updated = resourceDao.updateMetadata(rmeta);
+                updated = resourceDao.update(rmeta);
             }
             
             if (updated) {
@@ -180,7 +180,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
         ensureExists(resourceId, "The resource IDs are required.");
         try {
             boolean isZoomify = false;
-            ResourceMetadata rmeta = resourceDao.retrieveResourceMetadata(resourceId);
+            ResourceMetadata rmeta = resourceDao.retrieve(resourceId);
             if (rmeta == null) {
                 // This may be zoomify resource.
                 ResourceSearchParams params = new ResourceSearchParams();
@@ -241,7 +241,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
         try {
             String contentType;
             String name;
-            ResourceMetadata meta = resourceDao.retrieveResourceMetadata(resourceId);
+            ResourceMetadata meta = resourceDao.retrieve(resourceId);
             if (meta == null) {
                 // It may be a zoomify image.
                 ResourceSearchParams rparms = new ResourceSearchParams();
@@ -372,7 +372,7 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
                     destMD.setStatus(ResourceStatus.Released);
                     destMD.setTimestamp(originalMD.getTimestamp());
                     destMD.setType(scaleRequest.getResourceType());
-                    resourceDao.insertMetadata(destMD);
+                    resourceDao.insert(destMD);
                     repo.storeResource(destMD, destMD.getResourceId(), destMD.getName(), destMD.getContentType(), new ByteArrayInputStream(bytes), Long.valueOf(bytes.length));
                 } catch (DaoException daoe) {
                     throw new InternalServerErrorException("Error saving scaled image", daoe);

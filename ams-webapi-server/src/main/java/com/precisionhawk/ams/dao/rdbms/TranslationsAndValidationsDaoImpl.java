@@ -102,7 +102,7 @@ public class TranslationsAndValidationsDaoImpl extends AbstractSQLDao implements
     }
     
     @Override
-    public void storeOrgTranslations(OrgFieldTranslations trans) throws DaoException {
+    public boolean storeOrgTranslations(OrgFieldTranslations trans) throws DaoException {
         if (trans.getOrganizationId() == null || trans.getOrganizationId().isEmpty() || trans.getLanguageCode() == null || trans.getLanguageCode().isEmpty()) {
             throw new DaoException("Organization ID and language code are required.");
         }
@@ -154,6 +154,7 @@ public class TranslationsAndValidationsDaoImpl extends AbstractSQLDao implements
             resetConnection(conn);
             closeQuietly(conn);
         }
+        return true;
     }
 
     @Override
@@ -197,7 +198,7 @@ public class TranslationsAndValidationsDaoImpl extends AbstractSQLDao implements
     }
 
     @Override
-    public void storeOrgValidations(OrgFieldValidations val) throws DaoException {
+    public boolean storeOrgValidations(OrgFieldValidations val) throws DaoException {
         if (val.getOrganizationId() == null || val.getOrganizationId().isEmpty()) {
             throw new DaoException("Organization ID is required.");
         }
@@ -245,5 +246,6 @@ public class TranslationsAndValidationsDaoImpl extends AbstractSQLDao implements
             resetConnection(conn);
             closeQuietly(conn);
         }
+        return true;
     }
 }
