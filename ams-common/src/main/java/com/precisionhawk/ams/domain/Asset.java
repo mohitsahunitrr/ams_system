@@ -3,6 +3,8 @@ package com.precisionhawk.ams.domain;
 import com.precisionhawk.ams.bean.GeoPoint;
 import io.swagger.oas.annotations.media.Schema;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -11,6 +13,15 @@ import java.util.Objects;
  */
 @Schema(description="An asset being managed.")
 public class Asset implements Identifyable, SiteAware {
+
+    @Schema(description="Misc attributes associated with the asset.")
+    private Map<String, String> attributes = new HashMap<>();
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
 
     @Schema(description="The unique WindAMS ID for the asset.")
     private String id;
