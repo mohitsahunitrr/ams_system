@@ -107,7 +107,7 @@ public abstract class WorkOrderEsDao extends AbstractEsDao implements WorkOrderD
         ensureExists(workOrder.getOrderNumber(), "Order number required.");
         WorkOrder wo = retrieve(workOrder.getOrderNumber());
         if (wo == null) {
-            indexObject(DOCUMENT_TYPE_WORK_ORDER, workOrder);
+            indexObject(workOrder.getOrderNumber(), workOrder);
             return true;
         } else {
             return false;
