@@ -28,7 +28,7 @@ public class TranslationsAndValidationsDaoImpl extends AbstractSQLDao implements
     @Autowired
     protected ObjectMapper mapper;
 
-    private static final String TRANS_TABLE = "wams_field_translations";
+    private static final String TRANS_TABLE = "ams_field_translations";
     private static final String SQL_INSERT_TRANS =
             "INSERT INTO " + TRANS_TABLE +
             " (org_id, lang_code, country_code, json, id)" +
@@ -37,7 +37,7 @@ public class TranslationsAndValidationsDaoImpl extends AbstractSQLDao implements
     private static final String SQL_SELECT_TRANS = "SELECT json FROM " + TRANS_TABLE + " WHERE org_id = ?";
     
     
-    private static final String VAL_TABLE = "wams_field_validations";
+    private static final String VAL_TABLE = "ams_field_validations";
     private static final String SQL_INSERT_VAL =
             "INSERT INTO " + VAL_TABLE +
             " (org_id, json, id)" +

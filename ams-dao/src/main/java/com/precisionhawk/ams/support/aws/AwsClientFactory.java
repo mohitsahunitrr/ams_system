@@ -1,5 +1,6 @@
 package com.precisionhawk.ams.support.aws;
 
+import com.precisionhawk.ams.config.AwsConfig;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;

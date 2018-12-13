@@ -1,4 +1,4 @@
-package com.precisionhawk.ams.support.aws;
+package com.precisionhawk.ams.config;
 
 /**
  *
