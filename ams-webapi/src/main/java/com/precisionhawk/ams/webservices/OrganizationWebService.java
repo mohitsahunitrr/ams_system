@@ -75,19 +75,17 @@ public interface OrganizationWebService extends WebService {
     );
     
     @POST
-    @Path("/{orgId}/translations")
+    @Path("/translations")
     public void postOrgTranslations(
         @Parameter(required = true) @HeaderParam("Authorization") String authToken,
-        @PathParam("orgId") String orgId,
         OrgFieldTranslations trans
     );
 
     @POST
-    @Path("/{orgId}/validations")
+    @Path("/validations")
     @Operation(summary = "Gets an organization's field validation rules.", description = "Gets an organization's field validation rules.  These are basic field validation rules.  More complex business rules are handled in code.")
     public void postOrgFieldValidations(
         @Parameter(required = true) @HeaderParam("Authorization") String authToken,
-        @PathParam("orgId") String orgId,
         OrgFieldValidations validations
     );
 }

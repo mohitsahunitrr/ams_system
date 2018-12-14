@@ -33,6 +33,15 @@ public class ListValue {
     public void setValue(String value) {
         this.value = value;
     }
+    
+    @Schema(description="If not null indicates the dependent field key and list value for which this value is valid.")
+    private int selector;
+    public int getSelector() {
+        return selector;
+    }
+    public void setSelector(int selector) {
+        this.selector = selector;
+    }
 
     @Schema(description="The sort order for this value in relation to other valid values for the field.  Sort order is zero based.")
     private int sortOrder;

@@ -18,6 +18,15 @@ import java.util.Map;
 @Schema(description="Unique ID of the translations definition")
 public class FieldTranslation {
     
+    @Schema(description="The ID of a field that this field's list values are depenent on.")
+    private String dependent;
+    public String getDependent() {
+        return dependent;
+    }
+    public void setDependent(String dependent) {
+        this.dependent = dependent;
+    }
+    
     @Schema(description="Field identifier.  Field identifier is usually generated from domainObject.member or domainObject.map[key].")
     private String key;
     public String getKey() {

@@ -9,6 +9,7 @@ import io.swagger.oas.annotations.media.Schema;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -123,6 +124,15 @@ public class OrgFieldTranslations {
     }
     public void setFields(Map<String, FieldTranslation> fields) {
         this.fields = fields;
+    }
+    
+    @Schema(description="A mapping of lists of field keys for fields that should be used to populate list views.")
+    public Map<String, List<String>> views;
+    public Map<String, List<String>> getViews() {
+        return views;
+    }
+    public void setViews(Map<String, List<String>> views) {
+        this.views = views;
     }
     
     public String translationFromValue(String key, Object value) {

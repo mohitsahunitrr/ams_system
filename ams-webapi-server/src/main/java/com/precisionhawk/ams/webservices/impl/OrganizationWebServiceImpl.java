@@ -13,11 +13,9 @@ import com.precisionhawk.ams.security.Constants;
 import com.precisionhawk.ams.util.CollectionsUtilities;
 import com.precisionhawk.ams.webservices.OrganizationWebService;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 
@@ -123,17 +121,13 @@ public class OrganizationWebServiceImpl extends AbstractWebService implements Or
     }
     
     @Override
-    public void postOrgTranslations(String authToken, String orgId, OrgFieldTranslations trans)
+    public void postOrgTranslations(String authToken, OrgFieldTranslations trans)
     {
         ServicesSessionBean sess = securityService.validateToken(authToken);
-        if (orgId == null || orgId.isEmpty()) {
-            throw new BadRequestException("Organization ID is required.");
-        }
-        if (!sess.getCredentials().checkAuthorization(null, orgId, null, true, Constants.GROUP_KEY_ADMIN)) {
-            throw new NotAuthorizedException(String.format("The user is not authorized to upload translations for the organization %s", orgId));
-        }
-        if (!Objects.equals(orgId, trans.getOrganizationId())) {
-            throw new BadRequestException("Organization ID mismatch.");
+        ensureExists(trans, "Translations object is required");
+        ensureExists(trans.getOrganizationId(), "Translations organization ID is required");
+        if (!sess.getCredentials().checkAuthorization(null, trans.getOrganizationId(), null, true, Constants.GROUP_KEY_ADMIN)) {
+            throw new NotAuthorizedException(String.format("The user is not authorized to upload translations for the organization %s", trans.getOrganizationId()));
         }
         if (trans.getId() == null) {
             trans.setId(UUID.randomUUID().toString());
@@ -147,18 +141,14 @@ public class OrganizationWebServiceImpl extends AbstractWebService implements Or
 
     @Override
     public void postOrgFieldValidations(
-        String authToken, String orgId, OrgFieldValidations validations
+        String authToken, OrgFieldValidations validations
     )
     {
         ServicesSessionBean sess = securityService.validateToken(authToken);
-        if (orgId == null || orgId.isEmpty()) {
-            throw new BadRequestException("Organization ID is required.");
-        }
-        if (!sess.getCredentials().checkAuthorization(null, orgId, null, true, Constants.GROUP_KEY_ADMIN)) {
-            throw new NotAuthorizedException(String.format("The user is not authorized to upload validations for the organization %s", orgId));
-        }
-        if (!Objects.equals(orgId, validations.getOrganizationId())) {
-            throw new BadRequestException("Organization ID mismatch.");
+        ensureExists(validations, "Validations object is required");
+        ensureExists(validations.getOrganizationId(), "Validations organization ID is required");
+        if (!sess.getCredentials().checkAuthorization(null, validations.getOrganizationId(), null, true, Constants.GROUP_KEY_ADMIN)) {
+            throw new NotAuthorizedException(String.format("The user is not authorized to upload validations for the organization %s", validations.getOrganizationId()));
         }
         if (validations.getId() == null) {
             validations.setId(UUID.randomUUID().toString());
