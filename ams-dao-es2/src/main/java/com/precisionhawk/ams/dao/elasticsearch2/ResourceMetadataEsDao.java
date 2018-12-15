@@ -1,4 +1,4 @@
-package com.precisionhawk.ams.dao.elasticsearch;
+package com.precisionhawk.ams.dao.elasticsearch2;
 
 import com.precisionhawk.ams.dao.DaoException;
 import com.precisionhawk.ams.domain.ResourceMetadata;
@@ -33,7 +33,7 @@ public abstract class ResourceMetadataEsDao extends AbstractEsDao implements Res
     protected static final String COL_ZOOMIFY_ID = "zoomifyId";
     protected static final String DOCUMENT = "Resource";
 
-    private static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/Resource_Mapping.json";
+    private static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch2/Resource_Mapping.json";
 
     //TODO: Could this be done a differenet way?
     @Override

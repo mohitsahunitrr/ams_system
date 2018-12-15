@@ -1,7 +1,7 @@
 /*
  * All rights reserved.
  */
-package com.precisionhawk.ams.dao.elasticsearch;
+package com.precisionhawk.ams.dao.elasticsearch2;
 
 import com.precisionhawk.ams.bean.InspectionEventResourceSearchParams;
 import com.precisionhawk.ams.dao.DaoException;
@@ -27,7 +27,7 @@ public abstract class InspectionEventResourceEsDao extends AbstractEsDao impleme
     protected static final String FIELD_ORDER_NUMBER = "orderNumber";
     protected static final String FIELD_RESOURCE_ID = "resourceId";
     protected static final String FIELD_SITE_ID = "siteId";
-    protected static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/InspectionEventResource_Mapping.json";
+    protected static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch2/InspectionEventResource_Mapping.json";
 
     @Override
     protected String getDocumentType() {

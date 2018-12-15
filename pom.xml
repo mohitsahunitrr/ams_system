@@ -117,7 +117,6 @@
         </pluginManagement>
     </build>
     <properties>
-        <elasticsearch.version>2.1.2</elasticsearch.version>
         <jackson.version>1.9.13</jackson.version>
         <junit.version>4.12</junit.version>
         <liana.version>2.0.8</liana.version>
@@ -142,7 +141,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>ams-dao-es</artifactId>
+                <artifactId>ams-dao-es2</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -194,6 +193,11 @@
                 <groupId>com.nimbusds</groupId>
                 <artifactId>nimbus-jose-jwt</artifactId>
                 <version>5.4</version>
+            </dependency>
+            <dependency>
+                <groupId>com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-core</artifactId>
+                <version>3.6.0</version>
             </dependency>
 	    <dependency>
 	        <groupId>com.yugabyte</groupId>
@@ -294,11 +298,6 @@
                 <groupId>org.codehaus.jackson</groupId>
                 <artifactId>jackson-mapper-asl</artifactId>
                 <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.elasticsearch</groupId>
-                <artifactId>elasticsearch</artifactId>
-                <version>${elasticsearch.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.esotericsoftware.yamlbeans</groupId>
@@ -447,11 +446,6 @@
             </dependency>
             <dependency>
                 <groupId>us.pcsw</groupId>
-                <artifactId>pcsw-es-util</artifactId>
-                <version>${pcsw.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>us.pcsw</groupId>
                 <artifactId>pcsw-websvcs-libs</artifactId>
                 <version>${pcsw.version}</version>
             </dependency>
@@ -471,7 +465,7 @@
         <module>ams-common</module>
         <module>ams-dao</module>
         <module>ams-dao-cassandra</module>
-        <module>ams-dao-es</module>
+        <module>ams-dao-es2</module>
         <module>ams-swagger</module>
         <module>ams-webapi</module>
         <module>ams-webapi-client</module>

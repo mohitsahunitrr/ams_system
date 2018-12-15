@@ -31,10 +31,12 @@
             <artifactId>ams-dao-cassandra</artifactId>
         </dependency>
 -->
+<!--
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ams-dao-es</artifactId>
         </dependency>
+-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ams-webapi</artifactId>

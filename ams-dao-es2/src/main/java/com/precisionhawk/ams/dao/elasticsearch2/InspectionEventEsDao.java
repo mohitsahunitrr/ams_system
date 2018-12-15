@@ -1,7 +1,7 @@
 /*
  * All rights reserved.
  */
-package com.precisionhawk.ams.dao.elasticsearch;
+package com.precisionhawk.ams.dao.elasticsearch2;
 
 import com.precisionhawk.ams.bean.InspectionEventSearchParams;
 import com.precisionhawk.ams.dao.DaoException;
@@ -26,7 +26,7 @@ public abstract class InspectionEventEsDao extends AbstractEsDao implements Insp
     protected static final String FIELD_COMPONENT = "componentId";
     protected static final String FIELD_ORDER_NUMBER = "orderNumber";
     protected static final String FIELD_SITE_ID = "siteId";
-    protected static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/InspectionEvent_Mapping.json";
+    protected static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch2/InspectionEvent_Mapping.json";
 
     @Override
     protected String getDocumentType() {

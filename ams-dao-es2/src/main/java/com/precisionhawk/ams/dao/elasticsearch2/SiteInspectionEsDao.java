@@ -1,4 +1,4 @@
-package com.precisionhawk.ams.dao.elasticsearch;
+package com.precisionhawk.ams.dao.elasticsearch2;
 
 import com.precisionhawk.ams.bean.SiteInspectionSearchParams;
 import com.precisionhawk.ams.dao.DaoException;
@@ -24,7 +24,7 @@ public abstract class SiteInspectionEsDao extends AbstractEsDao implements SiteI
     protected static final String COL_STATUS = "status";
     protected static final String COL_TYPE = "type";
     protected static final String DOCUMENT = "SiteInspection";
-    protected static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/SiteInspection_Mapping.json";
+    protected static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch2/SiteInspection_Mapping.json";
 
     @Override
     protected String getDocumentType() {

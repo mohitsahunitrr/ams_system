@@ -1,4 +1,4 @@
-package com.precisionhawk.ams.dao.elasticsearch;
+package com.precisionhawk.ams.dao.elasticsearch2;
 
 import com.precisionhawk.ams.bean.SiteSearchParams;
 import com.precisionhawk.ams.dao.DaoException;
@@ -24,7 +24,7 @@ public abstract class SiteEsDao extends AbstractEsDao implements SiteDao, SitePr
     protected static final String COL_NAME = "name";
     protected static final String COL_ORG_ID = "organizationId";
     protected static final String DOCUMENT = "Site";
-    protected static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/Site_Mapping.json";
+    protected static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch2/Site_Mapping.json";
 
     @Override
     public String getMappingPath() {

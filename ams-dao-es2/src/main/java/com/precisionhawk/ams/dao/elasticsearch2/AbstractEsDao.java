@@ -1,4 +1,4 @@
-package com.precisionhawk.ams.dao.elasticsearch;
+package com.precisionhawk.ams.dao.elasticsearch2;
 
 import com.precisionhawk.ams.dao.AbstractDao;
 import com.precisionhawk.ams.support.elasticsearch.ElasticSearchConfig;

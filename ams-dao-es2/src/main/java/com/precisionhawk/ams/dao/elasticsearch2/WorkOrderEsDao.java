@@ -2,7 +2,7 @@
  * All rights reserved.
  */
 
-package com.precisionhawk.ams.dao.elasticsearch;
+package com.precisionhawk.ams.dao.elasticsearch2;
 
 import com.precisionhawk.ams.bean.WorkOrderSearchParams;
 import com.precisionhawk.ams.dao.DaoException;
@@ -28,7 +28,7 @@ public abstract class WorkOrderEsDao extends AbstractEsDao implements WorkOrderD
     protected static final String DOCUMENT_FIELD_STATUS = "status";
     protected static final String DOCUMENT_FIELD_TYPE = "type";
     protected static final String DOCUMENT_TYPE_WORK_ORDER = "WorkOrder";
-    protected static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch/WorkOrder_Mapping.json";
+    protected static final String MAPPING = "com/precisionhawk/ams/dao/elasticsearch2/WorkOrder_Mapping.json";
 
     @Override
     protected String getMappingPath() {

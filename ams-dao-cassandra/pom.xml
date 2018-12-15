@@ -31,13 +31,15 @@
             <artifactId>yamlbeans</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.datastax.cassandra</groupId>
+            <artifactId>cassandra-driver-core</artifactId>
+        </dependency>
+<!--
+        <dependency>
 	    <groupId>com.yugabyte</groupId>
 	    <artifactId>cassandra-driver-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>us.pcsw</groupId>
-            <artifactId>pcsw-es-util</artifactId>
-        </dependency>
+-->
 
         <!-- Testing -->
         <dependency>

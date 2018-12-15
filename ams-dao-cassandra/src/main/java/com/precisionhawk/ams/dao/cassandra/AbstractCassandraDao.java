@@ -2,7 +2,6 @@ package com.precisionhawk.ams.dao.cassandra;
 
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
-import org.codehaus.jackson.map.ObjectMapper;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
 import com.esotericsoftware.yamlbeans.YamlReader;
@@ -18,6 +17,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
