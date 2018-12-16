@@ -43,6 +43,19 @@
               "include_in_all" : true,
               "index" : "not_analyzed",
               "type" : "string"
+            },
+            "name" : {
+              "include_in_all" : true,
+              "index" : "not_analyzed",
+              "type" : "string"
+            },
+            "severity" : {
+              "type" : "long"
+            },
+            "text" : {
+              "include_in_all" : true,
+              "index" : "not_analyzed",
+              "type" : "string"
             }
           }
         },

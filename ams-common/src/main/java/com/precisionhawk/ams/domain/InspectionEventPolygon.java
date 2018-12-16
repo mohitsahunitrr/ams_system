@@ -29,6 +29,33 @@ public class InspectionEventPolygon implements Identifyable {
         this.id = id;
     }
 
+    @Schema(description="A name for the highlighted damage.")
+    private String name;
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Schema(description="A description of the highlighted damage.")
+    private String text;
+    public String getText() {
+        return text;
+    }
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    @Schema(description="The severity of the damage being highlighted.")
+    private Integer severity;
+    public Integer getSeverity() {
+        return severity;
+    }
+    public void setSeverity(Integer severity) {
+        this.severity = severity;
+    }
+
     @Schema(description="The center of the polygon.")
     private Point center;
     public Point getCenter() {

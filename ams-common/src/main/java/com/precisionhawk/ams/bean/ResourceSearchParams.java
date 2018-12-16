@@ -133,6 +133,7 @@ public class ResourceSearchParams extends AbstractSearchParams implements SiteAw
     public boolean hasCriteria() {
         return hasValue(siteId) || hasValue(orderNumber) || hasValue(assetId) ||
                 hasValue(assetInspectionId) || hasValue(siteInspectionId) ||
-                status != null || hasValue(sourceResourceId) || type != null;
+                status != null || hasValue(sourceResourceId) || type != null ||
+                hasValue(zoomifyId);
     }
 }

@@ -246,8 +246,14 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
                 // It may be a zoomify image.
                 ResourceSearchParams rparms = new ResourceSearchParams();
                 rparms.setZoomifyId(resourceId);
-                meta = CollectionsUtilities.firstItemIn(resourceDao.search(rparms));
+                //FIXME: Remove this
+                if (resourceId.equals("af6e54f6-8b57-480e-9d8b-f4c4186da60d")) {
+                    meta = resourceDao.retrieve("cd6847aa-4e09-4230-9daf-f8a175c25973");
+                } else {
+                    meta = CollectionsUtilities.firstItemIn(resourceDao.search(rparms));
+                }
                 if (meta == null) {
+                    
                     LOGGER.debug("No metadata for resource {}, upload aborted.", resourceId);
                     throw new NotFoundException(String.format("No metadata for resource %s found.  Data cannot be uploaded.", resourceId));
                 } else {
