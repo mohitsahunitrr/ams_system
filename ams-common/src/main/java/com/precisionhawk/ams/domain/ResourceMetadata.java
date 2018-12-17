@@ -2,6 +2,7 @@ package com.precisionhawk.ams.domain;
 
 import com.precisionhawk.ams.bean.Dimension;
 import com.precisionhawk.ams.bean.GeoPoint;
+import com.precisionhawk.ams.bean.ImagePosition;
 import io.swagger.oas.annotations.media.Schema;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -66,7 +67,16 @@ public final class ResourceMetadata implements SiteAware {
     public void setOrderNumber(String orderNumber) {
         this.orderNumber = orderNumber;
     }
-
+    
+    @Schema(description="The position of the portion of the object being photographed. Only valid if this resource is an image.")
+    private ImagePosition position;
+    public ImagePosition getPosition() {
+        return position;
+    }
+    public void setPosition(ImagePosition position) {
+        this.position = position;
+    }
+    
     @Schema(description="The unique ID of the resource.")
     private String resourceId;
     public String getResourceId() {

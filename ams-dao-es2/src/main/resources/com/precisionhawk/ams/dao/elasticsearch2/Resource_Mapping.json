@@ -66,6 +66,21 @@
         "index" : "not_analyzed",
         "type" : "string"
       },
+      "position" : {
+        "properties" : {
+            "side" : {
+                "include_in_all" : true,
+                "index" : "not_analyzed",
+                "type" : "string"
+            },
+            "x" : {
+                "type" : "float"
+            },
+            "y" : {
+                "type" : "float"
+            }
+        }
+      },
       "siteId" : {
         "include_in_all" : false,
         "index" : "not_analyzed",
