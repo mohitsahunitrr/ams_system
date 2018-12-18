@@ -70,6 +70,15 @@ public class InspectionEvent implements Identifyable, SiteAware {
         this.name = name;
     }
 
+    @Schema(description="The type of observation.")
+    private String observationType;
+    public String getObservationType() {
+        return observationType;
+    }
+    public void setObservationType(String observationType) {
+        this.observationType = observationType;
+    }
+    
     @Schema(description="The type of damage found.  This is the result of a lookup value.  See the translations JSON for details.")
     private String findingType;
     public String getFindingType() {
