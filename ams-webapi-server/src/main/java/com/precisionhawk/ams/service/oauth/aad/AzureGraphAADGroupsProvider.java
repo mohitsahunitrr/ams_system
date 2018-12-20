@@ -2,8 +2,9 @@
  * All rights reserved.
  */
 
-package com.precisionhawk.ams.service.aad;
+package com.precisionhawk.ams.service.oauth.aad;
 
+import com.precisionhawk.ams.service.oauth.GroupsProvider;
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpContent;
@@ -30,10 +31,10 @@ import org.codehaus.jackson.type.TypeReference;
  *
  * @author <a href="mailto:pchapman@pcsw.us">Philip A. Chapman</a>
  */
-public class AzureGraphAADGroupsProvider extends AADGroupsProvider {
+public class AzureGraphAADGroupsProvider extends GroupsProvider {
     
     @Override
-    Set<String> loadAADGroupIDs(AccessTokenProvider tokenProvider, ServicesSessionBean session, JWTClaimsSet claimsSet) throws SecurityException {
+    public Set<String> loadGroupIDs(AccessTokenProvider tokenProvider, ServicesSessionBean session, JWTClaimsSet claimsSet) throws SecurityException {
         Set<String> groupIDs = null;
         try {
             groupIDs = loadAADGroupIDsEnMass(tokenProvider, session);

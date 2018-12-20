@@ -2,8 +2,9 @@
  * All rights reserved.
  */
 
-package com.precisionhawk.ams.service.aad;
+package com.precisionhawk.ams.service.oauth.aad;
 
+import com.precisionhawk.ams.service.oauth.GroupsProvider;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponse;
@@ -27,14 +28,14 @@ import org.codehaus.jackson.type.TypeReference;
  *
  * @author <a href="mailto:pchapman@pcsw.us">Philip A. Chapman</a>
  */
-public class MSGraphAADGroupsProvider extends AADGroupsProvider {
+public class MSGraphAADGroupsProvider extends GroupsProvider {
     
     private final String API_VERSION = "2013-04-05";
     private final String MS_GRAPH_RESOURCE = "https://graph.microsoft.com/";
     private final String MEMBER_GROUPS_URL = MS_GRAPH_RESOURCE + "v1.0/users/%s/memberOf";
     
     @Override
-    Set<String> loadAADGroupIDs(AccessTokenProvider tokenProvider, ServicesSessionBean session, JWTClaimsSet claimsSet) throws SecurityException
+    public Set<String> loadGroupIDs(AccessTokenProvider tokenProvider, ServicesSessionBean session, JWTClaimsSet claimsSet) throws SecurityException
     {
         if (!(session.getCredentials() instanceof UserCredentials)) {
             throw new SecurityException("Groups can only be loaded for user credentials.");

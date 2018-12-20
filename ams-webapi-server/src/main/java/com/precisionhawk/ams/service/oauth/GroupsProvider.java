@@ -2,7 +2,7 @@
  * All rights reserved.
  */
 
-package com.precisionhawk.ams.service.aad;
+package com.precisionhawk.ams.service.oauth;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.precisionhawk.ams.bean.security.ServicesSessionBean;
@@ -19,23 +19,23 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:pchapman@pcsw.us">Philip A. Chapman</a>
  */
-abstract class AADGroupsProvider {
+public abstract class GroupsProvider {
     
     protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
     
     protected ObjectMapper mapper;    
-    ObjectMapper getMapper() {
+    public ObjectMapper getMapper() {
         return mapper;
     }
-    void setMapper(ObjectMapper mapper) {
+    public void setMapper(ObjectMapper mapper) {
         this.mapper = mapper;
     }
     
     protected SecurityDao dao;
-    SecurityDao getDao() {
+    public SecurityDao getDao() {
         return dao;
     }
-    void setDao(SecurityDao dao) {
+    public void setDao(SecurityDao dao) {
         this.dao = dao;
     }
     
@@ -56,5 +56,5 @@ abstract class AADGroupsProvider {
      * @return The list of group IDs.
      * @throws SecurityException  Indicates an error obtaining the information.
      */
-    abstract Set<String> loadAADGroupIDs(AccessTokenProvider accessTokenProvider, ServicesSessionBean session, JWTClaimsSet claimsSet) throws SecurityException;
+    public abstract Set<String> loadGroupIDs(AccessTokenProvider accessTokenProvider, ServicesSessionBean session, JWTClaimsSet claimsSet) throws SecurityException;
 }

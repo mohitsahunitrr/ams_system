@@ -2,8 +2,9 @@
  * All rights reserved.
  */
 
-package com.precisionhawk.ams.service.aad;
+package com.precisionhawk.ams.service.oauth.aad;
 
+import com.precisionhawk.ams.service.oauth.GroupsProvider;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.precisionhawk.ams.bean.security.ServicesSessionBean;
 import com.precisionhawk.ams.security.AccessTokenProvider;
@@ -18,10 +19,10 @@ import org.papernapkin.liana.util.StringUtil;
  *
  * @author <a href="mailto:pchapman@pcsw.us">Philip A. Chapman</a>
  */
-public class RolesBasedGroupsProvider extends AADGroupsProvider {
+public class RolesBasedGroupsProvider extends GroupsProvider {
 
     @Override
-    Set<String> loadAADGroupIDs(AccessTokenProvider accessTokenProvider, ServicesSessionBean session, JWTClaimsSet claimsSet) throws SecurityException {
+    public Set<String> loadGroupIDs(AccessTokenProvider accessTokenProvider, ServicesSessionBean session, JWTClaimsSet claimsSet) throws SecurityException {
         // Parse the "roles" claim and return the roles indicated there as group IDs.
         Set<String> groupIDs = new HashSet();
         String rolesClaim = StringUtil.nullableToString(claimsSet.getClaim("roles"));

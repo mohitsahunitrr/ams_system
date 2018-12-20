@@ -4,7 +4,7 @@ import com.precisionhawk.ams.cache.SecurityTokenCache;
 import com.precisionhawk.ams.config.SecurityConfig;
 import com.precisionhawk.ams.dao.SecurityDao;
 import com.precisionhawk.ams.dao.SiteProvider;
-import com.precisionhawk.ams.service.aad.AADSecurityService;
+import com.precisionhawk.ams.service.oauth.aad.AADSecurityService;
 import java.net.MalformedURLException;
 import java.util.List;
 import javax.inject.Inject;
