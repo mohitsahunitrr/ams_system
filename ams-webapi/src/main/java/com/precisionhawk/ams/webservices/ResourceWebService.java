@@ -39,7 +39,7 @@ public interface ResourceWebService extends WebService {
     @POST
     @Path("/search")
     @Operation(summary = "Search Resources", description = "Retrieves resource metadata for resources that match the indicated criteria.")
-    List<ResourceMetadata> query(
+    List<ResourceMetadata> search(
             @Parameter(required = true) @HeaderParam("Authorization") String authToken,
             ResourceSearchParams params);
 

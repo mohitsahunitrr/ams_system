@@ -68,6 +68,9 @@
       },
       "position" : {
         "properties" : {
+            "heading" : {
+                "type" : "float"
+            },
             "side" : {
                 "include_in_all" : true,
                 "index" : "not_analyzed",

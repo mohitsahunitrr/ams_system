@@ -10,7 +10,16 @@ import io.swagger.oas.annotations.media.Schema;
 @Schema(description="The position of the portion of the object being photographed.")
 public class ImagePosition {
     
-    @Schema(description="The side of the component being photographed.")
+    @Schema(description="The heading the camera was pointed when the photograph or image was taken.")
+    private Float heading;
+    public Float getHeading() {
+        return heading;
+    }
+    public void setHeading(Float heading) {
+        this.heading = heading;
+    }
+    
+    @Schema(description="The side of the component being photographed or imaged.")
     private String side;
     public String getSide() {
         return side;
@@ -19,7 +28,7 @@ public class ImagePosition {
         this.side = side;
     }
 
-    @Schema(description="The position as an integer percentage (0.00 = 0%, 1.00 = 100%) along the widge of the object.")
+    @Schema(description="The position as an integer percentage (0.00 = 0%, 1.00 = 100%) along the width of the object.")
     private Float x;
     public Float getX() {
         return x;

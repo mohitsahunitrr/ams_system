@@ -59,6 +59,11 @@
             }
           }
         },
+        "source" : {
+          "include_in_all" : true,
+          "index" : "not_analyzed",
+          "type" : "string"
+        },
         "assetId" : {
           "include_in_all" : true,
           "index" : "not_analyzed",

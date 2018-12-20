@@ -115,6 +115,15 @@ public class InspectionEvent implements Identifyable, SiteAware {
         this.size = size;
     }
 
+    @Schema(description="The source of the inspection event.")
+    private InspectionEventSource source;
+    public InspectionEventSource getSource() {
+        return source;
+    }
+    public void setSource(InspectionEventSource source) {
+        this.source = source;
+    }
+
     @Schema(description="The unique ID of the user reporting the damage.")
     private String userId;
     public String getUserId() {
