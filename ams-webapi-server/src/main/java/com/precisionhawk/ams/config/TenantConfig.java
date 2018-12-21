@@ -11,6 +11,7 @@ package com.precisionhawk.ams.config;
  */
 public class TenantConfig {
     
+    private String apiId;
     private String clientId;
     private String groupProvider;
     private String organizationId;
@@ -18,11 +19,20 @@ public class TenantConfig {
     private String tenantId;
     private String tenantName;
 
-    /** The unique ID of the application's registration within the Azure tenant. */
+    /** The unique ID of the application's registration within the OAuth tenant as an API. */
+    public String getApiId() {
+        return apiId;
+    }
+    /** The unique ID of the application's registration within the OAuth tenant as an API. */
+    public void setApiId(String apiId) {
+        this.apiId = apiId;
+    }
+
+    /** The unique ID of the application's registration within the OAuth tenant as a client. */
     public String getClientId() {
         return clientId;
     }
-    /** The unique ID of the application's registration within the Azure tenant. */
+    /** The unique ID of the application's registration within the OAuth tenant as a client. */
     public void setClientId(String clientId) {
         this.clientId = clientId;
     }
@@ -54,11 +64,11 @@ public class TenantConfig {
         this.passwordKey = passwordKey;
     }
 
-    /** The unique ID for the tenant in Azure to which this app is registered. */
+    /** The unique ID for the tenant in OAuth to which this app is registered. */
     public String getTenantId() {
         return tenantId;
     }
-    /** The unique ID for the tenant in Azure to which this app is registered. */
+    /** The unique ID for the tenant in OAuth to which this app is registered. */
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
     }

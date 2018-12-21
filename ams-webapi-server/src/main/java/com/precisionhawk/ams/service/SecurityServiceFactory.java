@@ -5,6 +5,7 @@ import com.precisionhawk.ams.config.SecurityConfig;
 import com.precisionhawk.ams.dao.SecurityDao;
 import com.precisionhawk.ams.dao.SiteProvider;
 import com.precisionhawk.ams.service.oauth.aad.AADSecurityService;
+import com.precisionhawk.ams.service.oauth.auth0.Auth0SecurityService;
 import java.net.MalformedURLException;
 import java.util.List;
 import javax.inject.Inject;
@@ -28,7 +29,13 @@ public class SecurityServiceFactory implements Provider<SecurityService> {
 
     @Override
     public SecurityService get() {
-        if (AADSecurityService.class.getName().equals(config.getSecurityImplementation())) {
+        if (Auth0SecurityService.class.getName().equals(config.getSecurityImplementation())) {
+            Auth0SecurityService svc = new Auth0SecurityService();
+            svc.setSecurityConfig(config);
+            svc.setSiteProviders(siteProviders);
+            svc.setTokenCache(tokenCache);
+            return svc;
+        } else if (AADSecurityService.class.getName().equals(config.getSecurityImplementation())) {
             try {
                 AADSecurityService svc = new AADSecurityService();
                 svc.setSecurityConfig(config);

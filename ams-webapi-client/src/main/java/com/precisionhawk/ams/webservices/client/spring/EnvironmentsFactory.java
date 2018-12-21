@@ -6,6 +6,7 @@ package com.precisionhawk.ams.webservices.client.spring;
 
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.precisionhawk.ams.security.AADAccessTokenProvider;
+import com.precisionhawk.ams.security.Auth0AccessTokenProvider;
 import com.precisionhawk.ams.security.NoOppAccessTokenProvider;
 import com.precisionhawk.ams.webservices.client.Environment;
 import java.io.InputStreamReader;
@@ -81,7 +82,13 @@ public class EnvironmentsFactory
         environments = new LinkedList<>();
         for (EnvironmentConfig config : configs) {
             Environment env = new Environment();
-            if (AADAccessTokenProvider.class.getName().equals(config.getAccessTokenProvider())) {
+            if (Auth0AccessTokenProvider.class.getName().equals(config.getAccessTokenProvider())) {
+                Auth0AccessTokenProvider provider = new Auth0AccessTokenProvider();
+                provider.setClientId(config.getClientId());
+                provider.setClientSecret(config.getClientSecret());
+                provider.setTenantId(config.getTenantId());
+                env.setAccessTokenProvider(provider);
+            } else if (AADAccessTokenProvider.class.getName().equals(config.getAccessTokenProvider())) {
                 AADAccessTokenProvider provider = new AADAccessTokenProvider();
                 provider.setClientId(config.getClientId());
                 provider.setClientSecret(config.getClientSecret());
