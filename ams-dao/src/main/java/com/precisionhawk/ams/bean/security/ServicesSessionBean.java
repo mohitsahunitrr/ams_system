@@ -12,10 +12,20 @@ public class ServicesSessionBean {
 
     private String windAMSAPIAccessToken;
     private Credentials credentials;
-//    private String msGraphAccessToken;
     private String reason;
     private String tenantId;
     private boolean tokenValid;
+    private String appData;
+
+    public String getAppData() {
+        if (appData == null) {
+            return "{}";
+        }
+        return appData;
+    }
+    public void setAppData(String appData) {
+        this.appData = appData;
+    }
 
     public String getWindAMSAPIAccessToken() {
         return windAMSAPIAccessToken;
@@ -30,13 +40,6 @@ public class ServicesSessionBean {
     public void setCredentials(Credentials credentials) {
         this.credentials = credentials;
     }
-
-//    public String getMSGraphAccessToken() {
-//        return msGraphAccessToken;
-//    }
-//    public void setMSGraphAccessToken(String onBehalfOfToken) {
-//        this.msGraphAccessToken = onBehalfOfToken;
-//    }
 
     public String getReason() {
         return reason;

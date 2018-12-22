@@ -49,6 +49,13 @@ public abstract class OAuthAccessTokenProvider implements AccessTokenProvider {
     /** The cache of tokens that have been obtained from Azure. */
     protected final Map<String, AccessTokenResponse> tokenCache = Collections.synchronizedMap(new HashMap<>());
     
+    @Override
+    public void configure(AccessTokenProviderConfig config) {
+        setClientId(config.getClientId());
+        setClientSecret(config.getClientSecret());
+        setTenantId(config.getTenantId());
+    }
+    
     /**
      * Returns an access token for the indicated resource.  The tokens are cached
      * until they time out such that subsequent calls do not cause delay.

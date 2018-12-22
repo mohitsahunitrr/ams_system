@@ -33,6 +33,14 @@ import org.codehaus.jackson.type.TypeReference;
  */
 public class AzureGraphAADGroupsProvider extends GroupsProvider {
     
+    private String userManagementResource;
+    public String getUserManagementResource() {
+        return userManagementResource;
+    }
+    public void setUserManagementResource(String userManagementResource) {
+        this.userManagementResource = userManagementResource;
+    }
+    
     @Override
     public Set<String> loadGroupIDs(AccessTokenProvider tokenProvider, ServicesSessionBean session, JWTClaimsSet claimsSet) throws SecurityException {
         Set<String> groupIDs = null;
@@ -73,7 +81,7 @@ public class AzureGraphAADGroupsProvider extends GroupsProvider {
                 HttpContent content = new ByteArrayContent("application/json", "{\"securityEnabledOnly\":true}".getBytes());
                 HttpRequest req = REQ_FACTORY.buildPostRequest(new GenericUrl(url), content);
                 req.getHeaders().setAccept(MIME_JSON);
-                req.getHeaders().setAuthorization("Bearer " + tokenProvider.obtainAccessToken(AADSecurityService.GRAPH_RESOURCE));
+                req.getHeaders().setAuthorization("Bearer " + tokenProvider.obtainAccessToken(getUserManagementResource()));
                 HttpResponse resp = req.execute();
                 String respText = HttpTransportClient.loadContent(resp);
                 Map<String, Object> data = mapper.readValue(respText, new TypeReference<Map<String, Object>>(){});
@@ -128,7 +136,7 @@ public class AzureGraphAADGroupsProvider extends GroupsProvider {
                     HttpContent content = new ByteArrayContent("application/json", String.format(IS_MEMBER_OF_JSON, aadGroupId, creds.getUserId()).getBytes());
                     HttpRequest req = REQ_FACTORY.buildPostRequest(gurl, content);
                     req.getHeaders().setAccept(MIME_JSON);
-                    req.getHeaders().setAuthorization("Bearer " + tokenProvider.obtainAccessToken(AADSecurityService.GRAPH_RESOURCE));
+                    req.getHeaders().setAuthorization("Bearer " + tokenProvider.obtainAccessToken(getUserManagementResource()));
                     HttpResponse resp = req.execute();
                     String respText = HttpTransportClient.loadContent(resp);
                     Map<String, Object> data = mapper.readValue(respText, new TypeReference<Map<String, Object>>(){});

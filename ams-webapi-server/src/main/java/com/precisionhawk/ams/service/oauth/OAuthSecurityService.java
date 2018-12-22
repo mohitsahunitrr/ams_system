@@ -25,6 +25,7 @@ import com.precisionhawk.ams.bean.security.UserInfoBean;
 import com.precisionhawk.ams.bean.security.UserSearchParams;
 import com.precisionhawk.ams.service.AbstractSecurityService;
 import com.precisionhawk.ams.config.ClientConfig;
+import com.precisionhawk.ams.config.SecurityConfig;
 import com.precisionhawk.ams.config.TenantConfig;
 import com.precisionhawk.ams.dao.DaoException;
 import com.precisionhawk.ams.dao.SecurityDao;
@@ -35,7 +36,6 @@ import com.precisionhawk.ams.security.AccessTokenProvider;
 import com.precisionhawk.ams.security.Constants;
 import com.precisionhawk.ams.support.jackson.ObjectMapperFactory;
 import com.precisionhawk.ams.util.RegexUtils;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ import org.papernapkin.liana.util.StringUtil;
  * @author <a href="mailto:pchapman@pcsw.us">Philip A. Chapman</a>
  */
 @Named
-public abstract class OAuthSecurityService extends AbstractSecurityService {
+public final class OAuthSecurityService extends AbstractSecurityService {
     
     private static final String CLAIM_AUDIENCE = "aud";
     private static final String CLAIM_EMAIL = "email";
@@ -75,9 +75,12 @@ public abstract class OAuthSecurityService extends AbstractSecurityService {
     @Inject
     protected SecurityDao dao;
     
+    private final Map<String, OAuthAuthenticationProvider> authProviders = new HashMap();
     private final Map<String, GroupsProvider> groupsProviders = new HashMap();
+   
+    private final ObjectMapper MAPPER = ObjectMapperFactory.getObjectMapper();
     
-    protected final ObjectMapper MAPPER;
+    private JWKSource jwkSource;
     
     private List<SiteProvider> siteDaos;
     public List<SiteProvider> getSiteProviders() {
@@ -95,10 +98,45 @@ public abstract class OAuthSecurityService extends AbstractSecurityService {
         this.tokenCache = cache;
     }
     
-    protected abstract JWKSource getKeySource() throws IOException;
-    
-    public OAuthSecurityService() {
-        MAPPER = ObjectMapperFactory.getObjectMapper();
+    @Override
+    public void configure(SecurityDao securityDao, List<SiteProvider> siteDaos, SecurityTokenCache tokenCache, SecurityConfig config) {
+        setSecurityConfig(config);
+        setSiteProviders(siteDaos);
+        setTokenCache(tokenCache);
+        
+        OAuthAuthenticationProvider a;
+        Class<OAuthAuthenticationProvider> authClazz;
+        GroupsProvider g;
+        Class<? extends GroupsProvider> groupClazz;
+        DelegatingJWKSource djwks = new DelegatingJWKSource();
+        
+        for (TenantConfig tcfg : getSecurityConfig().getTenantConfigurations().values()) {
+            try {
+                authClazz = (Class<OAuthAuthenticationProvider>)getClass().getClassLoader().loadClass(tcfg.getAuthProvider());
+                a = authClazz.newInstance();
+                a.configure(tcfg);
+                djwks.add(a.getKeySource());
+                authProviders.put(tcfg.getTenantId(), a);
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException ex) {
+                throw new IllegalArgumentException(String.format("Invalid authentication provider %s for tenant %s: %s", tcfg.getAuthProvider(), tcfg.getTenantId(), ex.getLocalizedMessage()));
+            } catch (MalformedURLException ex) {
+                throw new RuntimeException(String.format("Unable to configure the authentication provider for tenant %s: %s", tcfg.getTenantId(), ex.getLocalizedMessage()));
+            }
+            
+            try {
+                groupClazz = (Class<? extends GroupsProvider>) getClass().getClassLoader().loadClass(tcfg.getGroupProvider());
+                g = groupClazz.newInstance();
+                g.setDao(dao);
+                g.setMapper(MAPPER);
+                g.setMaxRetries(tcfg.getMaxRetries());
+                g.configure(tcfg);
+                groupsProviders.put(tcfg.getApiId(), g);
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+                throw new IllegalArgumentException(String.format("Invalid groups provider %s for tenant %s: %s", tcfg.getGroupProvider(), tcfg.getTenantId(), ex.getLocalizedMessage()));
+            }
+        }
+        
+        this.jwkSource = djwks;
     }
 
     @Override
@@ -127,7 +165,7 @@ public abstract class OAuthSecurityService extends AbstractSecurityService {
 
             // Configure the JWT processor with a key selector to feed matching public
             // RSA keys sourced from the JWK set URL
-            JWSKeySelector keySelector = new JWSVerificationKeySelector(expectedJWSAlg, getKeySource());
+            JWSKeySelector keySelector = new JWSVerificationKeySelector(expectedJWSAlg, jwkSource);
             jwtProcessor.setJWSKeySelector(keySelector);
 
             // Process the token
@@ -153,17 +191,6 @@ public abstract class OAuthSecurityService extends AbstractSecurityService {
             bean.setReason(ex.getLocalizedMessage());
             tokenCache.store(bean);
             return bean;
-        } catch (IOException ex) {
-            LOGGER.debug("Error validating access token: {}", ex);
-            if (bean == null) {
-                bean = new ServicesSessionBean();
-                bean.setWindAMSAPIAccessToken(bearerToken);
-            }
-            //TODO: Treat significantly different?
-            bean.setTokenValid(false);
-            bean.setReason(ex.getLocalizedMessage());
-            tokenCache.store(bean);
-            return bean;
         }
     }
     
@@ -173,138 +200,68 @@ public abstract class OAuthSecurityService extends AbstractSecurityService {
      * @return The session bean.
      */
     private ServicesSessionBean createServicesSessionBean(JWTClaimsSet claimsSet) {
-        ServicesSessionBean bean = new ServicesSessionBean();
-        String audience = claimsSet.getClaim(CLAIM_AUDIENCE).toString();
-        String tenantId = claimsSet.getClaim(CLAIM_TENANT_ID).toString();
-        TenantConfig tcfg = config.getTenantConfigurations().get(tenantId);
-        if (tcfg == null) {
-            String msg = String.format("Unknown tenant ID: %s", tenantId);
-            LOGGER.error(msg);
-            throw new SecurityException(msg);
-        }
-        if (!audience.contains(tcfg.getClientId())) {
-            LOGGER.error("The provided token is not intended for this application.  Declaired audience: {}", audience);
-            throw new SecurityException("The provided token is not intended for this application.");
-        }
-        bean.setTenantId(tenantId);
-        bean.setTokenValid(true);
-
-        // Determine if we have a User on-behalf-of or a service-to-service
-        if (CLAIM_VAL_USER_IMPERSONATION.equals(claimsSet.getClaim(CLAIM_SCP))) {
-            // User on-behalf-of
-            createExtUserCredentials(tcfg, claimsSet, bean);
-        } else {
-            // Treat it like a service-to-service
-            createAppCredentials(claimsSet, bean);
+        ServicesSessionBean bean = null;
+        for (OAuthAuthenticationProvider p : authProviders.values()) {
+            bean = p.createServicesSessionBean(claimsSet);
+            if (bean != null) {
+                if (bean.getCredentials() instanceof ExtUserCredentials) {
+                    processExtUserCredentials(claimsSet, bean);
+                } else if (bean.getCredentials() instanceof AppCredentials) {
+                    processAppCredentials(claimsSet, bean);
+                } else {
+                    String s = String.format("Missing or unknown credentials object %s", bean.getCredentials() == null ? "null" : bean.getCredentials().getClass().getName());
+                    LOGGER.error(s);
+                    bean.setTokenValid(false);
+                    bean.setReason(s);
+                    return bean;
+                }
+            }
         }
         return bean;
     }
     
-    /**
-     * Create a session bean based on server to server communication.
-     * @param claimsSet The claims set of the connecting service.
-     * @return The session bean.
-     */
-    private void createAppCredentials(JWTClaimsSet claimsSet, ServicesSessionBean bean) {
-        String clientAppID = StringUtil.nullableToString(claimsSet.getClaim("appid"));
-        if (clientAppID == null) {
+    private void processAppCredentials(JWTClaimsSet claimsSet, ServicesSessionBean bean) {
+        AppCredentials creds =(AppCredentials)bean.getCredentials();
+        ClientConfig cconfig = config.getClientConfigurations().get(creds.getApplicationId());
+        if (cconfig == null) {
             bean.setTokenValid(false);
-            bean.setReason("Invalid token, not a user on-behalf of token or a valid service-to-service token.");
+            bean.setReason(String.format("Unreconized client application %s", creds.getApplicationId()));
         } else {
-            ClientConfig cconfig = config.getClientConfigurations().get(clientAppID);
-            if (cconfig == null) {
-                bean.setTokenValid(false);
-                bean.setReason(String.format("Service-to-service token from an unknown source with app ID %s.", clientAppID));
-            } else {
-                AppCredentials creds = new AppCredentials();
-                List<Organization> orgs = new LinkedList<>();
-                creds.setApplicationId(clientAppID);
-                orgs.add(dao.selectOrganizationById(cconfig.getOrganizationId()));
-                List<Site> sites = new ArrayList<>();
-                try {
-                    if (Constants.COMPANY_ORG_KEY.equals(orgs.get(0).getKey())) {
-                        for (SiteProvider p : siteDaos) {
-                            sites.addAll( p.retrieveAllSites());
-                        }
-                    } else {
-                        SiteSearchParams params = new SiteSearchParams();
-                        params.setOrganizationId(cconfig.getOrganizationId());
+            List<Organization> orgs = new LinkedList<>();
+            orgs.add(dao.selectOrganizationById(cconfig.getOrganizationId()));
+            creds.setOrganizations(orgs);
+            List<Site> sites = new ArrayList<>();
+            try {
+                if (Constants.COMPANY_ORG_KEY.equals(orgs.get(0).getKey())) {
+                    for (SiteProvider p : siteDaos) {
+                        sites.addAll( p.retrieveAllSites());
+                    }
+                } else {
+                    SiteSearchParams params = new SiteSearchParams();
+                    for (Organization org : orgs) {
+                        params.setOrganizationId(org.getId());
                         for (SiteProvider p : siteDaos) {
                             sites.addAll(p.retrieve(params));
                         }
                     }
-                } catch (DaoException ex) {
-                    LOGGER.error("Error loading approved sites for clientId {}, org {}", clientAppID, cconfig.getOrganizationId(), ex);
-                    throw new InternalServerErrorException("Error loading approved sites", ex);
                 }
-                for (Site s : sites) {
-                    creds.getSiteIDs().add(s.getId());
-                }
-                creds.setOrganizations(orgs);
-                bean.setCredentials(creds);
+            } catch (DaoException ex) {
+                LOGGER.error("Error loading approved sites for clientId {}, orgs {}", creds.getApplicationId(), orgs.toString(), ex);
+                throw new InternalServerErrorException("Error loading approved sites", ex);
+            }
+            for (Site s : sites) {
+                creds.getSiteIDs().add(s.getId());
             }
         }
     }
     
-    /**
-     * Create a session bean based on user to server (on-behalf-of) communication.
-     * @param claimsSet The claims set of the connecting user.
-     * @return The session bean.
-     */
-    private void createExtUserCredentials(TenantConfig tcfg, JWTClaimsSet claimsSet, ServicesSessionBean bean) {
-        ExtUserCredentials creds = new ExtUserCredentials();
-        creds.setFirstName(StringUtil.notNull(claimsSet.getClaim(CLAIM_GIVEN_NAME)));
-        creds.setLastName(StringUtil.notNull(claimsSet.getClaim(CLAIM_FAMILY_NAME)));
-        creds.setUserId(claimsSet.getClaim(CLAIM_OBJECT_ID).toString());
-        if (claimsSet.getClaims().containsKey(CLAIM_EMAIL)) {
-            // External users are likely to have email address set in this claim
-            String s = claimsSet.getClaim(CLAIM_EMAIL).toString();
-            if (s.matches(RegexUtils.EMAIL_REGEX)) {
-                creds.setEmailAddress(s.toLowerCase());
-            }
-        } else if (claimsSet.getClaim(CLAIM_UNIQUE_NAME).toString().matches(RegexUtils.EMAIL_REGEX)) {
-            creds.setEmailAddress(claimsSet.getClaim(CLAIM_UNIQUE_NAME).toString().toLowerCase());
-        }
-        bean.setCredentials(creds);
-
-        GroupsProvider provider = loadGroupsProvider(tcfg);
-        if (provider == null) {
-            throw new SecurityException(String.format("Error loading AAD Groups Provider %s", tcfg.getGroupProvider()));
-        }
-        Set<String> aadGroupIDs = provider.loadGroupIDs(accessTokenProvider(tcfg.getTenantId()), bean, claimsSet);
+    private void processExtUserCredentials(JWTClaimsSet claimsSet, ServicesSessionBean bean) {
+        GroupsProvider provider = groupsProviders.get(bean.getTenantId());
+        Set<String> groupIDs = provider.loadGroupIDs(accessTokenProvider(bean.getTenantId()), bean, claimsSet);
         // Do final load of permissions
-        loadUserPermissions(tcfg, bean, aadGroupIDs);
+        loadUserPermissions(bean, groupIDs);
         // Cache user info
-        cacheUserInfo(tcfg, creds);
-    }
-    
-    /**
-     * Load the GroupsProvider associated with the given OAuth tenant.
-     * @param tcfg The configuration object associated with the tenant.
-     * @return The provider.
-     */
-    private GroupsProvider loadGroupsProvider(TenantConfig tcfg) {
-        GroupsProvider provider;
-        Exception ex = null;
-        synchronized (groupsProviders) {
-            provider = groupsProviders.get(tcfg.getGroupProvider());
-            if (provider == null) {
-                try {
-                    Class<? extends GroupsProvider> clazz = (Class<? extends GroupsProvider>) getClass().getClassLoader().loadClass(tcfg.getGroupProvider());
-                    provider = clazz.newInstance();
-                    provider.setDao(dao);
-                    provider.setMapper(MAPPER);
-                    provider.setMaxRetries(config.getMaxRetries());
-                    groupsProviders.put(tcfg.getGroupProvider(), provider);
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                    ex = e;
-                }
-            }
-        }
-        if (ex != null) {
-            LOGGER.error("Unable to load the AADGroupProvider {}", tcfg.getGroupProvider(), ex);
-        }
-        return provider;
+        cacheUserInfo(config.getTenantConfigurations().get(bean.getTenantId()), (ExtUserCredentials)bean.getCredentials());
     }
     
     /**
@@ -316,9 +273,10 @@ public abstract class OAuthSecurityService extends AbstractSecurityService {
      * @param groupIDs The groups or roles associated with the user.
      * @throws SecurityException Indicates an error loading permissions.
      */
-    private void loadUserPermissions(TenantConfig tcfg, ServicesSessionBean bean, Set<String> groupIDs)
+    private void loadUserPermissions(ServicesSessionBean bean, Set<String> groupIDs)
         throws SecurityException
     {
+        TenantConfig tcfg = config.getTenantConfigurations().get(bean.getTenantId());
         ExtUserCredentials creds = (ExtUserCredentials)bean.getCredentials();
         LOGGER.debug("Authenticating against tenant {}", tcfg.getTenantName());
         
@@ -488,7 +446,7 @@ public abstract class OAuthSecurityService extends AbstractSecurityService {
         }
         for (String tenantId : tenantsToTry) {
             parameters.setTenantId(tenantId);
-            CachedUserInfo info = queryForUserInfo(parameters);
+            CachedUserInfo info = authProviders.get(tenantId).queryForUserInfo(parameters);
             if (info != null) {
                 if (userInfo == null && parameters.getUserId() == null) {
                     // It may be possible that the user existed, but didn't have
@@ -514,14 +472,6 @@ public abstract class OAuthSecurityService extends AbstractSecurityService {
         }
         return null;
     }
-    
-    /**
-     * Queries the authentication authority for user information.
-     * @param parameters The parameters to search for.
-     * @return The information of the user which matches the parameters or null if
-     * no matches were found.
-     */
-    protected abstract CachedUserInfo queryForUserInfo(UserSearchParams parameters);
 
     /**
      * Caches user info for later use.
@@ -537,7 +487,7 @@ public abstract class OAuthSecurityService extends AbstractSecurityService {
             CachedUserInfo info = CachedUserInfo.fromUserInfo(creds, null);
             info.setTenantId(tcfg.getTenantId());
             // If we don't have all the user's complete info do not set last
-            // updated timestamp so that it can be retrieved from Graph later.
+            // updated timestamp so that it can be retrieved from the provider later.
             if (info.testHasMininumInfo()) {
                 info.setLastUpdated(System.currentTimeMillis());
             } 

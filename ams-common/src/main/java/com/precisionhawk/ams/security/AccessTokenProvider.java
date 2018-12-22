@@ -10,6 +10,8 @@ import java.io.IOException;
  */
 public interface AccessTokenProvider {
     
+    void configure(AccessTokenProviderConfig config);
+    
     /**
      * Returns an access token for the indicated resource.
      * @param resource The resource to request a token for.

@@ -4,11 +4,13 @@
 
 package com.precisionhawk.ams.webservices.client.spring;
 
+import com.precisionhawk.ams.security.AccessTokenProviderConfig;
+
 /**
  *
  * @author <a href="mailto:pchapman@pcsw.us">Philip A. Chapman</a>
  */
-public class EnvironmentConfig {
+public class EnvironmentConfig implements AccessTokenProviderConfig {
     
     private String accessTokenProvider;
     public String getAccessTokenProvider() {
@@ -35,6 +37,7 @@ public class EnvironmentConfig {
     }
     
     private String clientId;
+    @Override
     public String getClientId() {
         return clientId;
     }
@@ -43,6 +46,7 @@ public class EnvironmentConfig {
     }
 
     private String clientSecret;
+    @Override
     public String getClientSecret() {
         return clientSecret;
     }
@@ -51,6 +55,7 @@ public class EnvironmentConfig {
     }
     
     private String tenantId;
+    @Override
     public String getTenantId() {
         return tenantId;
     }

@@ -6,6 +6,7 @@ package com.precisionhawk.ams.webservices.client.spring;
 
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.precisionhawk.ams.security.AADAccessTokenProvider;
+import com.precisionhawk.ams.security.AccessTokenProvider;
 import com.precisionhawk.ams.security.Auth0AccessTokenProvider;
 import com.precisionhawk.ams.security.NoOppAccessTokenProvider;
 import com.precisionhawk.ams.webservices.client.Environment;
@@ -82,22 +83,13 @@ public class EnvironmentsFactory
         environments = new LinkedList<>();
         for (EnvironmentConfig config : configs) {
             Environment env = new Environment();
-            if (Auth0AccessTokenProvider.class.getName().equals(config.getAccessTokenProvider())) {
-                Auth0AccessTokenProvider provider = new Auth0AccessTokenProvider();
-                provider.setClientId(config.getClientId());
-                provider.setClientSecret(config.getClientSecret());
-                provider.setTenantId(config.getTenantId());
-                env.setAccessTokenProvider(provider);
-            } else if (AADAccessTokenProvider.class.getName().equals(config.getAccessTokenProvider())) {
-                AADAccessTokenProvider provider = new AADAccessTokenProvider();
-                provider.setClientId(config.getClientId());
-                provider.setClientSecret(config.getClientSecret());
-                provider.setTenantId(config.getTenantId());
-                env.setAccessTokenProvider(provider);
-            } else if (NoOppAccessTokenProvider.class.getName().equals(config.getAccessTokenProvider())) {
-                env.setAccessTokenProvider(new NoOppAccessTokenProvider());
-            } else {
+            Class<AccessTokenProvider> implClazz = (Class<AccessTokenProvider>)getClass().getClassLoader().loadClass(config.getAccessTokenProvider());
+            if (implClazz == null) {
                 throw new IllegalArgumentException(String.format("Invalid access provider \"%s\".", config.getAccessTokenProvider()));
+            } else {
+                AccessTokenProvider p = implClazz.newInstance();
+                p.configure(config);
+                env.setAccessTokenProvider(p);
             }
             env.setName(config.getName());
             env.setServiceAppId(config.getServiceAppId());

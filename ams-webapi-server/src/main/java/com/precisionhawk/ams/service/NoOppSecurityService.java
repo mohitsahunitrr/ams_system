@@ -9,6 +9,8 @@ import com.precisionhawk.ams.bean.security.CachedUserInfo;
 import com.precisionhawk.ams.bean.security.ServicesSessionBean;
 import com.precisionhawk.ams.bean.security.UserInfoBean;
 import com.precisionhawk.ams.bean.security.UserSearchParams;
+import com.precisionhawk.ams.cache.SecurityTokenCache;
+import com.precisionhawk.ams.config.SecurityConfig;
 import com.precisionhawk.ams.dao.DaoException;
 import com.precisionhawk.ams.dao.SecurityDao;
 import com.precisionhawk.ams.dao.SiteProvider;
@@ -27,6 +29,8 @@ import javax.ws.rs.InternalServerErrorException;
  */
 public class NoOppSecurityService extends AbstractSecurityService {
     
+    private final AccessTokenProvider tokenProvider = new NoOppAccessTokenProvider();
+    
     private SecurityDao securityDao;
     private List<SiteProvider> siteDaos;
 
@@ -44,9 +48,14 @@ public class NoOppSecurityService extends AbstractSecurityService {
 
     public void setSiteProviders(List<SiteProvider> providers) {
         this.siteDaos = providers;
+    }    
+
+    @Override
+    public void configure(SecurityDao securityDao, List<SiteProvider> siteDaos, SecurityTokenCache tokenCache, SecurityConfig config) {
+        setSecurityConfig(config);
+        setSecurityDao(securityDao);
+        setSiteProviders(siteDaos);
     }
-    
-    
 
     @Override
     public UserInfoBean queryUserInfo(UserSearchParams parameters) {
@@ -77,8 +86,6 @@ public class NoOppSecurityService extends AbstractSecurityService {
         sess.setTokenValid(true);
         return sess;
     }
-    
-    private final AccessTokenProvider tokenProvider = new NoOppAccessTokenProvider();
 
     @Override
     public AccessTokenProvider accessTokenProvider(String tenantId) {

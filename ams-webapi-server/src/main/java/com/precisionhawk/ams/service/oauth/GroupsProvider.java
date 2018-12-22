@@ -6,6 +6,7 @@ package com.precisionhawk.ams.service.oauth;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.precisionhawk.ams.bean.security.ServicesSessionBean;
+import com.precisionhawk.ams.config.TenantConfig;
 import com.precisionhawk.ams.dao.SecurityDao;
 import com.precisionhawk.ams.security.AccessTokenProvider;
 import java.util.Set;
@@ -46,6 +47,12 @@ public abstract class GroupsProvider {
     public void setMaxRetries(int maxRetries) {
         this.maxRetries = maxRetries;
     }
+    
+    /**
+     * A configuration methed that can be overridden if necessary.
+     * @param config 
+     */
+    public void configure(TenantConfig config) {}
     
     /**
      * Queries Azure Active Directory for group memberships and returns them.

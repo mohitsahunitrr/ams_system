@@ -14,20 +14,19 @@ public interface SecurityConfig {
     
     String getSecurityImplementation();
     
-    Integer getMaxRetries();
-    
     Long getUserInfoCacheTime();
 
     /**
-     * Configurations for this service within Azure as a registered application mapped
-     * by tenant ID.  The application can be registered with multiple Azure tenants
-     * allowing for authentication against each of them.
+     * Configurations for this service within OAuth as a registered application mapped
+     * by tenant ID.  The application can be registered with multiple OAuth tenants
+     * allowing for authentication against each of them, provided they are all against
+     * similar services.
      */
     Map<String, TenantConfig> getTenantConfigurations();
     
     /**
      * Configurations for clients which may programmatically access these services mapped
-     * by Azure Client ID.  This allows for server-to-server communication.
+     * by OAuth Client ID.  This allows for server-to-server communication.
      */
     Map<String, ClientConfig> getClientConfigurations();
 }

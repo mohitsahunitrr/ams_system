@@ -43,6 +43,14 @@ public class ClientConfig {
     public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
     }
+    
+    private String tenantId;
+    public String getTenantId() {
+        return tenantId;
+    }
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
 
     @Override
     public int hashCode() {

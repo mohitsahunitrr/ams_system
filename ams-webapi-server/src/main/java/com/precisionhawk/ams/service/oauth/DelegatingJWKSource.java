@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * A JWKSource which gathers JWK from other sources and includes them in a larger
+ * list.
  *
  * @author pchapman
  */

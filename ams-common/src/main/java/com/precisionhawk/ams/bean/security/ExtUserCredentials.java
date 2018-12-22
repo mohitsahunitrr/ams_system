@@ -39,4 +39,18 @@ public class ExtUserCredentials extends UserCredentials
         setUserId(source.getUserId());
         this.sitesByOrganization = sitesByOrganization;
     }
+    
+    public void populate(UserInfo userInfo) {
+        setEmailAddress(userInfo.getEmailAddress());
+        setFirstName(userInfo.getFirstName());
+        setLastName(userInfo.getLastName());
+        setMiddleName(userInfo.getMiddleName());
+        setUserId(userInfo.getUserId());
+    }
+    
+    public void populate(UserInfoBean userInfo) {
+        populate((UserInfo)userInfo);
+        setEmailNickname(userInfo.getEmailNickname());
+        setTenantId(userInfo.getTenantId());
+    }
 }

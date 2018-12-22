@@ -12,12 +12,15 @@ package com.precisionhawk.ams.config;
 public class TenantConfig {
     
     private String apiId;
+    private String authProvider;
     private String clientId;
     private String groupProvider;
+    private Integer maxRetries;
     private String organizationId;
     private String passwordKey;
     private String tenantId;
     private String tenantName;
+    private String userManagementResource;
 
     /** The unique ID of the application's registration within the OAuth tenant as an API. */
     public String getApiId() {
@@ -26,6 +29,13 @@ public class TenantConfig {
     /** The unique ID of the application's registration within the OAuth tenant as an API. */
     public void setApiId(String apiId) {
         this.apiId = apiId;
+    }
+
+    public String getAuthProvider() {
+        return authProvider;
+    }
+    public void setAuthProvider(String authProvider) {
+        this.authProvider = authProvider;
     }
 
     /** The unique ID of the application's registration within the OAuth tenant as a client. */
@@ -44,6 +54,13 @@ public class TenantConfig {
     /** The class of the provider to provide group assignments for authenticated users. */
     public void setGroupProvider(String groupProvider) {
         this.groupProvider = groupProvider;
+    }
+
+    public Integer getMaxRetries() {
+        return maxRetries;
+    }
+    public void setMaxRetries(Integer maxRetries) {
+        this.maxRetries = maxRetries;
     }
 
     /** The organization to which users of this tenant should be associated.  May be null. */
@@ -81,4 +98,11 @@ public class TenantConfig {
     public void setTenantName(String tenantName) {
         this.tenantName = tenantName;
     }
+    
+    public String getUserManagementResource() {
+        return userManagementResource;
+    }
+    public void setUserManagementResource(String userManagementResource) {
+        this.userManagementResource = userManagementResource;
+    }    
 }

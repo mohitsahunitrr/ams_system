@@ -46,8 +46,6 @@ public class CachedUserInfo extends UserInfoBean {
         return
             getEmailAddress() != null && (!getEmailAddress().isEmpty())
             &&
-            getEmailNickname()!= null && (!getEmailNickname().isEmpty())
-            &&
             getFirstName() != null && (!getFirstName().isEmpty())
             &&
             getLastName() != null && (!getLastName().isEmpty())
