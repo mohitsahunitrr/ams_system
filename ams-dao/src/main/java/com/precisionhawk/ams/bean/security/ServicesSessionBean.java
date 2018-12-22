@@ -4,6 +4,9 @@
 
 package com.precisionhawk.ams.bean.security;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  * @author <a href="mailto:pchapman@pcsw.us">Philip A. Chapman</a>
@@ -15,15 +18,20 @@ public class ServicesSessionBean {
     private String reason;
     private String tenantId;
     private boolean tokenValid;
-    private String appData;
+    private Map<String, Object> appData = new HashMap<>();
 
-    public String getAppData() {
-        if (appData == null) {
-            return "{}";
-        }
+    /**
+     * A map which holds misc application data about the user or session.
+     * @return The map of data.
+     */
+    public Map<String, Object> getAppData() {
         return appData;
     }
-    public void setAppData(String appData) {
+    /**
+     * A map which holds misc application data about the user or session.
+     * @param appData The map of data.
+     */
+    public void setAppData(Map<String, Object> appData) {
         this.appData = appData;
     }
 

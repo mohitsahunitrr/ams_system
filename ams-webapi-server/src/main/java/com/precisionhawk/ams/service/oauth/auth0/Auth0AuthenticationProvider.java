@@ -27,6 +27,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author pchapman
  */
-public class Auth0AuthenticationProvider implements OAuthAuthenticationProvider {
+public final class Auth0AuthenticationProvider implements OAuthAuthenticationProvider {
     
     private static final String CLAIM_GRANT_TYPE = "gty";
     private static final String GRANT_TYPE_CLIENT_CREDS = "client-credentials";
@@ -81,13 +82,14 @@ public class Auth0AuthenticationProvider implements OAuthAuthenticationProvider 
             throw new IllegalArgumentException("Tenant ID does not match.");
         }
         if (parameters.getUserId() != null && !parameters.getUserId().isEmpty()) {
-            return queryUserInfo(parameters.getUserId());
+            UserData ud = queryUserInfo(parameters.getUserId());
+            return ud == null ? null : ud.userInfo;
         } else if (parameters.getEmailAddress() != null || !parameters.getEmailAddress().isEmpty()) {
-            List<CachedUserInfo> list = queryUsersInfo(parameters);
+            List<UserData> list = queryUsersInfo(parameters);
             if (list.isEmpty()) {
                 return null;
             } else if (list.size() == 1) {
-                return list.get(0);
+                return list.get(0).userInfo;
             } else {
                 LOGGER.error("Returned too many results for parameters: {}", parameters);
                 return null;
@@ -97,7 +99,7 @@ public class Auth0AuthenticationProvider implements OAuthAuthenticationProvider 
         }
     }
     
-    protected CachedUserInfo queryUserInfo(String userId) {
+    private UserData queryUserInfo(String userId) {
         String accessToken = null;
         try {
             accessToken = accessTokenProvider.obtainAccessToken(config.getUserManagementResource());
@@ -128,7 +130,7 @@ public class Auth0AuthenticationProvider implements OAuthAuthenticationProvider 
                 LOGGER.debug("User Results: {}", respText);
                 Map<String, Object> data = MAPPER.readValue(respText, new TypeReference<Map<String, Object>>(){});
                 UserData udata = userInfoFromData(data);
-                return udata == null ? null : udata.userInfo;
+                return udata;
             } catch (IOException ex) {
                 if (ex instanceof HttpResponseException) {
                     HttpResponseException re = (HttpResponseException)ex;
@@ -171,16 +173,15 @@ public class Auth0AuthenticationProvider implements OAuthAuthenticationProvider 
         UserData userData = new UserData();
         CachedUserInfo info = new CachedUserInfo();
         userData.userInfo = info;
-        String appDataString = null;
+        // data is the result of parsing JSON into a Map.  Internal objects, such
+        // as app_metadata should also be maps of objects keyed by strings.
         Object appData = data.get(USER_INFO_APP_METADATA);
-        if (appData != null) {
-            try {
-                appDataString = MAPPER.writeValueAsString(appData);
-            } catch (IOException ioe) {
-                LOGGER.error("Error converting app data into JSON", ioe);
-            }
+        if (appData instanceof Map) {
+            userData.appData = (Map<String, Object>)appData;
+        } else {
+            LOGGER.error("Error parsing app data as string value map: %s", appData);
         }
-        userData.appData = appDataString == null ? "{}" : appDataString;
+        userData.appData = new HashMap<>();
         info.setTenantId(config.getTenantId());
         info.setFirstName(StringUtil.notNull(data.get(USER_INFO_GIVEN_NAME)));
         String emailAddress = StringUtil.notNull(data.get(USER_INFO_EMAIL));
@@ -194,7 +195,7 @@ public class Auth0AuthenticationProvider implements OAuthAuthenticationProvider 
     }
     
     private class UserData {
-        String appData;
+        Map<String, Object> appData = new HashMap<>();
         CachedUserInfo userInfo;
     }
 
@@ -206,7 +207,7 @@ public class Auth0AuthenticationProvider implements OAuthAuthenticationProvider 
      * @param parameters The parameters to query for users by.
      * @return A list of matches.
      */
-    protected List<CachedUserInfo> queryUsersInfo(UserSearchParams parameters) {
+    private List<UserData> queryUsersInfo(UserSearchParams parameters) {
         if (parameters.getTenantId() == null || parameters.getTenantId().isEmpty()) {
             throw new IllegalArgumentException("Tenant ID is required.");
         }
@@ -244,9 +245,9 @@ public class Auth0AuthenticationProvider implements OAuthAuthenticationProvider 
                     String respText = HttpTransportClient.loadContent(resp);
                     LOGGER.debug("User Results: {}", respText);
                     List<Map<String, Object>> data = MAPPER.readValue(respText, new TypeReference<List<Map<String, Object>>>(){});
-                    List<CachedUserInfo> list = new LinkedList<>();
+                    List<UserData> list = new LinkedList<>();
                     for (Map<String, Object> userData : data) {
-                        list.add(userInfoFromData(userData).userInfo);
+                        list.add(userInfoFromData(userData));
                     }
                     return list;
                 } catch (IOException ex) {
@@ -346,12 +347,13 @@ public class Auth0AuthenticationProvider implements OAuthAuthenticationProvider 
         } else {
             // Auth0 claims do not have any identifying information except the subscriber's ID.
             // Calls must be made to the service to get profile information.
-            CachedUserInfo userInfo = queryUserInfo(creds.getUserId());
-            if (userInfo == null) {
+            UserData userData = queryUserInfo(creds.getUserId());
+            if (userData == null) {
                 bean.setTokenValid(false);
                 bean.setReason(String.format("Invalid user ID %s", creds.getUserId()));
             } else {
-                creds.populate(userInfo);
+                creds.populate(userData.userInfo);
+                bean.setAppData(userData.appData);
                 bean.setCredentials(creds);
             }
         }
