@@ -81,6 +81,11 @@ public final class AADAuthenticationProvider implements OAuthAuthenticationProvi
         accessTokenProvider = p;
         keySource = new RemoteJWKSet(new URL("https://login.windows.net/common/discovery/keys"));
     }
+    
+    @Override
+    public AccessTokenProvider getAccessTokenProvider() {
+        return accessTokenProvider;
+    }
 
     @Override
     public TenantConfig getTenantConfig() {

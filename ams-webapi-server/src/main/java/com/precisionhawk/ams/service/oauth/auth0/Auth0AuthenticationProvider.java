@@ -65,6 +65,11 @@ public final class Auth0AuthenticationProvider implements OAuthAuthenticationPro
         accessTokenProvider = p;
         keySource = new RemoteJWKSet(new URL(String.format("https://%s/.well-known/jwks.json", config.getTenantId())));
     }
+    
+    @Override
+    public AccessTokenProvider getAccessTokenProvider() {
+        return accessTokenProvider;
+    }
 
     @Override
     public TenantConfig getTenantConfig() {
@@ -180,8 +185,8 @@ public final class Auth0AuthenticationProvider implements OAuthAuthenticationPro
             userData.appData = (Map<String, Object>)appData;
         } else {
             LOGGER.error("Error parsing app data as string value map: %s", appData);
+            userData.appData = new HashMap<>();
         }
-        userData.appData = new HashMap<>();
         info.setTenantId(config.getTenantId());
         info.setFirstName(StringUtil.notNull(data.get(USER_INFO_GIVEN_NAME)));
         String emailAddress = StringUtil.notNull(data.get(USER_INFO_EMAIL));

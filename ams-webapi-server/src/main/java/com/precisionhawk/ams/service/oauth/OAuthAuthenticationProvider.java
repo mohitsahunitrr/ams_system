@@ -6,6 +6,7 @@ import com.precisionhawk.ams.bean.security.CachedUserInfo;
 import com.precisionhawk.ams.bean.security.ServicesSessionBean;
 import com.precisionhawk.ams.bean.security.UserSearchParams;
 import com.precisionhawk.ams.config.TenantConfig;
+import com.precisionhawk.ams.security.AccessTokenProvider;
 import java.net.MalformedURLException;
 
 /**
@@ -43,6 +44,8 @@ public interface OAuthAuthenticationProvider {
      * no matches were found.
      */
     CachedUserInfo queryForUserInfo(UserSearchParams parameters);
+    
+    AccessTokenProvider getAccessTokenProvider();
     
 //    /**
 //     * Query for the information of a user that matches the given parameters.

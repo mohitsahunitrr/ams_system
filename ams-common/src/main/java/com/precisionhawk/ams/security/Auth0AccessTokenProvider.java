@@ -32,7 +32,8 @@ public final class Auth0AccessTokenProvider extends OAuthAccessTokenProvider {
             parameters.add(new BasicNameValuePair("client_secret", getClientSecret()));
             parameters.add(new BasicNameValuePair("audience", resource));
             httpclient = HttpClients.createDefault();
-            HttpPost httpOp = new HttpPost(String.format("https://%s/oauth/token", getTenantId())); // TenantID is the domain, such as precisionhawk.auth0.com
+            String url = String.format("https://%s/oauth/token", getTenantId());
+            HttpPost httpOp = new HttpPost(url); // TenantID is the domain, such as precisionhawk.auth0.com
             httpOp.addHeader("Accept", "application/json");
             httpOp.setEntity(new UrlEncodedFormEntity(parameters));
             response = httpclient.execute(httpOp);
@@ -40,6 +41,10 @@ public final class Auth0AccessTokenProvider extends OAuthAccessTokenProvider {
                 String rawJSON = HttpClientUtil.consumeEntity(response.getEntity());
                 return MAPPER.readValue(rawJSON, AccessTokenResponse.class);
             } else {
+                LOGGER.error("client_id: {}" , getClientId());
+                LOGGER.error("audience: {}", resource);
+                LOGGER.error("grant_type: {}", "client_credentials");
+                LOGGER.error("URL: {}", url);
                 throw new IOException(String.format("Error obtaining access token, got status: %d, resonse: %s", response.getStatusLine().getStatusCode(), HttpClientUtil.consumeEntity(response.getEntity())));
             }
         } finally {

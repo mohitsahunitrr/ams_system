@@ -35,7 +35,6 @@ import com.precisionhawk.ams.domain.Site;
 import com.precisionhawk.ams.security.AccessTokenProvider;
 import com.precisionhawk.ams.security.Constants;
 import com.precisionhawk.ams.support.jackson.ObjectMapperFactory;
-import com.precisionhawk.ams.util.RegexUtils;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -50,7 +49,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.InternalServerErrorException;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.papernapkin.liana.util.StringUtil;
 
 /**
  * The class responsible for applying security rules and setting up the session
@@ -504,6 +502,11 @@ public final class OAuthSecurityService extends AbstractSecurityService {
 
     @Override
     public AccessTokenProvider accessTokenProvider(String tenantId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        OAuthAuthenticationProvider p = authProviders.get(tenantId);
+        if (p == null) {
+            return null;
+        } else {
+            return p.getAccessTokenProvider();
+        }
     }
 }

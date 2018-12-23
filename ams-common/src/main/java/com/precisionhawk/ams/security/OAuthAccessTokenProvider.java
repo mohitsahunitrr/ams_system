@@ -71,9 +71,9 @@ public abstract class OAuthAccessTokenProvider implements AccessTokenProvider {
         synchronized (tokenCache) {
             resp = tokenCache.get(resource);
         }
+        long nowTime = System.currentTimeMillis() / 1000; // Convert milliseconds to seconds
         // If the Cert doesn't exist, has expired or will expire in the next BUFFER_TIME seconds get a new one.
         if (resp != null) {
-            long nowTime = System.currentTimeMillis() / 1000; // Convert milliseconds to seconds
             LOGGER.debug(
                 "Found token for resource {}\tExpire time: {}\tCurrent Time: {}",
                 resource, resp.getExpiresOn(), nowTime
@@ -85,6 +85,9 @@ public abstract class OAuthAccessTokenProvider implements AccessTokenProvider {
         }
         if (resp == null) {
             resp = queryAccessToken(resource);
+            if (resp.getExpiresOn() == null) {
+                resp.setExpiresOn(nowTime + resp.getExpiresIn());
+            }
             synchronized (tokenCache) {
                 tokenCache.put(resource, resp);
             }
