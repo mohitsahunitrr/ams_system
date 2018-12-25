@@ -4,10 +4,10 @@
 
 package com.precisionhawk.ams.service.oauth.aad;
 
-import com.precisionhawk.ams.service.oauth.GroupsProvider;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.precisionhawk.ams.bean.security.ServicesSessionBean;
 import com.precisionhawk.ams.security.AccessTokenProvider;
+import com.precisionhawk.ams.service.oauth.MappedGroupsProvider;
 import java.util.HashSet;
 import java.util.Set;
 import org.papernapkin.liana.util.StringUtil;
@@ -19,7 +19,7 @@ import org.papernapkin.liana.util.StringUtil;
  *
  * @author <a href="mailto:pchapman@pcsw.us">Philip A. Chapman</a>
  */
-public class RolesBasedGroupsProvider extends GroupsProvider {
+public class RolesBasedGroupsProvider extends MappedGroupsProvider {
 
     @Override
     public Set<String> loadGroupIDs(AccessTokenProvider accessTokenProvider, ServicesSessionBean session, JWTClaimsSet claimsSet) throws SecurityException {

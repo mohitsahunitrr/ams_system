@@ -15,4 +15,5 @@
         </select>
     </versionTable>
     <version major="1" minor="0" revision="0" updatefile="version_1.0.0.xml"/>
+    <version major="1" minor="0" revision="1" updatefile="version_1.0.1.xml"/>
 </versions>

@@ -1,0 +1,54 @@
+<dbchanges>
+    <!-- Tenant Group, in case OAuth groups need to be mapped to AMS groups -->
+    <statement>
+        CREATE TABLE sec_tenant_group (
+            tenant_group_id BIGSERIAL,
+            tenant_id CHAR(36) NOT NULL,
+            add_group_id CHAR(36) NOT NULL,
+            group_id CHAR(36) NOT NULL,
+            CONSTRAINT pk_sec_tenant_group PRIMARY KEY (tenant_group_id),
+            CONSTRAINT idx_sec_tenant_group_01 UNIQUE (tenant_id, add_group_id, group_id)
+        );
+    </statement>
+    <statement>
+        CREATE INDEX idx_tenant_group_02 ON sec_tenant_group (tenant_id, add_group_id);
+    </statement>
+    <statement>
+        ALTER TABLE sec_tenant_group
+        ADD CONSTRAINT fk_tenant_group_01 FOREIGN KEY (group_id)
+            REFERENCES sec_group (group_id);
+    </statement>
+    
+    <!-- User Site Mapping -->
+    <statement>
+        CREATE TABLE sec_site_user (
+            site_user_id BIGSERIAL,
+            site_id CHAR(36) NOT NULL,
+            user_id CHAR(36) NOT NULL,
+            CONSTRAINT pk_site_user PRIMARY KEY (site_user_id),
+            CONSTRAINT idx_site_user_01 UNIQUE (site_id, user_id)
+        );
+    </statement>
+    <statement>
+        CREATE INDEX idx_site_user_02 ON sec_site_user (site_id);
+    </statement>
+    <statement>
+        CREATE INDEX idx_site_user_03 ON sec_site_user (user_id);
+    </statement>
+
+    <!-- TODO: The below needs to be configured specific to each AMS System (PoleAMS, SolarAMS, WindAMS, etc) -->
+        
+    <!-- Install Viewer Application -->
+    <statement>
+        insert into sec_application (app_id, app_name) values ('51a2afaf-180d-4d20-8dd9-f06e84e73583', 'PoleAMS Viewer');
+    </statement>
+    
+    <!-- Install Groups for Viewer Application -->
+    <statement>insert into sec_group (group_id, group_app_id, group_key, group_name, description) values ('87be8ade-0ba9-4b41-be07-c5eb7bc3f38d','51a2afaf-180d-4d20-8dd9-f06e84e73583','Admin','Admin','Administrative Users');</statement>
+    <statement>insert into sec_group (group_id, group_app_id, group_key, group_name, description) values ('8222c3f5-39f7-465c-acae-904698b28420','51a2afaf-180d-4d20-8dd9-f06e84e73583','OrgAdmin','Organization Admin','Organizational Administrative Users');</statement>
+    <statement>insert into sec_group (group_id, group_app_id, group_key, group_name, description) values ('a8e78af4-7fa0-4588-9009-c2a22c8ba0a7','51a2afaf-180d-4d20-8dd9-f06e84e73583','SiteAdmin','Site Admin','Site Administrative Users');</statement>
+    <statement>insert into sec_group (group_id, group_app_id, group_key, group_name, description) values ('39ef8208-682c-43e9-bf9b-56879bcd45e4','51a2afaf-180d-4d20-8dd9-f06e84e73583','Guest','Guest','Guest Users');</statement>
+    <statement>insert into sec_group (group_id, group_app_id, group_key, group_name, description) values ('a5e1c11b-7ef9-4f50-a843-83867bf3d8b5','51a2afaf-180d-4d20-8dd9-f06e84e73583','Inspector','Inspector','Inspectors');</statement>
+    <statement>insert into sec_group (group_id, group_app_id, group_key, group_name, description) values ('2450bef0-7100-44f9-bf78-d3e62e41e7f0','51a2afaf-180d-4d20-8dd9-f06e84e73583','DataProcessor','Data Processor','Data Processors');</statement>
+    <statement>insert into sec_group (group_id, group_app_id, group_key, group_name, description) values ('4fed1d60-d006-45c4-81d5-fec985ad3d76','51a2afaf-180d-4d20-8dd9-f06e84e73583','read_report','Read/Report','Report access');</statement>
+</dbchanges>

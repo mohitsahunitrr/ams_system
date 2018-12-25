@@ -4,7 +4,6 @@
 
 package com.precisionhawk.ams.service.oauth.aad;
 
-import com.precisionhawk.ams.service.oauth.GroupsProvider;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpResponse;
@@ -13,6 +12,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.precisionhawk.ams.bean.security.ServicesSessionBean;
 import com.precisionhawk.ams.bean.security.UserCredentials;
 import com.precisionhawk.ams.security.AccessTokenProvider;
+import com.precisionhawk.ams.service.oauth.MappedGroupsProvider;
 import com.precisionhawk.ams.support.http.HttpTransportClient;
 import static com.precisionhawk.ams.support.http.HttpTransportClient.MIME_JSON;
 import static com.precisionhawk.ams.support.http.HttpTransportClient.REQ_FACTORY;
@@ -28,7 +28,7 @@ import org.codehaus.jackson.type.TypeReference;
  *
  * @author <a href="mailto:pchapman@pcsw.us">Philip A. Chapman</a>
  */
-public class MSGraphAADGroupsProvider extends GroupsProvider {
+public class MSGraphAADGroupsProvider extends MappedGroupsProvider {
     
     private final String API_VERSION = "2013-04-05";
     private final String MS_GRAPH_RESOURCE = "https://graph.microsoft.com/";

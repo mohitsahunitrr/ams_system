@@ -60,16 +60,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 @Named
 public final class OAuthSecurityService extends AbstractSecurityService {
     
-    private static final String CLAIM_AUDIENCE = "aud";
-    private static final String CLAIM_EMAIL = "email";
-    private static final String CLAIM_FAMILY_NAME = "family_name";
-    private static final String CLAIM_GIVEN_NAME = "given_name";
-    private static final String CLAIM_OBJECT_ID = "oid";
-    private static final String CLAIM_SCP = "scp";
-    private static final String CLAIM_TENANT_ID = "tid";
-    private static final String CLAIM_UNIQUE_NAME = "unique_name";
-    private static final String CLAIM_VAL_USER_IMPERSONATION = "user_impersonation";
-    
     @Inject
     protected SecurityDao dao;
     
@@ -98,6 +88,7 @@ public final class OAuthSecurityService extends AbstractSecurityService {
     
     @Override
     public void configure(SecurityDao securityDao, List<SiteProvider> siteDaos, SecurityTokenCache tokenCache, SecurityConfig config) {
+        this.dao = securityDao;
         setSecurityConfig(config);
         setSiteProviders(siteDaos);
         setTokenCache(tokenCache);
@@ -124,11 +115,11 @@ public final class OAuthSecurityService extends AbstractSecurityService {
             try {
                 groupClazz = (Class<? extends GroupsProvider>) getClass().getClassLoader().loadClass(tcfg.getGroupProvider());
                 g = groupClazz.newInstance();
-                g.setDao(dao);
+                g.setDao(securityDao);
                 g.setMapper(MAPPER);
                 g.setMaxRetries(tcfg.getMaxRetries());
                 g.configure(tcfg);
-                groupsProviders.put(tcfg.getApiId(), g);
+                groupsProviders.put(tcfg.getTenantId(), g);
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
                 throw new IllegalArgumentException(String.format("Invalid groups provider %s for tenant %s: %s", tcfg.getGroupProvider(), tcfg.getTenantId(), ex.getLocalizedMessage()));
             }
@@ -255,9 +246,9 @@ public final class OAuthSecurityService extends AbstractSecurityService {
     
     private void processExtUserCredentials(JWTClaimsSet claimsSet, ServicesSessionBean bean) {
         GroupsProvider provider = groupsProviders.get(bean.getTenantId());
-        Set<String> groupIDs = provider.loadGroupIDs(accessTokenProvider(bean.getTenantId()), bean, claimsSet);
+        Set<Group> groups = provider.loadGroups(accessTokenProvider(bean.getTenantId()), bean, claimsSet);
         // Do final load of permissions
-        loadUserPermissions(bean, groupIDs);
+        loadUserPermissions(bean, groups);
         // Cache user info
         cacheUserInfo(config.getTenantConfigurations().get(bean.getTenantId()), (ExtUserCredentials)bean.getCredentials());
     }
@@ -271,22 +262,13 @@ public final class OAuthSecurityService extends AbstractSecurityService {
      * @param groupIDs The groups or roles associated with the user.
      * @throws SecurityException Indicates an error loading permissions.
      */
-    private void loadUserPermissions(ServicesSessionBean bean, Set<String> groupIDs)
+    private void loadUserPermissions(ServicesSessionBean bean, Set<Group> groups)
         throws SecurityException
     {
         TenantConfig tcfg = config.getTenantConfigurations().get(bean.getTenantId());
         ExtUserCredentials creds = (ExtUserCredentials)bean.getCredentials();
         LOGGER.debug("Authenticating against tenant {}", tcfg.getTenantName());
         
-        // Match provider group IDs to AMS Groups
-        Set<Group> groups = new HashSet();
-        for (String groupId : groupIDs) {
-            List<Group> glist = dao.selectGroupsByTenantGroup(bean.getTenantId(), groupId);
-            if (glist != null && !glist.isEmpty()) {
-                groups.addAll(glist);
-            }
-        }
-
         // Map groups by application
         Map<String, List<String>> rolesMap = new HashMap<>();
         List<String> rolesByApp;

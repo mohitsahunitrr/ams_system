@@ -5,6 +5,7 @@
 package com.precisionhawk.ams.service.oauth;
 
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.precisionhawk.ams.bean.security.Group;
 import com.precisionhawk.ams.bean.security.ServicesSessionBean;
 import com.precisionhawk.ams.config.TenantConfig;
 import com.precisionhawk.ams.dao.SecurityDao;
@@ -55,13 +56,13 @@ public abstract class GroupsProvider {
     public void configure(TenantConfig config) {}
     
     /**
-     * Queries Azure Active Directory for group memberships and returns them.
+     * Provides AMS Group Memberships for the given user.
      * @param accessTokenProvider The provider for the access token to be used
      * to make the necessary service calls.
      * @param session The session containing user credentials.
      * @param claimsSet The claims set used to build the user credentials.
-     * @return The list of group IDs.
+     * @return The list of groups.
      * @throws SecurityException  Indicates an error obtaining the information.
      */
-    public abstract Set<String> loadGroupIDs(AccessTokenProvider accessTokenProvider, ServicesSessionBean session, JWTClaimsSet claimsSet) throws SecurityException;
+    public abstract Set<Group> loadGroups(AccessTokenProvider accessTokenProvider, ServicesSessionBean session, JWTClaimsSet claimsSet) throws SecurityException;
 }
