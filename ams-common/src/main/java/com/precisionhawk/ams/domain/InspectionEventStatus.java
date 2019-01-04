@@ -6,8 +6,9 @@ import com.precisionhawk.ams.bean.StatusEnum;
  *
  * @author pchapman
  */
-public class WorkOrderStatus extends StatusEnum {
-    public WorkOrderStatus(String value) {
+public class InspectionEventStatus extends StatusEnum {
+    
+    public InspectionEventStatus(String value) {
         super(value);
     }
 }

@@ -4,8 +4,10 @@
 package com.precisionhawk.ams.domain;
 
 import com.precisionhawk.ams.bean.Dimension;
+import com.precisionhawk.ams.bean.StatusEvent;
 import io.swagger.oas.annotations.media.Schema;
-import java.time.LocalDate;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -123,22 +125,22 @@ public class InspectionEvent implements Identifyable, SiteAware {
     public void setSource(InspectionEventSource source) {
         this.source = source;
     }
-
-    @Schema(description="The unique ID of the user reporting the damage.")
-    private String userId;
-    public String getUserId() {
-        return userId;
+    
+    @Schema(description="A list of status changes.")
+    private List<StatusEvent<InspectionEventStatus>> statusHistory = new LinkedList<>();
+    public List<StatusEvent<InspectionEventStatus>> getStatusHistory() {
+        return statusHistory;
     }
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setStatusHistory(List<StatusEvent<InspectionEventStatus>> statusHistory) {
+        this.statusHistory = statusHistory;
     }
-
-    @Schema(description="The date the date was reported.")
-    private LocalDate date;
-    public LocalDate getDate() {
-        return date;
+    
+    @Schema(description="The current status of the inspection event.")
+    private InspectionEventStatus status;
+    public InspectionEventStatus getStatus() {
+        return status;
     }
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setStatus(InspectionEventStatus status) {
+        this.status = status;
     }
 }

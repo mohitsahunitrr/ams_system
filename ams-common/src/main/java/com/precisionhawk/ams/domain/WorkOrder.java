@@ -4,6 +4,7 @@
 
 package com.precisionhawk.ams.domain;
 
+import com.precisionhawk.ams.bean.StatusEvent;
 import io.swagger.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.util.LinkedList;
@@ -53,8 +54,17 @@ public class WorkOrder implements SitesAware {
     public void setSiteIds(List<String> siteIds) {
         this.siteIds = siteIds;
     }
+    
+    @Schema(description="A list of status changes.")
+    private List<StatusEvent<WorkOrderStatus>> statusHistory = new LinkedList<>();
+    public List<StatusEvent<WorkOrderStatus>> getStatusHistory() {
+        return statusHistory;
+    }
+    public void setStatusHistory(List<StatusEvent<WorkOrderStatus>> statusHistory) {
+        this.statusHistory = statusHistory;
+    }
 
-    @Schema(description="The status of the work.")
+    @Schema(description="The current status of the work.")
     private WorkOrderStatus status;
     public WorkOrderStatus getStatus() {
         return status;

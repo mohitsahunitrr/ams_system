@@ -4,7 +4,10 @@
 
 package com.precisionhawk.ams.domain;
 
+import com.precisionhawk.ams.bean.StatusEvent;
 import io.swagger.oas.annotations.media.Schema;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -60,15 +63,6 @@ public class ComponentInspection implements Identifyable, SiteAware {
         this.description = description;
     }
     
-    @Schema(description="The ID of the inspector.")
-    private String inspectorUserId;
-    public String getInspectorUserId() {
-        return inspectorUserId;
-    }
-    public void setInspectorUserId(String inspectorUserId) {
-        this.inspectorUserId = inspectorUserId;
-    }
-    
     @Schema(description="The work order number.")
     private String orderNumber;
     public String getOrderNumber() {
@@ -104,6 +98,15 @@ public class ComponentInspection implements Identifyable, SiteAware {
     }
     public void setStatus(ComponentInspectionStatus status) {
         this.status = status;
+    }
+    
+    @Schema(description="A list of status changes.")
+    private List<StatusEvent<ComponentInspectionStatus>> statusHistory = new LinkedList<>();
+    public List<StatusEvent<ComponentInspectionStatus>> getStatusHistory() {
+        return statusHistory;
+    }
+    public void setStatusHistory(List<StatusEvent<ComponentInspectionStatus>> statusHistory) {
+        this.statusHistory = statusHistory;
     }
 
     @Schema(description="The type of inspection.")

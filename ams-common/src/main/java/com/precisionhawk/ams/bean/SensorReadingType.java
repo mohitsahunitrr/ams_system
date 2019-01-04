@@ -4,8 +4,6 @@
 
 package com.precisionhawk.ams.bean;
 
-import com.precisionhawk.ams.domain.ExtendableEnum;
-
 /**
  *
  * @author <a href="mailto:pchapman@pcsw.us">Philip A. Chapman</a>

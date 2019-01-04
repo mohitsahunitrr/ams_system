@@ -1,4 +1,4 @@
-package com.precisionhawk.ams.domain;
+package com.precisionhawk.ams.bean;
 
 import java.util.Objects;
 import org.codehaus.jackson.annotate.JsonValue;

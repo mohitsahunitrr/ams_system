@@ -4,8 +4,11 @@
 
 package com.precisionhawk.ams.domain;
 
+import com.precisionhawk.ams.bean.StatusEvent;
 import io.swagger.oas.annotations.media.Schema;
 import java.time.LocalDate;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -79,8 +82,17 @@ public class AssetInspection implements Identifyable, SiteAware {
     public void setSiteInspectionId(String siteInspectionId) {
         this.siteInspectionId = siteInspectionId;
     }
+    
+    @Schema(description="A list of status changes.")
+    private List<StatusEvent<AssetInspectionStatus>> statusHistory = new LinkedList<>();
+    public List<StatusEvent<AssetInspectionStatus>> getStatusHistory() {
+        return statusHistory;
+    }
+    public void setStatusHistory(List<StatusEvent<AssetInspectionStatus>> statusHistory) {
+        this.statusHistory = statusHistory;
+    }
 
-    @Schema(description="The status of the inspection.")
+    @Schema(description="The current status of the inspection.")
     private AssetInspectionStatus status;
     public AssetInspectionStatus getStatus() {
         return status;
