@@ -1,27 +1,55 @@
-package com.precisionhawk.ams.dao.cassandra;
+package com.precisionhawk.ams.dao.fs;
 
+import com.esotericsoftware.yamlbeans.YamlReader;
 import com.precisionhawk.ams.bean.security.Application;
 import com.precisionhawk.ams.bean.security.CachedUserInfo;
 import com.precisionhawk.ams.bean.security.Group;
-import com.precisionhawk.ams.bean.security.TenantGroup;
 import com.precisionhawk.ams.bean.security.UserInfoBean;
 import com.precisionhawk.ams.bean.security.UserSearchParams;
 import com.precisionhawk.ams.dao.DaoException;
-import com.precisionhawk.ams.dao.OAuthSecurityDao;
+import com.precisionhawk.ams.dao.SimpleSecurityDao;
 import com.precisionhawk.ams.domain.Organization;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author pchapman
  */
-public class SecurityCassDao extends AbstractCassandraDao implements OAuthSecurityDao {
+public class YamlFileSecurityDao implements SimpleSecurityDao {
     
-    //TODO:
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+    
+    private SecurityData data;
+    
+    public void configure(String configFile) {
+        Reader reader = null;
+        try {
+            reader = new FileReader(configFile);
+            YamlReader yamlreader = new YamlReader(reader);
+            data = yamlreader.read(SecurityData.class);
+        } catch (IOException ex) {
+            LOGGER.error(String.format("Error loading security data from file %s", configFile), ex);
+            throw new RuntimeException("Error loading security data.");
+        }
+    }
     
     @Override
-    protected String statementsMapsPath() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getPassHash(String userId) {
+        SelfContainedUserInfo ui = data.getUsers().get(userId);
+        if (ui == null) {
+            return null;
+        } else {
+            return ui.getPasswordHash();
+        }
     }
 
     @Override
@@ -36,12 +64,13 @@ public class SecurityCassDao extends AbstractCassandraDao implements OAuthSecuri
 
     @Override
     public Application selectApplicationById(String appId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return data.getApplications().get(appId);
     }
 
     @Override
     public List<Application> selectApplications() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Application> apps = new ArrayList<>(data.getApplications().values());
+        return apps;
     }
 
     @Override
@@ -56,22 +85,43 @@ public class SecurityCassDao extends AbstractCassandraDao implements OAuthSecuri
 
     @Override
     public Group selectGroupById(String groupId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return data.getGroups().get(groupId);
     }
+    
+    private final Comparator<Group> NAME_COMPARATOR = new Comparator<Group>() {
+        @Override
+        public int compare(Group o1, Group o2) {
+            return o1.getName().compareTo(o2.getName());
+        }
+    };
 
     @Override
     public List<Group> selectGroupsOrderedByName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Group> groups = new ArrayList<>(data.getGroups().values());
+        Collections.sort(groups, NAME_COMPARATOR);
+        return groups;
     }
 
     @Override
     public List<Group> selectGroupsForAppOrderedByName(String appId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Group> groups = new ArrayList<>();
+        for (Group g : data.getGroups().values()) {
+            if (g.getApplicationId().equals(appId)) {
+                groups.add(g);
+            }
+        }
+        Collections.sort(groups, NAME_COMPARATOR);
+        return groups;
     }
 
     @Override
     public Group selectGroupByKey(String appId, String key) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (Group g : data.getGroups().values()) {
+            if (g.getKey().equals(key)) {
+                return g;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -86,17 +136,26 @@ public class SecurityCassDao extends AbstractCassandraDao implements OAuthSecuri
 
     @Override
     public Organization selectOrganizationById(String orgId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return data.getOrganizations().get(orgId);
     }
 
     @Override
     public List<Organization> selectOrganizations() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new ArrayList<>(data.getOrganizations().values());
     }
 
     @Override
     public List<Organization> selectOrganizationsForUser(String userId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SelfContainedUserInfo ui = data.getUsers().get(userId);
+        if (ui == null) {
+            return Collections.emptyList();
+        } else {
+            List<Organization> orgs = new LinkedList<>();
+            for (String orgId : ui.getOrganizations()) {
+                orgs.add(data.getOrganizations().get(orgId));
+            }
+            return orgs;
+        }
     }
 
     @Override
@@ -111,27 +170,22 @@ public class SecurityCassDao extends AbstractCassandraDao implements OAuthSecuri
 
     @Override
     public Organization selectOrganizationByKey(String orgKey) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public List<TenantGroup> selectTenantGroups() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public List<Group> selectGroupsByTenantGroup(String tenantId, String aadGroupId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public List<String> selectAADGroupsByTenant(String tenantId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (Organization org : data.getOrganizations().values()) {
+            if (org.getKey().equals(orgKey)) {
+                return org;
+            }
+        }
+        return null;
     }
 
     @Override
     public List<String> selectSitesForUser(String userId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        SelfContainedUserInfo ui = data.getUsers().get(userId);
+        if (ui == null) {
+            return Collections.emptyList();
+        } else {
+            return ui.getSites();
+        }
     }
 
     @Override
@@ -156,7 +210,18 @@ public class SecurityCassDao extends AbstractCassandraDao implements OAuthSecuri
 
     @Override
     public List<CachedUserInfo> selectUserInfo(UserSearchParams parameters) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // Only email address makes sense here.
+        if (parameters.getEmailAddress() == null || parameters.getEmailAddress().isEmpty()) {
+            return Collections.emptyList();
+        } else {
+            List<CachedUserInfo> results = new LinkedList<>();
+            for (SelfContainedUserInfo ui : data.getUsers().values()) {
+                if (parameters.getEmailAddress().equals(ui.getEmailAddress())) {
+                    results.add(ui);
+                }
+            }
+            return results;
+        }
     }
 
     @Override

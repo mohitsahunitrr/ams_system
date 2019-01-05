@@ -28,6 +28,7 @@ import com.precisionhawk.ams.config.ClientConfig;
 import com.precisionhawk.ams.config.SecurityConfig;
 import com.precisionhawk.ams.config.TenantConfig;
 import com.precisionhawk.ams.dao.DaoException;
+import com.precisionhawk.ams.dao.OAuthSecurityDao;
 import com.precisionhawk.ams.dao.SecurityDao;
 import com.precisionhawk.ams.dao.SiteProvider;
 import com.precisionhawk.ams.domain.Organization;
@@ -38,7 +39,6 @@ import com.precisionhawk.ams.support.jackson.ObjectMapperFactory;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -61,7 +61,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 public final class OAuthSecurityService extends AbstractSecurityService {
     
     @Inject
-    protected SecurityDao dao;
+    protected OAuthSecurityDao dao;
     
     private final Map<String, OAuthAuthenticationProvider> authProviders = new HashMap();
     private final Map<String, GroupsProvider> groupsProviders = new HashMap();
@@ -69,15 +69,7 @@ public final class OAuthSecurityService extends AbstractSecurityService {
     private final ObjectMapper MAPPER = ObjectMapperFactory.getObjectMapper();
     
     private JWKSource jwkSource;
-    
-    private List<SiteProvider> siteDaos;
-    public List<SiteProvider> getSiteProviders() {
-        return siteDaos;
-    }
-    public void setSiteProviders(List<SiteProvider> providers) {
-        this.siteDaos = providers;
-    }
-    
+        
     private SecurityTokenCache tokenCache;
     public SecurityTokenCache getTokenCache() {
         return tokenCache;
@@ -88,7 +80,11 @@ public final class OAuthSecurityService extends AbstractSecurityService {
     
     @Override
     public void configure(SecurityDao securityDao, List<SiteProvider> siteDaos, SecurityTokenCache tokenCache, SecurityConfig config) {
-        this.dao = securityDao;
+        if (securityDao instanceof OAuthSecurityDao) {
+            this.dao = (OAuthSecurityDao)securityDao;
+        } else {
+            throw new IllegalArgumentException("The security DAO is not an implementation of OAuthSecurityDao.");
+        }
         setSecurityConfig(config);
         setSiteProviders(siteDaos);
         setTokenCache(tokenCache);
@@ -115,7 +111,7 @@ public final class OAuthSecurityService extends AbstractSecurityService {
             try {
                 groupClazz = (Class<? extends GroupsProvider>) getClass().getClassLoader().loadClass(tcfg.getGroupProvider());
                 g = groupClazz.newInstance();
-                g.setDao(securityDao);
+                g.setDao(dao);
                 g.setMapper(MAPPER);
                 g.setMaxRetries(tcfg.getMaxRetries());
                 g.configure(tcfg);
@@ -222,14 +218,14 @@ public final class OAuthSecurityService extends AbstractSecurityService {
             List<Site> sites = new ArrayList<>();
             try {
                 if (Constants.COMPANY_ORG_KEY.equals(orgs.get(0).getKey())) {
-                    for (SiteProvider p : siteDaos) {
+                    for (SiteProvider p : getSiteProviders()) {
                         sites.addAll( p.retrieveAllSites());
                     }
                 } else {
                     SiteSearchParams params = new SiteSearchParams();
                     for (Organization org : orgs) {
                         params.setOrganizationId(org.getId());
-                        for (SiteProvider p : siteDaos) {
+                        for (SiteProvider p : getSiteProviders()) {
                             sites.addAll(p.retrieve(params));
                         }
                     }
@@ -248,140 +244,9 @@ public final class OAuthSecurityService extends AbstractSecurityService {
         GroupsProvider provider = groupsProviders.get(bean.getTenantId());
         Set<Group> groups = provider.loadGroups(accessTokenProvider(bean.getTenantId()), bean, claimsSet);
         // Do final load of permissions
-        loadUserPermissions(bean, groups);
+        loadUserPermissions(dao, bean, groups);
         // Cache user info
         cacheUserInfo(config.getTenantConfigurations().get(bean.getTenantId()), (ExtUserCredentials)bean.getCredentials());
-    }
-    
-    /**
-     * Populates the user credentials in the session bean with the user's assigned
-     * organizations, the sites he has access to, and the user's assigned AMS roles.
-     * @param tcfg The configuration object for the OAuth tenant against which the user
-     * has been authenticated.
-     * @param bean The session bean to be updated.
-     * @param groupIDs The groups or roles associated with the user.
-     * @throws SecurityException Indicates an error loading permissions.
-     */
-    private void loadUserPermissions(ServicesSessionBean bean, Set<Group> groups)
-        throws SecurityException
-    {
-        TenantConfig tcfg = config.getTenantConfigurations().get(bean.getTenantId());
-        ExtUserCredentials creds = (ExtUserCredentials)bean.getCredentials();
-        LOGGER.debug("Authenticating against tenant {}", tcfg.getTenantName());
-        
-        // Map groups by application
-        Map<String, List<String>> rolesMap = new HashMap<>();
-        List<String> rolesByApp;
-        for (Group g : groups) {
-            rolesByApp = rolesMap.get(g.getApplicationId());
-            if (rolesByApp == null) {
-                rolesByApp = new LinkedList<>();
-                rolesMap.put(g.getApplicationId(), rolesByApp);
-            }
-            rolesByApp.add(g.getKey());
-        }
-        
-        // Organizations/Sites
-        List<Organization> orgs;
-        List<String> siteIDs;
-        List<Site> sites;
-        Map<String, List<Site>> sitesByOrg = new HashMap<>();
-        try {
-            if (tcfg.getOrganizationId() == null) {
-                orgs = dao.selectOrganizationsForUser(creds.getUserId());
-                boolean inspecToolsUser = false;
-                for (Organization o : orgs) {
-                    if (Constants.COMPANY_ORG_KEY.equals(o.getKey())) {
-                        inspecToolsUser = true;
-                        break;
-                    }
-                }
-                if (inspecToolsUser) {
-                    // If the user is an InspecTools user, he has access to all sites.
-                    List<Site> slist = new ArrayList<>();
-                    for (SiteProvider p : siteDaos) {
-                        slist.addAll(p.retrieveAllSites());
-                    }
-                    siteIDs = new ArrayList<>(slist.size());
-                    for (Site site : slist) {
-                        sites = sitesByOrg.get(site.getOrganizationId());
-                        if (sites == null) {
-                            sites = new LinkedList<>();
-                            sitesByOrg.put(site.getOrganizationId(), sites);
-                        }
-                        sites.add(site);
-                        siteIDs.add(site.getId());
-                    }
-                } else {
-                    sites = new ArrayList<>();
-                    siteIDs = new ArrayList<>();
-                    // The user has access to all sites for the org to which the user belongs.
-                    SiteSearchParams query = new SiteSearchParams();
-                    for (Organization o : orgs) {
-                        query.setOrganizationId(o.getId());
-                        for (SiteProvider p : siteDaos) {
-                            sites.addAll(p.retrieve(query));
-                        }
-                        if (sites.isEmpty()) {
-                            sitesByOrg.put(o.getId(), Collections.emptyList());
-                        } else {
-                            sitesByOrg.put(o.getId(), sites);
-                            for (Site site : sites) {
-                                siteIDs.add(site.getId());
-                            }
-                        }
-                    }
-                    // The user may have access to additional sites.
-                    List<String> sids = dao.selectSitesForUser(creds.getUserId());
-                    List<Site> allowedSites = new ArrayList<>();
-                    for (SiteProvider p : siteDaos) {
-                        allowedSites.addAll(p.retrieveByIDs(sids));
-                    }
-                    for (Site site : allowedSites) {
-                        // On occasion, sites have been deleted without permissions removed.  This causes nulls.
-                        if (
-                                site != null
-                                && (!siteIDs.contains(site.getId()))
-                            )
-                        {
-                            sites = sitesByOrg.get(site.getOrganizationId());
-                            if (sites == null) {
-                                sites = new LinkedList<>();
-                                sitesByOrg.put(site.getOrganizationId(), sites);
-                            }
-                            sites.add(site);
-                        }
-                    }
-                }
-            } else {
-                // Organization specific security.  All users belong to that org.
-                // These users have permissions for all sites belonging to that org
-                // but no others.
-                orgs = new LinkedList<>();
-                orgs.add(dao.selectOrganizationById(tcfg.getOrganizationId()));
-                // Add all the sites for the entire organization.
-                SiteSearchParams query = new SiteSearchParams();
-                query.setOrganizationId(tcfg.getOrganizationId());
-                sites = new ArrayList<>();
-                for (SiteProvider p : siteDaos) {
-                    sites.addAll(p.retrieve(query));
-                }
-                siteIDs = new ArrayList<>(sites.size());
-                for (Site site : sites) {
-                    siteIDs.add(site.getId());
-                }
-                sitesByOrg.put(tcfg.getOrganizationId(), sites);
-            }
-        } catch (DaoException ex) {
-            LOGGER.error("Error loading user's available sites.", ex);
-            throw new SecurityException("Error loading user's available sites.", ex);
-        }
-        
-        // Populate Credentials
-        creds.setOrganizations(orgs);
-        creds.setRolesByApplication(rolesMap);
-        creds.setSiteIDs(siteIDs);
-        creds.setSitesByOrganization(sitesByOrg);
     }
 
     /**

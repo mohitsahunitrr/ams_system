@@ -8,7 +8,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.precisionhawk.ams.bean.security.Group;
 import com.precisionhawk.ams.bean.security.ServicesSessionBean;
 import com.precisionhawk.ams.config.TenantConfig;
-import com.precisionhawk.ams.dao.SecurityDao;
+import com.precisionhawk.ams.dao.OAuthSecurityDao;
 import com.precisionhawk.ams.security.AccessTokenProvider;
 import java.util.Set;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -33,11 +33,11 @@ public abstract class GroupsProvider {
         this.mapper = mapper;
     }
     
-    protected SecurityDao dao;
-    public SecurityDao getDao() {
+    protected OAuthSecurityDao dao;
+    public OAuthSecurityDao getDao() {
         return dao;
     }
-    public void setDao(SecurityDao dao) {
+    public void setDao(OAuthSecurityDao dao) {
         this.dao = dao;
     }
     

@@ -3,7 +3,6 @@ package com.precisionhawk.ams.dao;
 import com.precisionhawk.ams.bean.security.Application;
 import com.precisionhawk.ams.bean.security.CachedUserInfo;
 import com.precisionhawk.ams.bean.security.Group;
-import com.precisionhawk.ams.bean.security.TenantGroup;
 import com.precisionhawk.ams.bean.security.UserInfoBean;
 import com.precisionhawk.ams.bean.security.UserSearchParams;
 import com.precisionhawk.ams.domain.Organization;
@@ -53,15 +52,7 @@ public interface SecurityDao {
     void removeUserFromOrganization(String orgId, String userId);
 
     Organization selectOrganizationByKey(String orgKey);
-        
-    // Tenant User
-    
-    List<TenantGroup> selectTenantGroups();
-    
-    List<Group> selectGroupsByTenantGroup(String tenantId, String aadGroupId);
-    
-    List<String> selectAADGroupsByTenant(String tenantId);
-    
+            
     // SITE
     List<String> selectSitesForUser(String userId);
 

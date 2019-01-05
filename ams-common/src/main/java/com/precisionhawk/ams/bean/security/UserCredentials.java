@@ -48,6 +48,16 @@ public class UserCredentials extends UserInfoBean implements Credentials
         this.organizations = organizations;
     }
     
+    public UserCredentials() {}
+    
+    public UserCredentials(UserInfo source) {
+        setEmailAddress(source.getEmailAddress());
+        setFirstName(source.getFirstName());
+        setLastName(source.getLastName());
+        setMiddleName(source.getMiddleName());
+        setUserId(source.getUserId());
+    }
+    
     @Override
     public boolean checkAuthorization(String appKey, String orgId, String siteId, boolean mustBeInspectoolsEmployee, String ... groupKeys)
     {

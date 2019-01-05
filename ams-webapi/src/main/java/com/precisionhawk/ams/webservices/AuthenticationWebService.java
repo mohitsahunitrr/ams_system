@@ -34,6 +34,6 @@ public interface AuthenticationWebService extends WebService {
 
     @GET
     @Path("auth/credentials")
-    @Operation(summary = "Obtains User Credentials", description = "Validates the Authorization token and returns user credentials.")
+    @Operation(summary = "Obtains User Credentials", description = "Validates the OAuth Authorization token and returns user credentials.")
     public ExtUserCredentials obtainCredentials(@Parameter(required = true) @HeaderParam("Authorization") String authToken);
 }

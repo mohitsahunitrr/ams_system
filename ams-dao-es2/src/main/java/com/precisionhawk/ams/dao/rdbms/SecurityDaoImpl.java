@@ -6,6 +6,7 @@ import com.precisionhawk.ams.bean.security.Group;
 import com.precisionhawk.ams.bean.security.TenantGroup;
 import com.precisionhawk.ams.bean.security.UserInfoBean;
 import com.precisionhawk.ams.bean.security.UserSearchParams;
+import com.precisionhawk.ams.dao.OAuthSecurityDao;
 import com.precisionhawk.ams.domain.Organization;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author Philip A. Chapman <pchapman@pcsw.us>
  */
 @Named
-public final class SecurityDaoImpl implements com.precisionhawk.ams.dao.SecurityDao {
+public final class SecurityDaoImpl implements OAuthSecurityDao {
     
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     private static final String PARAM_EMAIL_ADDRESS_ID = "emailAddress";
