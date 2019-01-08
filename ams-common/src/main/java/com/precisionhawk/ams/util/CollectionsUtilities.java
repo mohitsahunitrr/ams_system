@@ -87,5 +87,5 @@ public class CollectionsUtilities {
         set.addAll(col1);
         set.addAll(col2);
         return set;
-    }
+    }    
 }

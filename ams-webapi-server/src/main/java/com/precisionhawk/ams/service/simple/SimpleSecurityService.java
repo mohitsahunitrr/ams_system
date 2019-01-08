@@ -66,6 +66,11 @@ public class SimpleSecurityService extends AbstractSecurityService {
     @Override
     public ServicesSessionBean validateToken(String accessToken) {
         ServicesSessionBean bean = new ServicesSessionBean();
+        if (accessToken == null) {
+            bean.setTokenValid(false);
+            bean.setReason("Missing access token");
+            return bean;
+        }
         Reader reader;
         try {
             AuthBean auth;

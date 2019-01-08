@@ -1,10 +1,13 @@
 package com.precisionhawk.ams.support.httpclient;
 
+import com.precisionhawk.ams.util.HttpClientUtil;
 import com.precisionhawk.ams.webservices.client.Environment;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -41,11 +44,16 @@ public class HttpClientUtilities {
     private static void uploadFile(HttpEntityEnclosingRequestBase req, String authJWT, String contentType, File file) throws IOException
     {
         try {
-            req.setHeader("Authorized", "Bearer " + authJWT);
+            req.setHeader("Authorization", authJWT);
             req.setHeader("content-disposition", String.format("attachment; filename=\"%s\"", file.getName()));
             FileEntity content = new FileEntity(file, ContentType.create(contentType));
             req.setEntity(content);
-            CLIENT.execute(req);
+            CloseableHttpResponse resp = CLIENT.execute(req);
+            int statusCode = resp.getStatusLine().getStatusCode();
+            if (statusCode != HttpStatus.SC_OK && statusCode != HttpStatus.SC_NO_CONTENT) {
+                String cont = HttpClientUtil.consumeEntity(resp.getEntity());
+                throw new IOException(String.format("Error uploading file %s response status: %d response: %s", file, statusCode, cont));
+            }
         } finally {
             req.reset();
         }
