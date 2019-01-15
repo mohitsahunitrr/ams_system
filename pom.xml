@@ -464,7 +464,9 @@
     <modules>
         <module>ams-common</module>
         <module>ams-dao</module>
+        <!--
         <module>ams-dao-cassandra</module>
+        -->
         <module>ams-dao-es2</module>
         <module>ams-swagger</module>
         <module>ams-webapi</module>
