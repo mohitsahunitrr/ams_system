@@ -217,7 +217,11 @@ public class YamlFileSecurityDao implements SimpleSecurityDao {
         if (ui == null) {
             return Collections.emptyList();
         } else {
-            return ui.getSites();
+            if (ui.getSites() == null) {
+                return Collections.emptyList();
+            } else {
+                return ui.getSites();
+            }
         }
     }
 
