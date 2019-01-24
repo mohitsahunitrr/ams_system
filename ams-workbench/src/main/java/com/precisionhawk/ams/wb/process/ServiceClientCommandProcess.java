@@ -22,6 +22,7 @@ public abstract class ServiceClientCommandProcess extends CommandProcess {
     private static final String ARG_CONFIG = "-cfg";
     private static final String ARG_ENV = "-env";
     protected static final String ARGS_FOR_HELP = "[" + ARG_CONFIG + " environments/config/file.yaml] " + ARG_ENV + " environment";
+    protected List<Environment> environments;
 
     @Override
     public final boolean process(WorkbenchConfig config, Queue<String> args) {
@@ -60,7 +61,6 @@ public abstract class ServiceClientCommandProcess extends CommandProcess {
         
         EnvironmentsFactory factory = new EnvironmentsFactory();
         factory.setConfigFilePath(configURI);
-        List<Environment> environments;
         try {
             factory.init();
             environments = factory.getEnvironments();
