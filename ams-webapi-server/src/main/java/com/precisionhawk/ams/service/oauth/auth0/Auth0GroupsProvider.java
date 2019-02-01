@@ -28,7 +28,7 @@ public class Auth0GroupsProvider extends GroupsProvider {
     public Set<Group> loadGroups(AccessTokenProvider accessTokenProvider, ServicesSessionBean session, JWTClaimsSet claimsSet) throws SecurityException {
         // Expect a list of assigned groups in AppData.
         if (session.getAppData() != null && !session.getAppData().isEmpty()) {
-            Object o = session.getAppData().get("groups");
+            Object o = session.getAppData().get("roles");
             if (o instanceof List) {
                 Map<String, Group> groups = new HashMap<>();
                 for (Group g : dao.selectGroupsOrderedByName()) {

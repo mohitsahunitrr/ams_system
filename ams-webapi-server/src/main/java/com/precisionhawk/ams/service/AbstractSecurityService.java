@@ -20,6 +20,7 @@ import com.precisionhawk.ams.security.Constants;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -100,13 +101,13 @@ public abstract class AbstractSecurityService implements SecurityService {
         }
         
         // Organizations/Sites
-        List<Organization> orgs;
-        List<String> siteIDs;
+        Set<Organization> orgs;
+        Set<String> siteIDs;
         List<Site> sites;
         Map<String, List<Site>> sitesByOrg = new HashMap<>();
         try {
             if (tcfg.getOrganizationId() == null) {
-                orgs = dao.selectOrganizationsForUser(creds.getUserId());
+                orgs = new HashSet(dao.selectOrganizationsForUser(creds.getUserId()));
                 boolean inspecToolsUser = false;
                 for (Organization o : orgs) {
                     if (Constants.COMPANY_ORG_KEY.equals(o.getKey())) {
@@ -120,7 +121,7 @@ public abstract class AbstractSecurityService implements SecurityService {
                     for (SiteProvider p : siteDaos) {
                         slist.addAll(p.retrieveAllSites());
                     }
-                    siteIDs = new ArrayList<>(slist.size());
+                    siteIDs = new HashSet(slist.size());
                     for (Site site : slist) {
                         sites = sitesByOrg.get(site.getOrganizationId());
                         if (sites == null) {
@@ -132,7 +133,7 @@ public abstract class AbstractSecurityService implements SecurityService {
                     }
                 } else {
                     sites = new ArrayList<>();
-                    siteIDs = new ArrayList<>();
+                    siteIDs = new HashSet<>();
                     // The user has access to all sites for the org to which the user belongs.
                     SiteSearchParams query = new SiteSearchParams();
                     for (Organization o : orgs) {
@@ -168,6 +169,7 @@ public abstract class AbstractSecurityService implements SecurityService {
                                 sitesByOrg.put(site.getOrganizationId(), sites);
                             }
                             sites.add(site);
+                            siteIDs.add(site.getId());
                         }
                     }
                 }
@@ -175,7 +177,7 @@ public abstract class AbstractSecurityService implements SecurityService {
                 // Organization specific security.  All users belong to that org.
                 // These users have permissions for all sites belonging to that org
                 // but no others.
-                orgs = new LinkedList<>();
+                orgs = new HashSet();
                 orgs.add(dao.selectOrganizationById(tcfg.getOrganizationId()));
                 // Add all the sites for the entire organization.
                 SiteSearchParams query = new SiteSearchParams();
@@ -184,7 +186,7 @@ public abstract class AbstractSecurityService implements SecurityService {
                 for (SiteProvider p : siteDaos) {
                     sites.addAll(p.retrieve(query));
                 }
-                siteIDs = new ArrayList<>(sites.size());
+                siteIDs = new HashSet(sites.size());
                 for (Site site : sites) {
                     siteIDs.add(site.getId());
                 }
@@ -196,9 +198,9 @@ public abstract class AbstractSecurityService implements SecurityService {
         }
         
         // Populate Credentials
-        creds.setOrganizations(orgs);
+        creds.setOrganizations(new ArrayList(orgs));
         creds.setRolesByApplication(rolesMap);
-        creds.setSiteIDs(siteIDs);
+        creds.setSiteIDs(new ArrayList(siteIDs));
         creds.setSitesByOrganization(sitesByOrg);
     }
 }
