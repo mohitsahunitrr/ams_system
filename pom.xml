@@ -46,6 +46,7 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/repositories/releases/</url>
         </repository>
+	<!--
         <repository>
             <id>timboudreau-builds</id>
             <name>timboudreau.com builds</name>
@@ -58,7 +59,8 @@
                 <enabled>true</enabled>
                 <updatePolicy>never</updatePolicy>
             </snapshots>
-        </repository>
+            </repository>
+	    -->
     </repositories>
     <build>
         <pluginManagement>

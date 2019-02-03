@@ -3,11 +3,9 @@ package com.precisionhawk.ams.util;
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.imaging.ImageFormat;
-import org.apache.commons.imaging.ImageFormats;
 import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
-import org.apache.commons.imaging.common.ImageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +24,7 @@ public final class ContentTypeUtilities {
         String fn = f.getName().toUpperCase();
         try {
             ImageFormat format = Imaging.guessFormat(f);
-            if (ImageFormats.UNKNOWN.equals(format)) {
+            if (ImageFormat.IMAGE_FORMAT_UNKNOWN.equals(format)) {
                 if (fn.endsWith(".ZIP")) {
                     contentType = "application/zip";
                 } else if (fn.endsWith(".KML")) {
@@ -40,7 +38,6 @@ public final class ContentTypeUtilities {
                 }
             } else {
                 ImageInfo info = Imaging.getImageInfo(f);
-                ImageMetadata metadata = Imaging.getMetadata(f);
                 contentType = info.getMimeType();
             }
         } catch (IOException | ImageReadException ex) {
