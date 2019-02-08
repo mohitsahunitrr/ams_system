@@ -46,21 +46,6 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/repositories/releases/</url>
         </repository>
-	<!--
-        <repository>
-            <id>timboudreau-builds</id>
-            <name>timboudreau.com builds</name>
-            <url>http://timboudreau.com/builds/plugin/repository/everything/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-            </repository>
-	    -->
     </repositories>
     <build>
         <pluginManagement>
@@ -121,8 +106,8 @@
     <properties>
         <jackson.version>1.9.13</jackson.version>
         <junit.version>4.12</junit.version>
-        <liana.version>2.0.8</liana.version>
-        <pcsw.version>1.2.0</pcsw.version>
+        <liana.version>2.0.9</liana.version>
+        <pcsw.version>1.2.1</pcsw.version>
         <resteasy.version>3.6.2.Final</resteasy.version>
         <slf4j.version>1.7.25</slf4j.version>
         <spring.version>4.3.21.RELEASE</spring.version>
