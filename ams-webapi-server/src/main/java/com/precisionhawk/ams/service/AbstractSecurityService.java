@@ -12,6 +12,7 @@ import com.precisionhawk.ams.bean.security.UserCredentials;
 import com.precisionhawk.ams.config.SecurityConfig;
 import com.precisionhawk.ams.config.TenantConfig;
 import com.precisionhawk.ams.dao.DaoException;
+import com.precisionhawk.ams.dao.OAuthSecurityDao;
 import com.precisionhawk.ams.dao.SecurityDao;
 import com.precisionhawk.ams.dao.SiteProvider;
 import com.precisionhawk.ams.domain.Organization;
@@ -101,13 +102,13 @@ public abstract class AbstractSecurityService implements SecurityService {
         }
         
         // Organizations/Sites
-        Set<Organization> orgs;
+        Set<Organization> orgs = selectOrganizationsForUser(bean);
         Set<String> siteIDs;
         List<Site> sites;
         Map<String, List<Site>> sitesByOrg = new HashMap<>();
         try {
             if (tcfg.getOrganizationId() == null) {
-                orgs = new HashSet(dao.selectOrganizationsForUser(creds.getUserId()));
+//                orgs = new HashSet(dao.selectOrganizationsForUser(creds.getUserId()));
                 boolean inspecToolsUser = false;
                 for (Organization o : orgs) {
                     if (Constants.COMPANY_ORG_KEY.equals(o.getKey())) {
@@ -174,11 +175,11 @@ public abstract class AbstractSecurityService implements SecurityService {
                     }
                 }
             } else {
-                // Organization specific security.  All users belong to that org.
-                // These users have permissions for all sites belonging to that org
-                // but no others.
-                orgs = new HashSet();
-                orgs.add(dao.selectOrganizationById(tcfg.getOrganizationId()));
+//                // Organization specific security.  All users belong to that org.
+//                // These users have permissions for all sites belonging to that org
+//                // but no others.
+//                orgs = new HashSet();
+//                orgs.add(dao.selectOrganizationById(tcfg.getOrganizationId()));
                 // Add all the sites for the entire organization.
                 SiteSearchParams query = new SiteSearchParams();
                 query.setOrganizationId(tcfg.getOrganizationId());
@@ -203,4 +204,6 @@ public abstract class AbstractSecurityService implements SecurityService {
         creds.setSiteIDs(new ArrayList(siteIDs));
         creds.setSitesByOrganization(sitesByOrg);
     }
+    
+    protected abstract Set<Organization> selectOrganizationsForUser(ServicesSessionBean bean);
 }

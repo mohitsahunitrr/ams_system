@@ -15,8 +15,11 @@ import com.precisionhawk.ams.bean.security.AppCredentials;
 import com.precisionhawk.ams.bean.security.CachedUserInfo;
 import com.precisionhawk.ams.bean.security.ExtUserCredentials;
 import com.precisionhawk.ams.bean.security.ServicesSessionBean;
+import com.precisionhawk.ams.bean.security.UserCredentials;
 import com.precisionhawk.ams.bean.security.UserSearchParams;
 import com.precisionhawk.ams.config.TenantConfig;
+import com.precisionhawk.ams.dao.OAuthSecurityDao;
+import com.precisionhawk.ams.domain.Organization;
 import com.precisionhawk.ams.security.AADAccessTokenProvider;
 import com.precisionhawk.ams.security.AccessTokenProvider;
 import com.precisionhawk.ams.service.oauth.OAuthAuthenticationProvider;
@@ -336,5 +339,19 @@ public final class AADAuthenticationProvider implements OAuthAuthenticationProvi
             creds.setEmailAddress(claimsSet.getClaim(CLAIM_UNIQUE_NAME).toString().toLowerCase());
         }
         bean.setCredentials(creds);
+    }
+
+    @Override
+    public List<Organization> selectOrganizationsForUser(OAuthSecurityDao dao, ServicesSessionBean bean) {
+        List<Organization> orgs = new LinkedList<>();
+        if (bean.getCredentials() instanceof UserCredentials) {
+            String userId = ((UserCredentials)bean.getCredentials()).getUserId();
+            return dao.selectOrganizationsForUser(userId);
+        } else if (bean.getCredentials() instanceof AppCredentials) {
+            if (config.getOrganizationId() != null) {
+                orgs.add(dao.selectOrganizationById(config.getOrganizationId()));
+            }
+        }
+        return orgs;
     }
 }

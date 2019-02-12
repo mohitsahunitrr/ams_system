@@ -11,8 +11,11 @@ import com.precisionhawk.ams.bean.security.AppCredentials;
 import com.precisionhawk.ams.bean.security.CachedUserInfo;
 import com.precisionhawk.ams.bean.security.ExtUserCredentials;
 import com.precisionhawk.ams.bean.security.ServicesSessionBean;
+import com.precisionhawk.ams.bean.security.UserCredentials;
 import com.precisionhawk.ams.bean.security.UserSearchParams;
 import com.precisionhawk.ams.config.TenantConfig;
+import com.precisionhawk.ams.dao.OAuthSecurityDao;
+import com.precisionhawk.ams.domain.Organization;
 import com.precisionhawk.ams.security.AccessTokenProvider;
 import com.precisionhawk.ams.security.Auth0AccessTokenProvider;
 import com.precisionhawk.ams.service.oauth.OAuthAuthenticationProvider;
@@ -197,6 +200,24 @@ public final class Auth0AuthenticationProvider implements OAuthAuthenticationPro
         info.setLastName(StringUtil.notNull(data.get(USER_INFO_FAMILY_NAME)));
         info.setUserId(StringUtil.notNull(data.get(USER_INFO_USER_ID)));
         return userData;
+    }
+
+    @Override
+    public List<Organization> selectOrganizationsForUser(OAuthSecurityDao dao, ServicesSessionBean bean) {
+        List<Organization> orgs = new LinkedList<>();
+        if (bean.getCredentials() instanceof UserCredentials) {
+            List<String> orgIDs = (List<String>)bean.getAppData().get("organizations");
+            if (orgIDs != null) {
+                for (String orgId : orgIDs) {
+                    orgs.add(dao.selectOrganizationById(orgId));
+                }
+            }
+        } else if (bean.getCredentials() instanceof AppCredentials) {
+            if (config.getOrganizationId() != null) {
+                orgs.add(dao.selectOrganizationById(config.getOrganizationId()));
+            }
+        }
+        return orgs;
     }
     
     private class UserData {

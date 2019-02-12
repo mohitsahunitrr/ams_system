@@ -14,10 +14,13 @@ import com.precisionhawk.ams.config.SecurityConfig;
 import com.precisionhawk.ams.dao.DaoException;
 import com.precisionhawk.ams.dao.SecurityDao;
 import com.precisionhawk.ams.dao.SiteProvider;
+import com.precisionhawk.ams.domain.Organization;
 import com.precisionhawk.ams.domain.Site;
 import com.precisionhawk.ams.security.AccessTokenProvider;
 import com.precisionhawk.ams.security.NoOppAccessTokenProvider;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.ws.rs.InternalServerErrorException;
 
 /**
@@ -90,5 +93,12 @@ public class NoOppSecurityService extends AbstractSecurityService {
     @Override
     public AccessTokenProvider accessTokenProvider(String tenantId) {
         return tokenProvider;
+    }
+
+    @Override
+    protected Set<Organization> selectOrganizationsForUser(ServicesSessionBean bean) {
+        Set<Organization> orgs = new HashSet<>();
+        orgs.addAll(securityDao.selectOrganizations());
+        return orgs;
     }
 }

@@ -6,8 +6,11 @@ import com.precisionhawk.ams.bean.security.CachedUserInfo;
 import com.precisionhawk.ams.bean.security.ServicesSessionBean;
 import com.precisionhawk.ams.bean.security.UserSearchParams;
 import com.precisionhawk.ams.config.TenantConfig;
+import com.precisionhawk.ams.dao.OAuthSecurityDao;
+import com.precisionhawk.ams.domain.Organization;
 import com.precisionhawk.ams.security.AccessTokenProvider;
 import java.net.MalformedURLException;
+import java.util.List;
 
 /**
  *
@@ -44,6 +47,8 @@ public interface OAuthAuthenticationProvider {
      * no matches were found.
      */
     CachedUserInfo queryForUserInfo(UserSearchParams parameters);
+    
+    List<Organization> selectOrganizationsForUser(OAuthSecurityDao dao, ServicesSessionBean bean);
     
     AccessTokenProvider getAccessTokenProvider();
     

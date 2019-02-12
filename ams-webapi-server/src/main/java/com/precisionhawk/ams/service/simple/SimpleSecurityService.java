@@ -15,6 +15,7 @@ import com.precisionhawk.ams.dao.SecurityDao;
 import com.precisionhawk.ams.dao.SimpleSecurityDao;
 import com.precisionhawk.ams.dao.SiteProvider;
 import com.precisionhawk.ams.dao.fs.SelfContainedUserInfo;
+import com.precisionhawk.ams.domain.Organization;
 import com.precisionhawk.ams.security.AccessTokenProvider;
 import com.precisionhawk.ams.security.SimpleAccessTokenProvider;
 import com.precisionhawk.ams.service.AbstractSecurityService;
@@ -110,6 +111,18 @@ public class SimpleSecurityService extends AbstractSecurityService {
             bean.setReason("Error parsing access token");
         }
         return bean;
+    }
+
+    @Override
+    protected Set<Organization> selectOrganizationsForUser(ServicesSessionBean bean) {
+        Set<Organization> set = new HashSet<>();
+        TenantConfig tcfg = config.getTenantConfigurations().get(bean.getTenantId());
+        if (tcfg == null || tcfg.getOrganizationId() == null) {
+            set.addAll(dao.selectOrganizationsForUser(((UserCredentials)bean.getCredentials()).getUserId()));
+        } else {
+            set.add(dao.selectOrganizationById(tcfg.getOrganizationId()));
+        }
+        return set;
     }
 
 }

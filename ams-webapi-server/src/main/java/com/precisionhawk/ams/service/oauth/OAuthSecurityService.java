@@ -356,4 +356,14 @@ public final class OAuthSecurityService extends AbstractSecurityService {
             return p.getAccessTokenProvider();
         }
     }
+
+    @Override
+    protected Set<Organization> selectOrganizationsForUser(ServicesSessionBean bean) {
+        Set<Organization> orgs = new HashSet<>();
+        OAuthAuthenticationProvider prov = authProviders.get(bean.getTenantId());
+        if (prov != null) {
+            orgs.addAll(prov.selectOrganizationsForUser(dao, bean));
+        }
+        return orgs;
+    }
 }
