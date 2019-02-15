@@ -106,7 +106,7 @@
     <properties>
         <jackson.version>1.9.13</jackson.version>
         <junit.version>4.12</junit.version>
-        <liana.version>2.0.9</liana.version>
+        <liana.version>2.0.13</liana.version>
         <pcsw.version>1.2.1</pcsw.version>
         <resteasy.version>3.6.2.Final</resteasy.version>
         <slf4j.version>1.7.25</slf4j.version>
@@ -250,6 +250,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-imaging</artifactId>
                 <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>1.6</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
