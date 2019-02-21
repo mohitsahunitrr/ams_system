@@ -46,8 +46,8 @@ public abstract class AbstractWebService {
     {
         ServicesSessionBean sess = securityService.validateToken(accessToken);
         if (sess == null || (!sess.isTokenValid())) {
-            LOGGER.error("Token \"{}\" failed validation: {}", accessToken, sess.getReason());
-            throw new NotAuthorizedException(sess.getReason());
+            LOGGER.error("Token \"{}\" failed validation: {}", accessToken, sess == null ? "No valid session" : sess.getReason());
+            throw new NotAuthorizedException(sess == null ? "No valid session" : sess.getReason());
         }
         return sess;
     }
