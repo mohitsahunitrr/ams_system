@@ -20,22 +20,25 @@ import org.slf4j.LoggerFactory;
  */
 @Named
 @Provider
-public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<WebApplicationException> {
+public class ExceptionMapper implements javax.ws.rs.ext.ExceptionMapper<Throwable> {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     
     @Inject private ServicesConfig config;
     
     @Override
-    public Response toResponse(WebApplicationException ex) {
-        LOGGER.error("Handling error", ex);
+    public Response toResponse(Throwable t) {
+        LOGGER.error("Handling error", t);
         Map<String, Object> data = new HashMap<>();
-        data.put("error", ex.getMessage());
+        data.put("error", t.getMessage());
         data.put("timestamp", ZonedDateTime.now());
         data.put("name", config.getAppName());
         data.put("environment", config.getEnvironment());
         data.put("version", config.getVersion());
-        Response resp = ex.getResponse();
-        return Response.status(resp.getStatus()).entity(data).type(MediaType.APPLICATION_JSON).build();
+        int status = 500;
+        if (t instanceof WebApplicationException) {
+            status = ((WebApplicationException)t).getResponse().getStatus();
+        }
+        return Response.status(status).entity(data).type(MediaType.APPLICATION_JSON).build();
     }
 }

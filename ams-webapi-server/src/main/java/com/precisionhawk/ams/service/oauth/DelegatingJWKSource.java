@@ -20,22 +20,40 @@ import java.util.Set;
 public class DelegatingJWKSource implements JWKSource {
     private final Set<JWKSource> delegates = new HashSet<>();
     
+    private List<JWK> cache = null;
+    
+    private final Object LOCK = new Object();
+    
     public void add(JWKSource source) {
         delegates.add(source);
+        clearCache();
     }
     public void addAll(Collection<JWKSource> sources) {
         delegates.addAll(sources);
+        clearCache();
     }
     public void remove(JWKSource source) {
         delegates.remove(source);
+        clearCache();
     }
 
     @Override
     public List<JWK> get(JWKSelector jwkSelector, SecurityContext context) throws KeySourceException {
-        List<JWK> keys = new LinkedList<>();
-        for (JWKSource delegate : delegates) {
-            keys.addAll(delegate.get(jwkSelector, context));
+        synchronized (LOCK) {
+            if (cache == null) {
+                List<JWK> keys = new LinkedList<>();
+                for (JWKSource delegate : delegates) {
+                    keys.addAll(delegate.get(jwkSelector, context));
+                }
+                cache = keys;
+            }
         }
-        return keys;
+        return cache;
+    }
+    
+    private void clearCache() {
+        synchronized (LOCK) {
+            cache = null;
+        }
     }
 }

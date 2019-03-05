@@ -198,8 +198,8 @@ public final class OAuthSecurityService extends AbstractSecurityService {
                     LOGGER.error(s);
                     bean.setTokenValid(false);
                     bean.setReason(s);
-                    return bean;
                 }
+                return bean;
             }
         }
         return bean;
