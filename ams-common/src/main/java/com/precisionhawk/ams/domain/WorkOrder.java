@@ -53,6 +53,19 @@ public class WorkOrder implements SitesAware {
     public void setSiteIds(List<String> siteIds) {
         this.siteIds = siteIds;
     }
+    
+    public boolean ensureSiteId(String id) {
+        if (id == null || id.isEmpty()) {
+            return false;
+        }
+        for (String s : siteIds) {
+            if (id.equals(s)) {
+                return false;
+            }
+        }
+        siteIds.add(id);
+        return true;
+    }
 
     @Schema(description="The status of the work.")
     private WorkOrderStatus status;

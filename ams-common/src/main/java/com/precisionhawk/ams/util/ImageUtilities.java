@@ -220,6 +220,22 @@ public final class ImageUtilities {
         return result;
     }
     
+    // Camera model is 0x010f
+    private static final int CAMERA_MODEL = 0x010f;
+    public static String getCameraMake(TiffImageMetadata metadata) throws ImageReadException {
+        if (metadata == null) {
+            return null;
+        }
+        // Camera make
+        for (TiffField field : metadata.getAllFields()) {
+            if (CAMERA_MODEL == field.getTag()) {
+                return new String(field.getByteArrayValue()).trim();
+//                return field.getStringValue();
+            }
+        }
+        return null;
+    }
+    
     private static ZonedDateTime getTimestamp(String value) throws DateTimeParseException {
         if (value == null || value.isEmpty()) {
             return null;

@@ -96,6 +96,9 @@ public class ResourceWebServiceImpl extends AbstractWebService implements Resour
     @Override
     public List<ResourceMetadata> search(String authToken, ResourceSearchParams params) {
         ServicesSessionBean sess = lookupSessionBean(authToken);
+        return _search(sess, params);
+    }
+    public List<ResourceMetadata> _search(ServicesSessionBean sess, ResourceSearchParams params) {
         ensureExists(params, "The search parameters are required.");
         authorize(sess, params);
         try {
