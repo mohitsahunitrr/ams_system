@@ -11,6 +11,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,6 +30,9 @@ import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants;
 import org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants;
 import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii;
+import org.apache.commons.io.IOUtils;
+import org.imgscalr.Scalr;
+import org.imgscalr.Scalr.Rotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -249,5 +254,64 @@ public final class ImageUtilities {
         }
         LocalDateTime ldt = LocalDateTime.parse(value, DATE_TIME_FORMATTER2);
         return ZonedDateTime.of(ldt, zoneId);
+    }
+    
+    public static File rotateIfNecessary(TiffImageMetadata metadata, File infile, ImageType type) throws ImageReadException, IOException {
+        // First, try to find the orientation field
+        Object o = metadata.getFieldValue(TiffTagConstants.TIFF_TAG_ORIENTATION);
+        Short orientation;
+        if (o == null) {
+            return infile;
+        } else if (o instanceof Short) {
+            orientation = (Short)o;
+        } else {
+            orientation = Short.valueOf(o.toString());
+        }
+        BufferedImage i = null;
+        switch (orientation) {
+            case TiffTagConstants.ORIENTATION_VALUE_HORIZONTAL_NORMAL:
+                // Standard orientation.
+                break;
+            case TiffTagConstants.ORIENTATION_VALUE_MIRROR_HORIZONTAL:
+                i = ImageIO.read(infile);
+                i = Scalr.rotate(i, Rotation.FLIP_HORZ);
+            case TiffTagConstants.ORIENTATION_VALUE_MIRROR_HORIZONTAL_AND_ROTATE_270_CW:
+                i = ImageIO.read(infile);
+                i = Scalr.rotate(i, Rotation.FLIP_HORZ);
+                i = Scalr.rotate(i, Rotation.CW_270);
+            case TiffTagConstants.ORIENTATION_VALUE_MIRROR_HORIZONTAL_AND_ROTATE_90_CW:
+                i = ImageIO.read(infile);
+                i = Scalr.rotate(i, Rotation.FLIP_HORZ);
+                i = Scalr.rotate(i, Rotation.CW_90);
+            case TiffTagConstants.ORIENTATION_VALUE_MIRROR_VERTICAL:
+                i = ImageIO.read(infile);
+                i = Scalr.rotate(i, Rotation.FLIP_HORZ);
+            case TiffTagConstants.ORIENTATION_VALUE_ROTATE_90_CW:
+                i = ImageIO.read(infile);
+                i = Scalr.rotate(i, Rotation.CW_90);
+            case TiffTagConstants.ORIENTATION_VALUE_ROTATE_180:
+                i = ImageIO.read(infile);
+                i = Scalr.rotate(i, Rotation.CW_180);
+            case TiffTagConstants.ORIENTATION_VALUE_ROTATE_270_CW:
+                i = ImageIO.read(infile);
+                i = Scalr.rotate(i, Rotation.CW_270);
+            default:
+                LOGGER.warn("Unhandled orientation %d", orientation);
+        }
+        File outfile;
+        if (i == null) {
+            outfile = infile;
+        } else {
+            outfile = File.createTempFile("pa", ".jpg");
+            OutputStream os = null;
+            try {
+                os = new FileOutputStream(outfile);
+                String outtype = type == ImageType.JPG ? "JPEG" : type.name();
+                ImageIO.write(i, outtype, os);
+            } finally {
+                IOUtils.closeQuietly(os);
+            }
+        }
+        return outfile;
     }
 }

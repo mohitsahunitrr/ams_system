@@ -57,6 +57,10 @@
             <artifactId>jackson-mapper-asl</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.imgscalr</groupId>
+            <artifactId>imgscalr-lib</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.papernapkin.liana</groupId>
             <artifactId>liana-util</artifactId>
         </dependency>
