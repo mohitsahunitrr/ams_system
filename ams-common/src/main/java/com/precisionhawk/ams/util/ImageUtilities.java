@@ -335,6 +335,9 @@ public final class ImageUtilities {
     public static Short readImageOrientation(TiffImageMetadata exif)
         throws ImageReadException
     {
+        if (exif == null) {
+            return null;
+        }
         Object o = exif.getFieldValue(TiffTagConstants.TIFF_TAG_ORIENTATION);
         Short orientation;
         if (o == null) {
