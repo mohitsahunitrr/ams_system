@@ -24,6 +24,9 @@ import java.time.format.DateTimeParseException;
 import javax.imageio.ImageIO;
 import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.Imaging;
+import org.apache.commons.imaging.common.ImageMetadata;
+import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants;
@@ -83,6 +86,10 @@ public final class ImageUtilities {
                 }
             }
             return null;
+        }
+        
+        public String toExtension() {
+            return extensions[0];
         }
     }
     
@@ -256,16 +263,26 @@ public final class ImageUtilities {
         return ZonedDateTime.of(ldt, zoneId);
     }
     
+    public static TiffImageMetadata retrieveExif(File file)
+        throws IOException, ImageReadException
+    {
+        TiffImageMetadata exif;
+        ImageMetadata metadata = Imaging.getMetadata(file);
+        if (metadata instanceof JpegImageMetadata) {
+            exif = ((JpegImageMetadata)metadata).getExif();
+        } else if (metadata instanceof TiffImageMetadata) {
+            exif = (TiffImageMetadata)metadata;
+        } else {
+            exif = null;
+        }
+        return exif;
+    }
+    
     public static File rotateIfNecessary(TiffImageMetadata metadata, File infile, ImageType type) throws ImageReadException, IOException {
         // First, try to find the orientation field
-        Object o = metadata.getFieldValue(TiffTagConstants.TIFF_TAG_ORIENTATION);
-        Short orientation;
-        if (o == null) {
+        Short orientation = readImageOrientation(metadata);
+        if (orientation == null) {
             return infile;
-        } else if (o instanceof Short) {
-            orientation = (Short)o;
-        } else {
-            orientation = Short.valueOf(o.toString());
         }
         BufferedImage i = null;
         switch (orientation) {
@@ -302,7 +319,7 @@ public final class ImageUtilities {
         if (i == null) {
             outfile = infile;
         } else {
-            outfile = File.createTempFile("pa", ".jpg");
+            outfile = File.createTempFile("ams", "." + type.toExtension());
             OutputStream os = null;
             try {
                 os = new FileOutputStream(outfile);
@@ -313,5 +330,20 @@ public final class ImageUtilities {
             }
         }
         return outfile;
+    }
+    
+    public static Short readImageOrientation(TiffImageMetadata exif)
+        throws ImageReadException
+    {
+        Object o = exif.getFieldValue(TiffTagConstants.TIFF_TAG_ORIENTATION);
+        Short orientation;
+        if (o == null) {
+            orientation = null;
+        } else if (o instanceof Short) {
+            orientation = (Short)o;
+        } else {
+            orientation = Short.valueOf(o.toString());
+        }
+        return orientation;
     }
 }
