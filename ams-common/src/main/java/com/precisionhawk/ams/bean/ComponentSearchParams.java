@@ -9,7 +9,7 @@ import io.swagger.oas.annotations.media.Schema;
  * @author pchapman
  */
 @Schema(description="Search criteria for components.  At least one field must have a non-null value.")
-public final class ComponentSearchParam extends AbstractSearchParams implements SiteAware {
+public final class ComponentSearchParams extends AbstractSearchParams implements SiteAware {
 
     @Schema(description="The unique ID of the site.")
     private String siteId;
@@ -46,6 +46,15 @@ public final class ComponentSearchParam extends AbstractSearchParams implements 
     }
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
+    }
+    
+    @Schema(description="Unique ID of the component assigned by the Utility.")
+    private String utilityId;
+    public String getUtilityId() {
+        return utilityId;
+    }
+    public void setUtilityId(String utilityId) {
+        this.utilityId = utilityId;
     }
 
     @Override

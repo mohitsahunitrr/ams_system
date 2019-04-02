@@ -1,6 +1,8 @@
 package com.precisionhawk.ams.domain;
 
 import io.swagger.oas.annotations.media.Schema;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -10,6 +12,15 @@ import java.util.Objects;
  */
 @Schema(description="A component of an asset.")
 public class Component implements Identifyable, SiteAware {
+
+    @Schema(description="Misc attributes associated with the component.")
+    private Map<String, String> attributes = new HashMap<>();
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
 
     @Schema(description="The unique ID of the component.")
     private String id;
@@ -74,6 +85,15 @@ public class Component implements Identifyable, SiteAware {
     }
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
+    }
+    
+    @Schema(description="Unique ID of the component assigned by the Utility.")
+    private String utilityId;
+    public String getUtilityId() {
+        return utilityId;
+    }
+    public void setUtilityId(String utilityId) {
+        this.utilityId = utilityId;
     }
     
     @Override
