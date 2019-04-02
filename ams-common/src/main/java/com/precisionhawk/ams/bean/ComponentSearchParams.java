@@ -59,6 +59,6 @@ public final class ComponentSearchParams extends AbstractSearchParams implements
 
     @Override
     public boolean hasCriteria() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return hasValue(assetId) || hasValue(siteId) || hasValue(assetId) || hasValue(utilityId) || hasValue(serialNumber) || type != null;
     }
 }
