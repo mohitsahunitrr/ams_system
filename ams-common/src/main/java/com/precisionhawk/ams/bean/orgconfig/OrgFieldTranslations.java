@@ -127,11 +127,11 @@ public class OrgFieldTranslations {
     }
     
     @Schema(description="A mapping of lists of field keys for fields that should be used to populate list views.")
-    public Map<String, List<String>> views;
-    public Map<String, List<String>> getViews() {
+    public Map<String, TranslationView> views;
+    public Map<String, TranslationView> getViews() {
         return views;
     }
-    public void setViews(Map<String, List<String>> views) {
+    public void setViews(Map<String, TranslationView> views) {
         this.views = views;
     }
     
