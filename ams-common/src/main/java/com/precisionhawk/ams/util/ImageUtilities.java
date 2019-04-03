@@ -292,28 +292,35 @@ public final class ImageUtilities {
             case TiffTagConstants.ORIENTATION_VALUE_MIRROR_HORIZONTAL:
                 i = ImageIO.read(infile);
                 i = Scalr.rotate(i, Rotation.FLIP_HORZ);
+                break;
             case TiffTagConstants.ORIENTATION_VALUE_MIRROR_HORIZONTAL_AND_ROTATE_270_CW:
                 i = ImageIO.read(infile);
                 i = Scalr.rotate(i, Rotation.FLIP_HORZ);
                 i = Scalr.rotate(i, Rotation.CW_270);
+                break;
             case TiffTagConstants.ORIENTATION_VALUE_MIRROR_HORIZONTAL_AND_ROTATE_90_CW:
                 i = ImageIO.read(infile);
                 i = Scalr.rotate(i, Rotation.FLIP_HORZ);
                 i = Scalr.rotate(i, Rotation.CW_90);
+                break;
             case TiffTagConstants.ORIENTATION_VALUE_MIRROR_VERTICAL:
                 i = ImageIO.read(infile);
                 i = Scalr.rotate(i, Rotation.FLIP_HORZ);
+                break;
             case TiffTagConstants.ORIENTATION_VALUE_ROTATE_90_CW:
                 i = ImageIO.read(infile);
                 i = Scalr.rotate(i, Rotation.CW_90);
+                break;
             case TiffTagConstants.ORIENTATION_VALUE_ROTATE_180:
                 i = ImageIO.read(infile);
                 i = Scalr.rotate(i, Rotation.CW_180);
+                break;
             case TiffTagConstants.ORIENTATION_VALUE_ROTATE_270_CW:
                 i = ImageIO.read(infile);
                 i = Scalr.rotate(i, Rotation.CW_270);
+                break;
             default:
-                LOGGER.warn("Unhandled orientation %d", orientation);
+                LOGGER.warn("Unhandled orientation {}", orientation);
         }
         File outfile;
         if (i == null) {
