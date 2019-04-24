@@ -193,6 +193,7 @@ public abstract class AbstractEsDao extends AbstractDao {
             hitsRead = false;
             for (SearchHit hit : resp.getHits()) {
                 hitsRead = true;
+//                LOGGER.debug("Loading {} object {}", getDocumentType(), hit.getId());
                 list.add(deserializeToObject(hit.sourceAsString(), clazz));
             }
         }
