@@ -6,6 +6,8 @@ package com.precisionhawk.ams.domain;
 
 import io.swagger.oas.annotations.media.Schema;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -14,6 +16,15 @@ import java.util.Objects;
  */
 @Schema(description="An inspetion of an asset.")
 public class AssetInspection implements Identifyable, SiteAware {
+
+    @Schema(description="Misc attributes associated with the asset obtained during inspection.")
+    private Map<String, String> attributes = new HashMap<>();
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
 
     @Schema(description="The unique ID of the inspection.")
     private String id;

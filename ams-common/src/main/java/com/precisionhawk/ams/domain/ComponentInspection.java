@@ -5,6 +5,8 @@
 package com.precisionhawk.ams.domain;
 
 import io.swagger.oas.annotations.media.Schema;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -49,6 +51,15 @@ public class ComponentInspection implements Identifyable, SiteAware {
     }
     public void setComponentId(String componentId) {
         this.componentId = componentId;
+    }
+
+    @Schema(description="Misc attributes associated with the component as determined during the inspection.")
+    private Map<String, String> attributes = new HashMap<>();
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
     }
     
     @Schema(description="A description of the inspection.")
