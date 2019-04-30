@@ -91,19 +91,21 @@ public class UserCredentials extends UserInfoBean implements Credentials
             // isAdmin is used for skipping site access check later, if needed.
             isAdmin = roleKeys.contains(Constants.GROUP_KEY_ORG_ADMIN);
         }
-        
-        // Check to see if user is in the org.  If not, group permissions do not matter.
-        if (orgId != null) {
-            // Assume the user isn't in the org.
-            boolean authorized = false;
-            for (Organization org : organizations) {
-                if (org.getId().equals(orgId)) {
-                    authorized = true;
-                    break;
+
+        if (!isInspectToolsEmp) {
+            // Check to see if user is in the org.  If not, group permissions do not matter.
+            if (orgId != null) {
+                // Assume the user isn't in the org.
+                boolean authorized = false;
+                for (Organization org : organizations) {
+                    if (org.getId().equals(orgId)) {
+                        authorized = true;
+                        break;
+                    }
                 }
-            }
-            if (!authorized) {
-                return false;
+                if (!authorized) {
+                    return false;
+                }
             }
         }
         

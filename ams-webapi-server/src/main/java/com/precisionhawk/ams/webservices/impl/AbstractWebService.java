@@ -96,7 +96,7 @@ public abstract class AbstractWebService {
             // Check site permissions
             for (SiteAware aware : awares) {
                 if (aware != null) {
-                    if (aware.getSiteId() != null && !sess.getCredentials().getSiteIDs().contains(aware.getSiteId())) {
+                    if (!sess.getCredentials().checkAuthorization(null, null, aware.getSiteId(), false, groupKeys)) {
                         throw new NotAuthorizedException(String.format("User not authorized for site %s", aware.getSiteId()));
                     }
                 }
